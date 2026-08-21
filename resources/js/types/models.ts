@@ -104,35 +104,52 @@ export interface AnggotaRow {
     no_anggota: string;
     nama: string;
     pin: string | null;
-    kelompok_id: number;
-    kantor_id: number;
-    alamat: string;
+    kelompok_id: number | null;
+    kantor_id: number | null;
+    alamat: string | null;
+    email: string | null;
+    telepon: string | null;
+    no_hp: string | null;
+    status: number;
+    foto: string | null;
+    kelompok?: { id: number; nama: string } | null;
+    kantor?: { id: number; nama_kantor: string } | null;
+}
+
+/** Data lengkap untuk halaman Show/Edit. */
+export interface AnggotaDetail extends AnggotaRow {
     provinsi_id: string | null;
     kota_id: string | null;
     kecamatan_id: string | null;
     kelurahan_id: string | null;
-    email: string | null;
     tempat_lahir: string | null;
     tgl_lahir: string | null;
-    jenis_kelamin: 'L' | 'P' | null;
+    jenis_kelamin: string | null;
     agama: string | null;
     pekerjaan: string | null;
     pendidikan: string | null;
     status_perkawinan: string | null;
     pasangan: string | null;
-    telepon: string | null;
-    no_hp: string | null;
     jenis_identitas: string | null;
     no_identitas: string | null;
     npwp: string | null;
     ibu: string | null;
+    pengurus: number;
+    pengurus_jabatan: string | null;
+    tgl_pengurus_diangkat: string | null;
+    tgl_pengurus_berhenti: string | null;
+    pengurus_berhenti: string | null;
+    pengawas: number;
+    pengawas_jabatan: string | null;
+    tgl_pengawas_diangkat: string | null;
+    tgl_pengawas_berhenti: string | null;
+    pengawas_berhenti: string | null;
     waris1: string | null;
     hubungan_waris1: string | null;
     waris2: string | null;
     hubungan_waris2: string | null;
-    status: string;
-    kelompok?: { id: number; nama: string } | null;
-    kantor?: { id: number; nama_kantor: string } | null;
+    tgl_anggota_berhenti: string | null;
+    anggota_berhenti: string | null;
 }
 
 export type KodeFlag =

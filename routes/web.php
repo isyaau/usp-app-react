@@ -5,6 +5,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Superadmin\AccGroupController;
 use App\Http\Controllers\Superadmin\AccHeaderController;
 use App\Http\Controllers\Superadmin\AccountController;
+use App\Http\Controllers\Superadmin\AnggotaController;
 use App\Http\Controllers\Superadmin\JaminanController;
 use App\Http\Controllers\Superadmin\KodetransaksiController;
 use App\Http\Controllers\Superadmin\KantorController;
@@ -13,6 +14,8 @@ use App\Http\Controllers\Superadmin\MarketingController;
 use App\Http\Controllers\Superadmin\PinjamanProdukController;
 use App\Http\Controllers\Superadmin\SimpananProdukController;
 use App\Http\Controllers\Superadmin\UserController;
+
+// Route Livewire lama modul Anggota dihapus — sudah dimigrasikan ke Inertia.
 use App\Http\Controllers\WilayahController;
 use Illuminate\Support\Facades\Route;
 
@@ -33,12 +36,6 @@ use App\Livewire\Superadmin\Kantor\Index as KantorIndex;
 use App\Livewire\Superadmin\Kantor\Create as KantorCreate;
 use App\Livewire\Superadmin\Kantor\Edit as KantorEdit;
 use App\Livewire\Superadmin\Kantor\Show as KantorShow;
-
-// ANGGOTA
-use App\Livewire\Superadmin\Anggota\Index as AnggotaIndex;
-use App\Livewire\Superadmin\Anggota\Create as AnggotaCreate;
-use App\Livewire\Superadmin\Anggota\Edit as AnggotaEdit;
-use App\Livewire\Superadmin\Anggota\Show as AnggotaShow;
 
 
 // ACCOUNT HEADER
@@ -328,13 +325,18 @@ Route::prefix('superadmin')->name('superadmin.')->middleware(['auth', 'role:supe
     Route::delete('/kelompok/{kelompok}', [KelompokController::class, 'destroy'])->name('kelompok.destroy');
     Route::get('/kelompok/{kelompok}', [KelompokController::class, 'show'])->name('kelompok.show');
 
-    //Anggota
-    Route::get('/anggota', AnggotaIndex::class)->name('anggota');
-    Route::get('/anggota/create', AnggotaCreate::class)->name('anggota.create');
-    Route::get('/anggota/export', AnggotaIndex::class)->name('anggota.export-pdf');
-    Route::get('/anggota/{id}/edit', AnggotaEdit::class)->name('anggota.edit');
-    Route::get('/anggota/{id}', AnggotaShow::class)->name('anggota.show');
-    Route::get('export-anggota', [AnggotaIndex::class, 'export']);
+    //Anggota (Inertia + React)
+    Route::get('/anggota', [AnggotaController::class, 'index'])->name('anggota');
+    Route::get('/anggota/create', [AnggotaController::class, 'create'])->name('anggota.create');
+    Route::post('/anggota', [AnggotaController::class, 'store'])->name('anggota.store');
+    Route::get('/anggota/export/template', [AnggotaController::class, 'downloadTemplate'])->name('anggota.template');
+    Route::post('/anggota/import', [AnggotaController::class, 'import'])->name('anggota.import');
+    Route::get('/anggota/export/pdf', [AnggotaController::class, 'exportPdf'])->name('anggota.export-pdf');
+    Route::get('/anggota/export/excel', [AnggotaController::class, 'exportExcel'])->name('anggota.export-excel');
+    Route::get('/anggota/{anggota}/edit', [AnggotaController::class, 'edit'])->name('anggota.edit');
+    Route::put('/anggota/{anggota}', [AnggotaController::class, 'update'])->name('anggota.update');
+    Route::delete('/anggota/{anggota}', [AnggotaController::class, 'destroy'])->name('anggota.destroy');
+    Route::get('/anggota/{anggota}', [AnggotaController::class, 'show'])->name('anggota.show');
 
     //Kantor (Inertia + React)
     Route::get('/kantor', [KantorController::class, 'index'])->name('kantor');
