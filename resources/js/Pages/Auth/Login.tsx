@@ -1,17 +1,30 @@
 import { useState } from 'react';
-import { useForm, Head, Link } from '@inertiajs/react';
-import { Eye, EyeOff, Landmark, Lock, Mail, LoaderCircle } from 'lucide-react';
+import { useForm, Head } from '@inertiajs/react';
+import { Eye, EyeOff, Landmark, Lock, Mail, LoaderCircle, ShieldCheck } from 'lucide-react';
 
-export default function Login({ status }) {
+import { Button } from '@/Components/ui/button';
+import { Input } from '@/Components/ui/input';
+import { Label } from '@/Components/ui/label';
+import { Alert, AlertDescription, AlertTitle } from '@/Components/ui/alert';
+
+interface LoginProps {
+    status?: string;
+}
+
+export default function Login({ status }: LoginProps) {
     const [showPassword, setShowPassword] = useState(false);
 
-    const form = useForm({
+    const form = useForm<{
+        email: string;
+        password: string;
+        remember: boolean;
+    }>({
         email: '',
         password: '',
         remember: true,
     });
 
-    const submit = (e) => {
+    const submit = (e: React.FormEvent) => {
         e.preventDefault();
         form.post(route('login.attempt'), {
             onFinish: () => form.reset('password'),
@@ -45,6 +58,16 @@ export default function Login({ status }) {
                         <p className="mt-4 max-w-md text-white/70">
                             Kelola anggota, pinjaman, simpanan, dan kas harian dalam satu platform yang cepat dan modern.
                         </p>
+                        <div className="mt-8 flex flex-wrap gap-2">
+                            {['React + TypeScript', 'Laravel 13', 'PostgreSQL'].map((tech) => (
+                                <span
+                                    key={tech}
+                                    className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-medium backdrop-blur"
+                                >
+                                    {tech}
+                                </span>
+                            ))}
+                        </div>
                     </div>
 
                     <p className="text-sm text-white/50">© {new Date().getFullYear()} KSP KOPINKA. Seluruh hak cipta.</p>
@@ -67,19 +90,21 @@ export default function Login({ status }) {
                     <p className="mt-2 text-slate-400">Masuk untuk mengakses dashboard Anda.</p>
 
                     {status && (
-                        <div className="mt-6 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300">
-                            {status}
-                        </div>
+                        <Alert variant="success" className="mt-6 border-emerald-500/30 bg-emerald-500/10 text-emerald-300">
+                            <ShieldCheck />
+                            <AlertTitle>Berhasil</AlertTitle>
+                            <AlertDescription>{status}</AlertDescription>
+                        </Alert>
                     )}
 
                     <form onSubmit={submit} className="mt-8 space-y-5">
-                        <div>
-                            <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-slate-300">
+                        <div className="space-y-2">
+                            <Label htmlFor="email" className="text-slate-300">
                                 Email
-                            </label>
+                            </Label>
                             <div className="relative">
-                                <Mail className="pointer-events-none absolute left-3.5 top-1/2 size-4.5 -translate-y-1/2 text-slate-500" />
-                                <input
+                                <Mail className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-500" />
+                                <Input
                                     id="email"
                                     type="email"
                                     autoFocus
@@ -87,26 +112,26 @@ export default function Login({ status }) {
                                     placeholder="nama@kopinka.co.id"
                                     value={form.data.email}
                                     onChange={(e) => form.setData('email', e.target.value)}
-                                    className="w-full rounded-xl border border-white/10 bg-white/5 py-3 pl-11 pr-4 text-white placeholder:text-slate-600 transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30 focus:outline-none"
+                                    className="h-11 rounded-xl border-white/10 bg-white/5 pl-11 text-white placeholder:text-slate-600 focus-visible:border-brand-500 focus-visible:ring-brand-500/30"
                                 />
                             </div>
-                            {form.errors.email && <p className="mt-1.5 text-sm text-brand-400">{form.errors.email}</p>}
+                            {form.errors.email && <p className="text-sm text-brand-400">{form.errors.email}</p>}
                         </div>
 
-                        <div>
-                            <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-slate-300">
+                        <div className="space-y-2">
+                            <Label htmlFor="password" className="text-slate-300">
                                 Password
-                            </label>
+                            </Label>
                             <div className="relative">
-                                <Lock className="pointer-events-none absolute left-3.5 top-1/2 size-4.5 -translate-y-1/2 text-slate-500" />
-                                <input
+                                <Lock className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-500" />
+                                <Input
                                     id="password"
                                     type={showPassword ? 'text' : 'password'}
                                     autoComplete="current-password"
                                     placeholder="••••••••"
                                     value={form.data.password}
                                     onChange={(e) => form.setData('password', e.target.value)}
-                                    className="w-full rounded-xl border border-white/10 bg-white/5 py-3 pl-11 pr-12 text-white placeholder:text-slate-600 transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30 focus:outline-none"
+                                    className="h-11 rounded-xl border-white/10 bg-white/5 pl-11 pr-12 text-white placeholder:text-slate-600 focus-visible:border-brand-500 focus-visible:ring-brand-500/30"
                                 />
                                 <button
                                     type="button"
@@ -114,34 +139,32 @@ export default function Login({ status }) {
                                     className="absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1 text-slate-500 transition hover:text-slate-300"
                                     aria-label={showPassword ? 'Sembunyikan password' : 'Tampilkan password'}
                                 >
-                                    {showPassword ? <EyeOff className="size-4.5" /> : <Eye className="size-4.5" />}
+                                    {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                                 </button>
                             </div>
                             {form.errors.password && (
-                                <p className="mt-1.5 text-sm text-brand-400">{form.errors.password}</p>
+                                <p className="text-sm text-brand-400">{form.errors.password}</p>
                             )}
                         </div>
 
-                        <div className="flex items-center justify-between">
-                            <label className="flex cursor-pointer items-center gap-2 text-sm text-slate-400">
-                                <input
-                                    type="checkbox"
-                                    checked={form.data.remember}
-                                    onChange={(e) => form.setData('remember', e.target.checked)}
-                                    className="size-4 rounded border-white/20 bg-white/5 accent-brand-600"
-                                />
-                                Ingat saya
-                            </label>
-                        </div>
+                        <label className="flex cursor-pointer items-center gap-2 text-sm text-slate-400">
+                            <input
+                                type="checkbox"
+                                checked={form.data.remember}
+                                onChange={(e) => form.setData('remember', e.target.checked)}
+                                className="size-4 rounded border-white/20 bg-white/5 accent-brand-600"
+                            />
+                            Ingat saya
+                        </label>
 
-                        <button
+                        <Button
                             type="submit"
                             disabled={form.processing}
-                            className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-600 py-3 font-semibold text-white shadow-lg shadow-brand-600/25 transition hover:bg-brand-500 active:scale-[.98] disabled:opacity-60"
+                            className="h-11 w-full rounded-xl bg-brand-600 text-base font-semibold shadow-lg shadow-brand-600/25 hover:bg-brand-500"
                         >
-                            {form.processing && <LoaderCircle className="size-4 animate-spin" />}
+                            {form.processing && <LoaderCircle className="animate-spin" />}
                             Masuk ke Dashboard
-                        </button>
+                        </Button>
                     </form>
                 </div>
             </div>

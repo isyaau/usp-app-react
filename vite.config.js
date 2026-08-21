@@ -10,7 +10,7 @@ export default defineConfig({
                 'resources/css/app.css',
                 'resources/js/app.js',
                 'resources/css/react.css',
-                'resources/js/app.jsx',
+                'resources/js/app.tsx',
             ],
             refresh: true,
         }),

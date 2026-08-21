@@ -14,8 +14,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
+    @routes
     @viteReactRefresh
-    @vite(['resources/css/react.css', 'resources/js/app.jsx'])
+    @vite(['resources/css/react.css', 'resources/js/app.tsx'])
 </head>
 
 <body class="font-sans antialiased bg-slate-100">

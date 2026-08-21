@@ -19,7 +19,8 @@
         "laravolt/indonesia": "^0.41",
         "livewire/livewire": "^3.6",
         "maatwebsite/excel": "^3.1",
-        "sweetalert2/laravel": "^1.4"
+        "sweetalert2/laravel": "^1.4",
+        "tightenco/ziggy": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
