@@ -2,6 +2,18 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Superadmin\AccGroupController;
+use App\Http\Controllers\Superadmin\AccHeaderController;
+use App\Http\Controllers\Superadmin\AccountController;
+use App\Http\Controllers\Superadmin\JaminanController;
+use App\Http\Controllers\Superadmin\KodetransaksiController;
+use App\Http\Controllers\Superadmin\KantorController;
+use App\Http\Controllers\Superadmin\KelompokController;
+use App\Http\Controllers\Superadmin\MarketingController;
+use App\Http\Controllers\Superadmin\PinjamanProdukController;
+use App\Http\Controllers\Superadmin\SimpananProdukController;
+use App\Http\Controllers\Superadmin\UserController;
+use App\Http\Controllers\WilayahController;
 use Illuminate\Support\Facades\Route;
 
 // USER
@@ -284,25 +296,37 @@ Route::get('/reset-swal', function () {
 // });
 
 
+// Wilayah Indonesia (dropdown berantai Provinsi → Kota → Kecamatan → Kelurahan)
+Route::middleware(['auth'])->prefix('wilayah')->name('wilayah.')->group(function () {
+    Route::get('/provinsi', [WilayahController::class, 'provinces'])->name('provinces');
+    Route::get('/kota/{province}', [WilayahController::class, 'cities'])->name('cities');
+    Route::get('/kecamatan/{city}', [WilayahController::class, 'districts'])->name('districts');
+    Route::get('/kelurahan/{district}', [WilayahController::class, 'villages'])->name('villages');
+});
+
 Route::prefix('superadmin')->name('superadmin.')->middleware(['auth', 'role:superadmin'])->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    //User
-    Route::get('/user', UserIndex::class)->name('user');
-    Route::get('/user/create', UserCreate::class)->name('user.create');
-    Route::get('/user/export', UserIndex::class)->name('user.export-pdf');
-    Route::get('/user/{id}/edit', UserEdit::class)->name('user.edit');
-    Route::get('/user/{id}', UserShow::class)->name('user.show');
-    Route::get('export-users', [UserIndex::class, 'export']);
+    //User (Inertia + React)
+    Route::get('/user', [UserController::class, 'index'])->name('user');
+    Route::get('/user/create', [UserController::class, 'create'])->name('user.create');
+    Route::post('/user', [UserController::class, 'store'])->name('user.store');
+    Route::get('/user/{user}/edit', [UserController::class, 'edit'])->name('user.edit');
+    Route::put('/user/{user}', [UserController::class, 'update'])->name('user.update');
+    Route::delete('/user/{user}', [UserController::class, 'destroy'])->name('user.destroy');
+    Route::get('/user/{user}', [UserController::class, 'show'])->name('user.show');
 
-    //Kelompok
-    Route::get('/kelompok', KelompokIndex::class)->name('kelompok');
-    Route::get('/kelompok/create', KelompokCreate::class)->name('kelompok.create');
-    Route::get('/kelompok/export', KelompokIndex::class)->name('kelompok.export-pdf');
-    Route::get('/kelompok/{id}/edit', KelompokEdit::class)->name('kelompok.edit');
-    Route::get('/kelompok/{id}', KelompokShow::class)->name('kelompok.show');
-    Route::get('export-kelompok', [KelompokIndex::class, 'export']);
+    //Kelompok (Inertia + React)
+    Route::get('/kelompok', [KelompokController::class, 'index'])->name('kelompok');
+    Route::get('/kelompok/create', [KelompokController::class, 'create'])->name('kelompok.create');
+    Route::post('/kelompok', [KelompokController::class, 'store'])->name('kelompok.store');
+    Route::get('/kelompok/search-users', [KelompokController::class, 'searchUsers'])
+        ->name('kelompok.search-users');
+    Route::get('/kelompok/{kelompok}/edit', [KelompokController::class, 'edit'])->name('kelompok.edit');
+    Route::put('/kelompok/{kelompok}', [KelompokController::class, 'update'])->name('kelompok.update');
+    Route::delete('/kelompok/{kelompok}', [KelompokController::class, 'destroy'])->name('kelompok.destroy');
+    Route::get('/kelompok/{kelompok}', [KelompokController::class, 'show'])->name('kelompok.show');
 
     //Anggota
     Route::get('/anggota', AnggotaIndex::class)->name('anggota');
@@ -312,45 +336,53 @@ Route::prefix('superadmin')->name('superadmin.')->middleware(['auth', 'role:supe
     Route::get('/anggota/{id}', AnggotaShow::class)->name('anggota.show');
     Route::get('export-anggota', [AnggotaIndex::class, 'export']);
 
-    // Kantor
-    Route::get('/kantor', KantorIndex::class)->name('kantor');
-    Route::get('/kantor/create', KantorCreate::class)->name('kantor.create');
-    Route::get('/kantor/export', KantorIndex::class)->name('kantor.export-pdf');
-    Route::get('/kantor/{id}/edit', KantorEdit::class)->name('kantor.edit');
-    Route::get('/kantor/{id}', KantorShow::class)->name('kantor.show');
-    Route::get('export-kantor', [KantorIndex::class, 'export']);
+    //Kantor (Inertia + React)
+    Route::get('/kantor', [KantorController::class, 'index'])->name('kantor');
+    Route::get('/kantor/create', [KantorController::class, 'create'])->name('kantor.create');
+    Route::post('/kantor', [KantorController::class, 'store'])->name('kantor.store');
+    Route::get('/kantor/{kantor}/edit', [KantorController::class, 'edit'])->name('kantor.edit');
+    Route::put('/kantor/{kantor}', [KantorController::class, 'update'])->name('kantor.update');
+    Route::delete('/kantor/{kantor}', [KantorController::class, 'destroy'])->name('kantor.destroy');
+    Route::get('/kantor/{kantor}', [KantorController::class, 'show'])->name('kantor.show');
 
-    // Account Header
-    Route::get('/account-header', AccheaderIndex::class)->name('account-header');
-    Route::get('/account-header/create', AccheaderCreate::class)->name('account-header.create');
-    Route::get('/account-header/export', AccheaderIndex::class)->name('account-header.export-pdf');
-    Route::get('/account-header/{id}/edit', AccheaderEdit::class)->name('account-header.edit');
-    Route::get('/account-header/{id}', AccheaderShow::class)->name('account-header.show');
-    Route::get('export-account-header', [AccheaderIndex::class, 'export']);
+    // Account Group (dialog Kelola Grup di halaman Account Header)
+    Route::post('/acc-group', [AccGroupController::class, 'store'])->name('acc-group.store');
 
-    // Account
-    Route::get('/account', AccountIndex::class)->name('account');
-    Route::get('/account/create', AccountCreate::class)->name('account.create');
-    Route::get('/account/export', AccountIndex::class)->name('account.export-pdf');
-    Route::get('/account/{id}/edit', AccountEdit::class)->name('account.edit');
-    Route::get('/account/{id}', AccountShow::class)->name('account.show');
-    Route::get('export-account', [AccountIndex::class, 'export']);
+    // Account Header (Inertia + React)
+    Route::get('/account-header', [AccHeaderController::class, 'index'])->name('account-header');
+    Route::post('/account-header', [AccHeaderController::class, 'store'])->name('account-header.store');
+    Route::get('/account-header/create', [AccHeaderController::class, 'create'])->name('account-header.create');
+    Route::get('/account-header/{header}/edit', [AccHeaderController::class, 'edit'])->name('account-header.edit');
+    Route::put('/account-header/{header}', [AccHeaderController::class, 'update'])->name('account-header.update');
+    Route::delete('/account-header/{header}', [AccHeaderController::class, 'destroy'])->name('account-header.destroy');
+    Route::get('/account-header/{header}', [AccHeaderController::class, 'show'])->name('account-header.show');
 
-    // Pinjaman Produk
-    Route::get('/pinjaman/produk', PinjamanprodukIndex::class)->name('pinjaman.produk');
-    Route::get('/pinjaman/produk/create', PinjamanprodukCreate::class)->name('pinjaman.produk.create');
-    Route::get('/pinjaman/produk/export', PinjamanprodukIndex::class)->name('pinjaman.produk.export-pdf');
-    Route::get('/pinjaman/produk/{id}/edit', PinjamanprodukEdit::class)->name('pinjaman.produk.edit');
-    Route::get('/pinjaman/produk/{id}', pinjamanprodukShow::class)->name('pinjaman.produk.show');
-    Route::get('export-pinjaman-produk', [PinjamanprodukIndex::class, 'export']);
+    // Account (Inertia + React)
+    Route::get('/account', [AccountController::class, 'index'])->name('account');
+    Route::get('/account/create', [AccountController::class, 'create'])->name('account.create');
+    Route::post('/account', [AccountController::class, 'store'])->name('account.store');
+    Route::get('/account/{account}/edit', [AccountController::class, 'edit'])->name('account.edit');
+    Route::put('/account/{account}', [AccountController::class, 'update'])->name('account.update');
+    Route::delete('/account/{account}', [AccountController::class, 'destroy'])->name('account.destroy');
+    Route::get('/account/{account}', [AccountController::class, 'show'])->name('account.show');
 
-    // Pinjaman Jaminan
-    Route::get('/pinjaman/jaminan', JaminanIndex::class)->name('pinjaman.jaminan');
-    Route::get('/pinjaman/jaminan/create', JaminanCreate::class)->name('pinjaman.jaminan.create');
-    Route::get('/pinjaman/jaminan/export', JaminanIndex::class)->name('pinjaman.jaminan.export-pdf');
-    Route::get('/pinjaman/jaminan/{id}/edit', JaminanEdit::class)->name('pinjaman.jaminan.edit');
-    Route::get('/pinjaman/jaminan/{id}', JaminanShow::class)->name('pinjaman.jaminan.show');
-    Route::get('export-pinjaman-jaminan', [JaminanIndex::class, 'export']);
+    // Pinjaman Produk (Inertia + React)
+    Route::get('/pinjaman/produk', [PinjamanProdukController::class, 'index'])->name('pinjaman.produk');
+    Route::get('/pinjaman/produk/create', [PinjamanProdukController::class, 'create'])->name('pinjaman.produk.create');
+    Route::post('/pinjaman/produk', [PinjamanProdukController::class, 'store'])->name('pinjaman.produk.store');
+    Route::get('/pinjaman/produk/{produk}/edit', [PinjamanProdukController::class, 'edit'])->name('pinjaman.produk.edit');
+    Route::put('/pinjaman/produk/{produk}', [PinjamanProdukController::class, 'update'])->name('pinjaman.produk.update');
+    Route::delete('/pinjaman/produk/{produk}', [PinjamanProdukController::class, 'destroy'])->name('pinjaman.produk.destroy');
+    Route::get('/pinjaman/produk/{produk}', [PinjamanProdukController::class, 'show'])->name('pinjaman.produk.show');
+
+    // Pinjaman Jaminan (Inertia + React)
+    Route::get('/pinjaman/jaminan', [JaminanController::class, 'index'])->name('pinjaman.jaminan');
+    Route::get('/pinjaman/jaminan/create', [JaminanController::class, 'create'])->name('pinjaman.jaminan.create');
+    Route::post('/pinjaman/jaminan', [JaminanController::class, 'store'])->name('pinjaman.jaminan.store');
+    Route::get('/pinjaman/jaminan/{jaminan}/edit', [JaminanController::class, 'edit'])->name('pinjaman.jaminan.edit');
+    Route::put('/pinjaman/jaminan/{jaminan}', [JaminanController::class, 'update'])->name('pinjaman.jaminan.update');
+    Route::delete('/pinjaman/jaminan/{jaminan}', [JaminanController::class, 'destroy'])->name('pinjaman.jaminan.destroy');
+    Route::get('/pinjaman/jaminan/{jaminan}', [JaminanController::class, 'show'])->name('pinjaman.jaminan.show');
 
     // Pinjaman Pinjaman
     Route::get('/pinjaman/pinjaman', PinjamanIndex::class)->name('pinjaman.pinjaman');
@@ -410,29 +442,33 @@ Route::prefix('superadmin')->name('superadmin.')->middleware(['auth', 'role:supe
 
     // Simpanan
     // Kode Transaksi
-    Route::get('/simpanan/kode-transaksi', KodeTransaksiIndex::class)->name('simpanan.kode-transaksi');
-    Route::get('/simpanan/kode-transaksi/create', KodeTransaksiCreate::class)->name('simpanan.kode-transaksi.create');
-    Route::get('/simpanan/kode-transaksi/export', KodeTransaksiIndex::class)->name('simpanan.kode-transaksi.export-pdf');
-    Route::get('/simpanan/kode-transaksi/{id}/edit', KodeTransaksiEdit::class)->name('simpanan.kode-transaksi.edit');
-    Route::get('/simpanan/kode-transaksi/{id}', KodeTransaksiShow::class)->name('simpanan.kode-transaksi.show');
-    Route::get('export-kode-transaksi', [KodeTransaksiIndex::class, 'export']);
+        // Kode Transaksi (Inertia + React)
+    Route::get('/simpanan/kode-transaksi', [KodetransaksiController::class, 'index'])->name('simpanan.kode-transaksi');
+    Route::get('/simpanan/kode-transaksi/create', [KodetransaksiController::class, 'create'])->name('simpanan.kode-transaksi.create');
+    Route::post('/simpanan/kode-transaksi', [KodetransaksiController::class, 'store'])->name('simpanan.kode-transaksi.store');
+    Route::get('/simpanan/kode-transaksi/{kodetransaksi}/edit', [KodetransaksiController::class, 'edit'])->name('simpanan.kode-transaksi.edit');
+    Route::put('/simpanan/kode-transaksi/{kodetransaksi}', [KodetransaksiController::class, 'update'])->name('simpanan.kode-transaksi.update');
+    Route::delete('/simpanan/kode-transaksi/{kodetransaksi}', [KodetransaksiController::class, 'destroy'])->name('simpanan.kode-transaksi.destroy');
+    Route::get('/simpanan/kode-transaksi/{kodetransaksi}', [KodetransaksiController::class, 'show'])->name('simpanan.kode-transaksi.show');
 
 
-    // Simpanan Produk
-    Route::get('/simpanan/produk-simpanan', SimpananprodukIndex::class)->name('simpanan.produk-simpanan');
-    Route::get('/simpanan/produk-simpanan/create', SimpananprodukCreate::class)->name('simpanan.produk-simpanan.create');
-    Route::get('/simpanan/produk-simpanan/export', SimpananprodukIndex::class)->name('simpanan.produk-simpanan.export-pdf');
-    Route::get('/simpanan/produk-simpanan/{id}/edit', SimpananprodukEdit::class)->name('simpanan.produk-simpanan.edit');
-    Route::get('/simpanan/produk-simpanan/{id}', SimpananprodukShow::class)->name('simpanan.produk-simpanan.show');
-    Route::get('export-produk-simpanan', [SimpananprodukIndex::class, 'export']);
+    // Simpanan Produk (Inertia + React)
+    Route::get('/simpanan/produk-simpanan', [SimpananProdukController::class, 'index'])->name('simpanan.produk-simpanan');
+    Route::get('/simpanan/produk-simpanan/create', [SimpananProdukController::class, 'create'])->name('simpanan.produk-simpanan.create');
+    Route::post('/simpanan/produk-simpanan', [SimpananProdukController::class, 'store'])->name('simpanan.produk-simpanan.store');
+    Route::get('/simpanan/produk-simpanan/{produk}/edit', [SimpananProdukController::class, 'edit'])->name('simpanan.produk-simpanan.edit');
+    Route::put('/simpanan/produk-simpanan/{produk}', [SimpananProdukController::class, 'update'])->name('simpanan.produk-simpanan.update');
+    Route::delete('/simpanan/produk-simpanan/{produk}', [SimpananProdukController::class, 'destroy'])->name('simpanan.produk-simpanan.destroy');
+    Route::get('/simpanan/produk-simpanan/{produk}', [SimpananProdukController::class, 'show'])->name('simpanan.produk-simpanan.show');
 
-    // Marketing
-    Route::get('/marketing', MarketingIndex::class)->name('marketing');
-    Route::get('/marketing/create', MarketingCreate::class)->name('marketing.create');
-    Route::get('/marketing/export', MarketingIndex::class)->name('marketing.export-pdf');
-    Route::get('/marketing/{id}/edit', MarketingEdit::class)->name('marketing.edit');
-    Route::get('/marketing/{id}', MarketingShow::class)->name('marketing.show');
-    Route::get('export-marketing', [MarketingIndex::class, 'export']);
+    // Marketing (Inertia + React)
+    Route::get('/marketing', [MarketingController::class, 'index'])->name('marketing');
+    Route::get('/marketing/create', [MarketingController::class, 'create'])->name('marketing.create');
+    Route::post('/marketing', [MarketingController::class, 'store'])->name('marketing.store');
+    Route::get('/marketing/{marketing}/edit', [MarketingController::class, 'edit'])->name('marketing.edit');
+    Route::put('/marketing/{marketing}', [MarketingController::class, 'update'])->name('marketing.update');
+    Route::delete('/marketing/{marketing}', [MarketingController::class, 'destroy'])->name('marketing.destroy');
+    Route::get('/marketing/{marketing}', [MarketingController::class, 'show'])->name('marketing.show');
 
     // Simpanan
     Route::get('/simpanan/rencana', SimpananrencanaIndex::class)->name('simpanan.rencana');
