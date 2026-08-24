@@ -234,6 +234,66 @@ export interface PenutupanSimpananRow extends TransaksiSimpananRow {
     nominal_bunga: string | number;
 }
 
+export interface DepositoJenisRow {
+    id: number;
+    kode: string;
+    nama: string;
+    account_id: number | null;
+    jangka_waktu: string | null;
+    bunga: string | null;
+    rumus_bunga: string | null;
+    penalti: string | null;
+    pajak: string | null;
+    saldo_pajak: string | null;
+    insentif: string | null;
+}
+
+export interface DepositoJenisDetail extends DepositoJenisRow {
+    account_bunga: number | null;
+    account_penalti: number | null;
+    account_pajak: number | null;
+    account?: AccountMini | null;
+    bungaAccount?: AccountMini | null;
+    penaltiAccount?: AccountMini | null;
+    pajakAccount?: AccountMini | null;
+}
+
+/** Rekening simpanan berjangka (tabel deposito). */
+export interface DepositoRow {
+    id: number;
+    tanggal: string;
+    no_deposito: string;
+    anggota_id: number;
+    jenis_id: number;
+    jangka_waktu: string;
+    bunga: string;
+    nominal: string;
+    otomatis: string;
+    blokir: string;
+    anggota?: { id: number; no_anggota: string; nama: string } | null;
+    produk?:
+        | { id: number; kode: string; nama: string; jangka_waktu: string | null; bunga: string | null }
+        | null;
+    marketing?: { id: number; nama: string } | null;
+    kantor?: { id: number; nama_kantor: string } | null;
+}
+
+export interface DepositoDetail extends DepositoRow {
+    qq: string | null;
+    marketing_id: number | null;
+    bayar_bunga: string;
+    diawal: string;
+    bunga_accrual: string;
+    account_bungaaccrual: string | null;
+    tabunganbunga_id: number | null;
+    tabungantempo_id: number | null;
+    bayar_jatuhtempo: string;
+    kantor_id: number;
+    tabunganBunga?: { id: number; no_rekening: string } | null;
+    tabunganTempo?: { id: number; no_rekening: string } | null;
+    produk?: DepositoJenisRow | null;
+}
+
 /** Baris pemindahbukuan: dua rekening (asal & tujuan). */
 export interface PemindahbukuanSimpananRow extends Omit<TransaksiSimpananRow, 'simpanan'> {
     simpanan_dari_id: number;

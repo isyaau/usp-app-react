@@ -15,6 +15,8 @@ use App\Http\Controllers\Superadmin\PemindahbukuanSimpananController;
 use App\Http\Controllers\Superadmin\PenutupanSimpananController;
 use App\Http\Controllers\Superadmin\SetoranSimpananController;
 use App\Http\Controllers\Superadmin\TarikanSimpananController;
+use App\Http\Controllers\Superadmin\BerjangkaprodukController;
+use App\Http\Controllers\Superadmin\BerjangkaController;
 use App\Http\Controllers\Superadmin\PinjamanProdukController;
 use App\Http\Controllers\Superadmin\SimpananProdukController;
 use App\Http\Controllers\Superadmin\UserController;
@@ -249,6 +251,8 @@ use App\Livewire\Superadmin\Setoransimpananberjangka\Create as Setoransimpananbe
 use App\Livewire\Superadmin\Setoransimpananberjangka\Edit as SetoransimpananberjangkaEdit;
 use App\Livewire\Superadmin\Setoransimpananberjangka\Show as SetoransimpananberjangkaShow;
 
+// Simpanan Berjangka & Produknya sudah dimigrasikan ke Inertia (BerjangkaprodukController & BerjangkaController).
+
 // Pencairan Simpana Berjangka
 use App\Livewire\Superadmin\Pencairansimpananberjangka\Index as PencairansimpananberjangkaIndex;
 use App\Livewire\Superadmin\Pencairansimpananberjangka\Create as PencairansimpananberjangkaCreate;
@@ -478,21 +482,23 @@ Route::prefix('superadmin')->name('superadmin.')->middleware(['auth', 'role:supe
 
 
     // Berjangka
-    // Produk Berjangka
-    Route::get('/simpanan-berjangka/produk', BerjangkaprodukIndex::class)->name('simpanan-berjangka.produk');
-    Route::get('/simpanan-berjangka/produk/create', BerjangkaprodukCreate::class)->name('simpanan-berjangka.produk.create');
-    Route::get('/simpanan-berjangka/produk/export', BerjangkaprodukIndex::class)->name('simpanan-berjangka.produk.export-pdf');
-    Route::get('/simpanan-berjangka/produk/{id}/edit', BerjangkaprodukEdit::class)->name('simpanan-berjangka.produk.edit');
-    Route::get('/simpanan-berjangka/produk/{id}', BerjangkaprodukShow::class)->name('simpanan-berjangka.produk.show');
-    Route::get('export-simpanan-berjangka-produk', [BerjangkaprodukIndex::class, 'export']);
+    // Produk Berjangka (Inertia + React)
+    Route::get('/simpanan-berjangka/produk', [BerjangkaprodukController::class, 'index'])->name('simpanan-berjangka.produk');
+    Route::get('/simpanan-berjangka/produk/create', [BerjangkaprodukController::class, 'create'])->name('simpanan-berjangka.produk.create');
+    Route::post('/simpanan-berjangka/produk', [BerjangkaprodukController::class, 'store'])->name('simpanan-berjangka.produk.store');
+    Route::get('/simpanan-berjangka/produk/{produkBerjangka}/edit', [BerjangkaprodukController::class, 'edit'])->name('simpanan-berjangka.produk.edit');
+    Route::put('/simpanan-berjangka/produk/{produkBerjangka}', [BerjangkaprodukController::class, 'update'])->name('simpanan-berjangka.produk.update');
+    Route::delete('/simpanan-berjangka/produk/{produkBerjangka}', [BerjangkaprodukController::class, 'destroy'])->name('simpanan-berjangka.produk.destroy');
+    Route::get('/simpanan-berjangka/produk/{produkBerjangka}', [BerjangkaprodukController::class, 'show'])->name('simpanan-berjangka.produk.show');
 
-    // Simpanan Berjangka
-    Route::get('/simpanan-berjangka', BerjangkaIndex::class)->name('simpanan-berjangka');
-    Route::get('/simpanan-berjangka/create', BerjangkaCreate::class)->name('simpanan-berjangka.create');
-    Route::get('/simpanan-berjangka/export', BerjangkaIndex::class)->name('simpanan-berjangka.export-pdf');
-    Route::get('/simpanan-berjangka/{id}/edit', BerjangkaEdit::class)->name('simpanan-berjangka.edit');
-    Route::get('/simpanan-berjangka/{id}', BerjangkaShow::class)->name('simpanan-berjangka.show');
-    Route::get('export-simpanan-berjangka', [BerjangkaIndex::class, 'export']);
+    // Simpanan Berjangka (Inertia + React)
+    Route::get('/simpanan-berjangka', [BerjangkaController::class, 'index'])->name('simpanan-berjangka');
+    Route::get('/simpanan-berjangka/create', [BerjangkaController::class, 'create'])->name('simpanan-berjangka.create');
+    Route::post('/simpanan-berjangka', [BerjangkaController::class, 'store'])->name('simpanan-berjangka.store');
+    Route::get('/simpanan-berjangka/{berjangka}/edit', [BerjangkaController::class, 'edit'])->name('simpanan-berjangka.edit');
+    Route::put('/simpanan-berjangka/{berjangka}', [BerjangkaController::class, 'update'])->name('simpanan-berjangka.update');
+    Route::delete('/simpanan-berjangka/{berjangka}', [BerjangkaController::class, 'destroy'])->name('simpanan-berjangka.destroy');
+    Route::get('/simpanan-berjangka/{berjangka}', [BerjangkaController::class, 'show'])->name('simpanan-berjangka.show');
 
     // Template
     Route::get('/template', TemplateIndex::class)->name('template');

@@ -56,4 +56,16 @@ class Deposito extends Model
     {
         return $this->belongsTo(Kantor::class, 'kantor_id');
     }
+
+    /** Rekening simpanan tujuan transfer bunga (bayar_bunga = 3). */
+    public function tabunganBunga()
+    {
+        return $this->belongsTo(Simpanan::class, 'tabunganbunga_id');
+    }
+
+    /** Rekening simpanan tujuan transfer saat jatuh tempo (bayar_jatuhtempo = 2). */
+    public function tabunganTempo()
+    {
+        return $this->belongsTo(Simpanan::class, 'tabungantempo_id');
+    }
 }
