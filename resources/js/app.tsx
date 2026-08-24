@@ -4,12 +4,14 @@ import '../css/react.css';
 
 createInertiaApp({
     title: (title) => `${title} — KSP KOPINKA`,
-    resolve: (name): ResolvedComponent => {
-        const pages = import.meta.glob('./Pages/**/*.tsx', { eager: true }) as Record<
+    resolve: async (name): Promise<ResolvedComponent> => {
+        const pages = import.meta.glob('./Pages/**/*.tsx') as Record<
             string,
-            { default: ResolvedComponent }
+            () => Promise<{ default: ResolvedComponent }>
         >;
-        return pages[`./Pages/${name}.tsx`]?.default;
+        const page = await pages[`./Pages/${name}.tsx`]?.();
+
+        return page?.default;
     },
     setup({ el, App, props }) {
         createRoot(el).render(<App {...props} />);
