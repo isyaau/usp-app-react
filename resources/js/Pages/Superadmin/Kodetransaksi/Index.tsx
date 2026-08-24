@@ -56,7 +56,7 @@ export default function KodetransaksiIndex({ kodeTransaksi, filters }: Props) {
                 icon={ArrowLeftRight}
             >
                 <Button asChild className="bg-brand-600 hover:bg-brand-500">
-                    <Link href={route('superadmin.simpanan.kode-transaksi.create')}>
+                    <Link href={route('superadmin.simpanan.kode-transaksi.create')} preload="hover">
                         <Plus />
                         Tambah Kode
                     </Link>

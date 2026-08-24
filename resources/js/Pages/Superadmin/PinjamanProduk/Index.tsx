@@ -57,7 +57,7 @@ export default function PinjamanProdukIndex({ produk, filters }: Props) {
                 icon={HandCoins}
             >
                 <Button asChild className="bg-brand-600 hover:bg-brand-500">
-                    <Link href={route('superadmin.pinjaman.produk.create')}>
+                    <Link href={route('superadmin.pinjaman.produk.create')} preload="hover">
                         <Plus />
                         Tambah Produk
                     </Link>

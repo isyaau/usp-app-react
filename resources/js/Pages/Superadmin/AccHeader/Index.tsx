@@ -91,7 +91,7 @@ export default function AccHeaderIndex({ headers, filters }: Props) {
                     Kelola Grup
                 </Button>
                 <Button asChild className="bg-brand-600 hover:bg-brand-500">
-                    <Link href={route('superadmin.account-header.create')}>
+                    <Link href={route('superadmin.account-header.create')} preload="hover">
                         <Plus />
                         Tambah Header
                     </Link>

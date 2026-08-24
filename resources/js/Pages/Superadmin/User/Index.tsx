@@ -70,7 +70,7 @@ export default function UserIndex({ users, filters }: Props) {
                 icon={ShieldCheck}
             >
                 <Button asChild className="bg-brand-600 hover:bg-brand-500">
-                    <Link href={route('superadmin.user.create')}>
+                    <Link href={route('superadmin.user.create')} preload="hover">
                         <Plus />
                         Tambah User
                     </Link>

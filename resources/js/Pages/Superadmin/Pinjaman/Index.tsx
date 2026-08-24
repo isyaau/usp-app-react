@@ -60,7 +60,7 @@ export default function PinjamanIndex({ pinjaman, filters }: Props) {
                 icon={Banknote}
             >
                 <Button asChild className="bg-brand-600 hover:bg-brand-500">
-                    <Link href={route('superadmin.pinjaman.pinjaman.create')}>
+                    <Link href={route('superadmin.pinjaman.pinjaman.create')} preload="hover">
                         <Plus />
                         Tambah Pinjaman
                     </Link>

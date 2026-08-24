@@ -56,7 +56,7 @@ export default function KantorIndex({ kantor, filters }: Props) {
                 icon={Building2}
             >
                 <Button asChild className="bg-brand-600 hover:bg-brand-500">
-                    <Link href={route('superadmin.kantor.create')}>
+                    <Link href={route('superadmin.kantor.create')} preload="hover">
                         <Plus />
                         Tambah Kantor
                     </Link>

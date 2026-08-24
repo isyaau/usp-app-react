@@ -57,7 +57,7 @@ export default function SimpananIndex({ simpanan, filters }: Props) {
                 icon={Wallet}
             >
                 <Button asChild className="bg-brand-600 hover:bg-brand-500">
-                    <Link href={route('superadmin.simpanan.create')}>
+                    <Link href={route('superadmin.simpanan.create')} preload="hover">
                         <Plus />
                         Tambah Simpanan
                     </Link>

@@ -56,7 +56,7 @@ export default function AccountIndex({ accounts, filters }: Props) {
                 icon={BookOpen}
             >
                 <Button asChild className="bg-brand-600 hover:bg-brand-500">
-                    <Link href={route('superadmin.account.create')}>
+                    <Link href={route('superadmin.account.create')} preload="hover">
                         <Plus />
                         Tambah Account
                     </Link>

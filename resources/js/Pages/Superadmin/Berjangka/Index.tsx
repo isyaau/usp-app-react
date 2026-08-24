@@ -57,7 +57,7 @@ export default function BerjangkaIndex({ berjangka, filters }: Props) {
                 icon={CalendarClock}
             >
                 <Button asChild className="bg-brand-600 hover:bg-brand-500">
-                    <Link href={route('superadmin.simpanan-berjangka.create')}>
+                    <Link href={route('superadmin.simpanan-berjangka.create')} preload="hover">
                         <Plus />
                         Tambah Deposito
                     </Link>

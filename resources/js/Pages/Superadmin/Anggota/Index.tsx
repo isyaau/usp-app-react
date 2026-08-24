@@ -76,7 +76,7 @@ export default function AnggotaIndex({ anggota, filters }: Props) {
                 icon={Users}
             >
                 <Button asChild className="bg-brand-600 hover:bg-brand-500">
-                    <Link href={route('superadmin.anggota.create')}>
+                    <Link href={route('superadmin.anggota.create')} preload="hover">
                         Tambah Anggota
                     </Link>
                 </Button>

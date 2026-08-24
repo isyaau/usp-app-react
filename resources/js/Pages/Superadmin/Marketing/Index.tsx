@@ -57,7 +57,7 @@ export default function MarketingIndex({ marketing, filters }: Props) {
                 icon={Megaphone}
             >
                 <Button asChild className="bg-brand-600 hover:bg-brand-500">
-                    <Link href={route('superadmin.marketing.create')}>
+                    <Link href={route('superadmin.marketing.create')} preload="hover">
                         <Plus />
                         Tambah Marketing
                     </Link>

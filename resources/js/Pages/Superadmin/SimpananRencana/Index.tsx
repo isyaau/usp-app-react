@@ -59,7 +59,7 @@ export default function SimpananRencanaIndex({ rencana, filters }: Props) {
                 icon={CalendarClock}
             >
                 <Button asChild className="bg-brand-600 hover:bg-brand-500">
-                    <Link href={route('superadmin.simpanan.rencana.create')}>
+                    <Link href={route('superadmin.simpanan.rencana.create')} preload="hover">
                         <Plus />
                         Tambah Rencana
                     </Link>

@@ -56,7 +56,7 @@ export default function KelompokIndex({ kelompok, filters }: Props) {
                 icon={Users}
             >
                 <Button asChild className="bg-brand-600 hover:bg-brand-500">
-                    <Link href={route('superadmin.kelompok.create')}>
+                    <Link href={route('superadmin.kelompok.create')} preload="hover">
                         <Plus />
                         Tambah Kelompok
                     </Link>

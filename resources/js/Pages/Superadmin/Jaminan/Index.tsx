@@ -57,7 +57,7 @@ export default function JaminanIndex({ jaminan, filters }: Props) {
                 icon={Package}
             >
                 <Button asChild className="bg-brand-600 hover:bg-brand-500">
-                    <Link href={route('superadmin.pinjaman.jaminan.create')}>
+                    <Link href={route('superadmin.pinjaman.jaminan.create')} preload="hover">
                         <Plus />
                         Tambah Jaminan
                     </Link>

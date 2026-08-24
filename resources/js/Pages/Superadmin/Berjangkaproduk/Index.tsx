@@ -56,7 +56,7 @@ export default function ProdukIndex({ produk, filters }: Props) {
                 icon={Package}
             >
                 <Button asChild className="bg-brand-600 hover:bg-brand-500">
-                    <Link href={route('superadmin.simpanan-berjangka.produk.create')}>
+                    <Link href={route('superadmin.simpanan-berjangka.produk.create')} preload="hover">
                         <Plus />
                         Tambah Produk
                     </Link>
