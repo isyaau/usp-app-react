@@ -200,3 +200,44 @@ export interface Wilayah {
     code: string;
     name: string;
 }
+
+/* ============================================================
+   Tipe entitas modul Transaksi Simpanan (C4)
+   ============================================================ */
+
+/** Rekening simpanan ringkas untuk dropdown form transaksi. */
+export interface SimpananMini {
+    id: number;
+    no_rekening: string;
+    jenis?: string | null;
+}
+
+/** Baris daftar transaksi (setoran/tarikan/penutupan). */
+export interface TransaksiSimpananRow {
+    id: number;
+    no_transaksi: string;
+    tgl_transaksi: string;
+    anggota_id: number;
+    simpanan_id: number;
+    kode_transaksi_id: number;
+    nominal: string | number;
+    keterangan: string | null;
+    status: 'draft' | 'posted' | 'batal';
+    anggota?: { id: number; nama: string; no_anggota: string } | null;
+    simpanan?: { id: number; no_rekening: string } | null;
+    kodeTransaksi?: { id: number; kode: string; nama: string } | null;
+    kantor?: { id: number; nama_kantor: string } | null;
+}
+
+/** Detail penutupan memuat nominal bunga. */
+export interface PenutupanSimpananRow extends TransaksiSimpananRow {
+    nominal_bunga: string | number;
+}
+
+/** Baris pemindahbukuan: dua rekening (asal & tujuan). */
+export interface PemindahbukuanSimpananRow extends Omit<TransaksiSimpananRow, 'simpanan'> {
+    simpanan_dari_id: number;
+    simpanan_ke_id: number;
+    simpananDari?: { id: number; no_rekening: string } | null;
+    simpananKe?: { id: number; no_rekening: string } | null;
+}

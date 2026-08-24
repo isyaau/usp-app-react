@@ -11,6 +11,10 @@ use App\Http\Controllers\Superadmin\KodetransaksiController;
 use App\Http\Controllers\Superadmin\KantorController;
 use App\Http\Controllers\Superadmin\KelompokController;
 use App\Http\Controllers\Superadmin\MarketingController;
+use App\Http\Controllers\Superadmin\PemindahbukuanSimpananController;
+use App\Http\Controllers\Superadmin\PenutupanSimpananController;
+use App\Http\Controllers\Superadmin\SetoranSimpananController;
+use App\Http\Controllers\Superadmin\TarikanSimpananController;
 use App\Http\Controllers\Superadmin\PinjamanProdukController;
 use App\Http\Controllers\Superadmin\SimpananProdukController;
 use App\Http\Controllers\Superadmin\UserController;
@@ -219,11 +223,7 @@ use App\Livewire\Superadmin\Setorankolektifbank\Create as SetorankolektifbankCre
 use App\Livewire\Superadmin\Setorankolektifbank\Edit as SetorankolektifbankEdit;
 use App\Livewire\Superadmin\Setorankolektifbank\Show as SetorankolektifbankShow;
 
-// Setoran Simpanan
-use App\Livewire\Superadmin\Setoransimpanan\Index as SetoransimpananIndex;
-use App\Livewire\Superadmin\Setoransimpanan\Create as SetoransimpananCreate;
-use App\Livewire\Superadmin\Setoransimpanan\Edit as SetoransimpananEdit;
-use App\Livewire\Superadmin\Setoransimpanan\Show as SetoransimpananShow;
+// Setoran Simpanan sudah dimigrasikan ke Inertia (SetoranSimpananController).
 
 // Setoran Simpanan Kolektif
 use App\Livewire\Superadmin\Setoransimpanankolektif\Index as SetoransimpanankolektifIndex;
@@ -231,11 +231,7 @@ use App\Livewire\Superadmin\Setoransimpanankolektif\Create as Setoransimpanankol
 use App\Livewire\Superadmin\Setoransimpanankolektif\Edit as SetoransimpanankolektifEdit;
 use App\Livewire\Superadmin\Setoransimpanankolektif\Show as SetoransimpanankolektifShow;
 
-// Tarikan Simpanan
-use App\Livewire\Superadmin\Tarikansimpanan\Index as TarikansimpananIndex;
-use App\Livewire\Superadmin\Tarikansimpanan\Create as TarikansimpananCreate;
-use App\Livewire\Superadmin\Tarikansimpanan\Edit as TarikansimpananEdit;
-use App\Livewire\Superadmin\Tarikansimpanan\Show as TarikansimpananShow;
+// Tarikan Simpanan sudah dimigrasikan ke Inertia (TarikanSimpananController).
 
 // Tarikan Simpana Kolektif
 use App\Livewire\Superadmin\Tarikansimpanankolektif\Index as TarikansimpanankolektifIndex;
@@ -243,17 +239,9 @@ use App\Livewire\Superadmin\Tarikansimpanankolektif\Create as Tarikansimpanankol
 use App\Livewire\Superadmin\Tarikansimpanankolektif\Edit as TarikansimpanankolektifEdit;
 use App\Livewire\Superadmin\Tarikansimpanankolektif\Show as TarikansimpanankolektifShow;
 
-// Pemindahbukuan Simpanan
-use App\Livewire\Superadmin\Pemindahbukuansimpanan\Index as PemindahbukuansimpananIndex;
-use App\Livewire\Superadmin\Pemindahbukuansimpanan\Create as PemindahbukuansimpananCreate;
-use App\Livewire\Superadmin\Pemindahbukuansimpanan\Edit as PemindahbukuansimpananEdit;
-use App\Livewire\Superadmin\Pemindahbukuansimpanan\Show as PemindahbukuansimpananShow;
+// Pemindahbukuan Simpanan sudah dimigrasikan ke Inertia (PemindahbukuanSimpananController).
 
-// Penutupan Simpanan
-use App\Livewire\Superadmin\Penutupansimpanan\Index as PenutupansimpananIndex;
-use App\Livewire\Superadmin\Penutupansimpanan\Create as PenutupansimpananCreate;
-use App\Livewire\Superadmin\Penutupansimpanan\Edit as PenutupansimpananEdit;
-use App\Livewire\Superadmin\Penutupansimpanan\Show as PenutupansimpananShow;
+// Penutupan Simpanan sudah dimigrasikan ke Inertia (PenutupanSimpananController).
 
 // Setoran Simpana Berjangka
 use App\Livewire\Superadmin\Setoransimpananberjangka\Index as SetoransimpananberjangkaIndex;
@@ -613,13 +601,18 @@ Route::prefix('superadmin')->name('superadmin.')->middleware(['auth', 'role:supe
     Route::get('export-setoran-kolektif-bank', [SetorankolektifbankIndex::class, 'export']);
 
     // Transaksi Simpanan
-    // Setoran Simpanan
-    Route::get('/transaksi-simpanan/setoran-simpanan', SetoransimpananIndex::class)->name('transaksi-simpanan.setoran-simpanan');
-    Route::get('/transaksi-simpanan/setoran-simpanan/create', SetoransimpananCreate::class)->name('transaksi-simpanan.setoran-simpanan.create');
-    Route::get('/transaksi-simpanan/setoran-simpanan/export', SetoransimpananIndex::class)->name('transaksi-simpanan.setoran-simpanan.export-pdf');
-    Route::get('/transaksi-simpanan/setoran-simpanan/{id}/edit', SetoransimpananEdit::class)->name('transaksi-simpanan.setoran-simpanan.edit');
-    Route::get('/transaksi-simpanan/setoran-simpanan/{id}', SetoransimpananShow::class)->name('transaksi-simpanan.setoran-simpanan.show');
-    Route::get('export-setoran-simpanan', [SetoransimpananIndex::class, 'export']);
+    // Endpoint JSON rekening simpanan per anggota (dropdown bertingkat form transaksi)
+    Route::get('/transaksi-simpanan/simpanan-by-anggota/{anggota}', [SetoranSimpananController::class, 'simpananByAnggota'])
+        ->name('transaksi-simpanan.simpanan-by-anggota');
+
+    // Setoran Simpanan (Inertia + React)
+    Route::get('/transaksi-simpanan/setoran-simpanan', [SetoranSimpananController::class, 'index'])->name('transaksi-simpanan.setoran-simpanan');
+    Route::get('/transaksi-simpanan/setoran-simpanan/create', [SetoranSimpananController::class, 'create'])->name('transaksi-simpanan.setoran-simpanan.create');
+    Route::post('/transaksi-simpanan/setoran-simpanan', [SetoranSimpananController::class, 'store'])->name('transaksi-simpanan.setoran-simpanan.store');
+    Route::get('/transaksi-simpanan/setoran-simpanan/{setoranSimpanan}/edit', [SetoranSimpananController::class, 'edit'])->name('transaksi-simpanan.setoran-simpanan.edit');
+    Route::put('/transaksi-simpanan/setoran-simpanan/{setoranSimpanan}', [SetoranSimpananController::class, 'update'])->name('transaksi-simpanan.setoran-simpanan.update');
+    Route::delete('/transaksi-simpanan/setoran-simpanan/{setoranSimpanan}', [SetoranSimpananController::class, 'destroy'])->name('transaksi-simpanan.setoran-simpanan.destroy');
+    Route::get('/transaksi-simpanan/setoran-simpanan/{setoranSimpanan}', [SetoranSimpananController::class, 'show'])->name('transaksi-simpanan.setoran-simpanan.show');
 
     // Setoran Simpanan Kolektif
     Route::get('/transaksi-simpanan/setoran-simpanan-kolektif', SetoransimpanankolektifIndex::class)->name('transaksi-simpanan.setoran-simpanan-kolektif');
@@ -629,13 +622,14 @@ Route::prefix('superadmin')->name('superadmin.')->middleware(['auth', 'role:supe
     Route::get('/transaksi-simpanan/setoran-simpanan-kolektif/{id}', SetoransimpanankolektifShow::class)->name('transaksi-simpanan.setoran-simpanan-kolektif.show');
     Route::get('export-setoran-simpanan-kolektif', [SetoransimpanankolektifIndex::class, 'export']);
 
-    // Tarikan Simpanan
-    Route::get('/transaksi-simpanan/tarikan-simpanan', TarikansimpananIndex::class)->name('transaksi-simpanan.tarikan-simpanan');
-    Route::get('/transaksi-simpanan/tarikan-simpanan/create', TarikansimpananCreate::class)->name('transaksi-simpanan.tarikan-simpanan.create');
-    Route::get('/transaksi-simpanan/tarikan-simpanan/export', TarikansimpananIndex::class)->name('transaksi-simpanan.tarikan-simpanan.export-pdf');
-    Route::get('/transaksi-simpanan/tarikan-simpanan/{id}/edit', TarikansimpananEdit::class)->name('transaksi-simpanan.tarikan-simpanan.edit');
-    Route::get('/transaksi-simpanan/tarikan-simpanan/{id}', TarikansimpananShow::class)->name('transaksi-simpanan.tarikan-simpanan.show');
-    Route::get('export-tarikan-simpanan', [TarikansimpananIndex::class, 'export']);
+    // Tarikan Simpanan (Inertia + React)
+    Route::get('/transaksi-simpanan/tarikan-simpanan', [TarikanSimpananController::class, 'index'])->name('transaksi-simpanan.tarikan-simpanan');
+    Route::get('/transaksi-simpanan/tarikan-simpanan/create', [TarikanSimpananController::class, 'create'])->name('transaksi-simpanan.tarikan-simpanan.create');
+    Route::post('/transaksi-simpanan/tarikan-simpanan', [TarikanSimpananController::class, 'store'])->name('transaksi-simpanan.tarikan-simpanan.store');
+    Route::get('/transaksi-simpanan/tarikan-simpanan/{tarikanSimpanan}/edit', [TarikanSimpananController::class, 'edit'])->name('transaksi-simpanan.tarikan-simpanan.edit');
+    Route::put('/transaksi-simpanan/tarikan-simpanan/{tarikanSimpanan}', [TarikanSimpananController::class, 'update'])->name('transaksi-simpanan.tarikan-simpanan.update');
+    Route::delete('/transaksi-simpanan/tarikan-simpanan/{tarikanSimpanan}', [TarikanSimpananController::class, 'destroy'])->name('transaksi-simpanan.tarikan-simpanan.destroy');
+    Route::get('/transaksi-simpanan/tarikan-simpanan/{tarikanSimpanan}', [TarikanSimpananController::class, 'show'])->name('transaksi-simpanan.tarikan-simpanan.show');
 
     // Tarikan Simpanan Kolektif
     Route::get('/transaksi-simpanan/tarikan-simpanan-kolektif', TarikansimpanankolektifIndex::class)->name('transaksi-simpanan.tarikan-simpanan-kolektif');
@@ -645,21 +639,23 @@ Route::prefix('superadmin')->name('superadmin.')->middleware(['auth', 'role:supe
     Route::get('/transaksi-simpanan/tarikan-simpanan-kolektif/{id}', TarikansimpanankolektifShow::class)->name('transaksi-simpanan.tarikan-simpanan-kolektif.show');
     Route::get('export-tarikan-simpanan-kolektif', [TarikansimpanankolektifIndex::class, 'export']);
 
-    // Pemindahbukuan Simpanan
-    Route::get('/transaksi-simpanan/pemindahbukuan-simpanan', PemindahbukuansimpananIndex::class)->name('transaksi-simpanan.pemindahbukuan-simpanan');
-    Route::get('/transaksi-simpanan/pemindahbukuan-simpanan/create', PemindahbukuansimpananCreate::class)->name('transaksi-simpanan.pemindahbukuan-simpanan.create');
-    Route::get('/transaksi-simpanan/pemindahbukuan-simpanan/export', PemindahbukuansimpananIndex::class)->name('transaksi-simpanan.pemindahbukuan-simpanan.export-pdf');
-    Route::get('/transaksi-simpanan/pemindahbukuan-simpanan/{id}/edit', PemindahbukuansimpananEdit::class)->name('transaksi-simpanan.pemindahbukuan-simpanan.edit');
-    Route::get('/transaksi-simpanan/pemindahbukuan-simpanan/{id}', PemindahbukuansimpananShow::class)->name('transaksi-simpanan.pemindahbukuan-simpanan.show');
-    Route::get('export-pemindahbukuan-simpanan', [PemindahbukuansimpananIndex::class, 'export']);
+    // Pemindahbukuan Simpanan (Inertia + React)
+    Route::get('/transaksi-simpanan/pemindahbukuan-simpanan', [PemindahbukuanSimpananController::class, 'index'])->name('transaksi-simpanan.pemindahbukuan-simpanan');
+    Route::get('/transaksi-simpanan/pemindahbukuan-simpanan/create', [PemindahbukuanSimpananController::class, 'create'])->name('transaksi-simpanan.pemindahbukuan-simpanan.create');
+    Route::post('/transaksi-simpanan/pemindahbukuan-simpanan', [PemindahbukuanSimpananController::class, 'store'])->name('transaksi-simpanan.pemindahbukuan-simpanan.store');
+    Route::get('/transaksi-simpanan/pemindahbukuan-simpanan/{pemindahbukuanSimpanan}/edit', [PemindahbukuanSimpananController::class, 'edit'])->name('transaksi-simpanan.pemindahbukuan-simpanan.edit');
+    Route::put('/transaksi-simpanan/pemindahbukuan-simpanan/{pemindahbukuanSimpanan}', [PemindahbukuanSimpananController::class, 'update'])->name('transaksi-simpanan.pemindahbukuan-simpanan.update');
+    Route::delete('/transaksi-simpanan/pemindahbukuan-simpanan/{pemindahbukuanSimpanan}', [PemindahbukuanSimpananController::class, 'destroy'])->name('transaksi-simpanan.pemindahbukuan-simpanan.destroy');
+    Route::get('/transaksi-simpanan/pemindahbukuan-simpanan/{pemindahbukuanSimpanan}', [PemindahbukuanSimpananController::class, 'show'])->name('transaksi-simpanan.pemindahbukuan-simpanan.show');
 
-    // Penutupan Simpanan
-    Route::get('/transaksi-simpanan/penutupan-simpanan', PenutupansimpananIndex::class)->name('transaksi-simpanan.penutupan-simpanan');
-    Route::get('/transaksi-simpanan/penutupan-simpanan/create', PenutupansimpananCreate::class)->name('transaksi-simpanan.penutupan-simpanan.create');
-    Route::get('/transaksi-simpanan/penutupan-simpanan/export', PenutupansimpananIndex::class)->name('transaksi-simpanan.penutupan-simpanan.export-pdf');
-    Route::get('/transaksi-simpanan/penutupan-simpanan/{id}/edit', PenutupansimpananEdit::class)->name('transaksi-simpanan.penutupan-simpanan.edit');
-    Route::get('/transaksi-simpanan/penutupan-simpanan/{id}', PenutupansimpananShow::class)->name('transaksi-simpanan.penutupan-simpanan.show');
-    Route::get('export-penutupan-simpanan', [PenutupansimpananIndex::class, 'export']);
+    // Penutupan Simpanan (Inertia + React)
+    Route::get('/transaksi-simpanan/penutupan-simpanan', [PenutupanSimpananController::class, 'index'])->name('transaksi-simpanan.penutupan-simpanan');
+    Route::get('/transaksi-simpanan/penutupan-simpanan/create', [PenutupanSimpananController::class, 'create'])->name('transaksi-simpanan.penutupan-simpanan.create');
+    Route::post('/transaksi-simpanan/penutupan-simpanan', [PenutupanSimpananController::class, 'store'])->name('transaksi-simpanan.penutupan-simpanan.store');
+    Route::get('/transaksi-simpanan/penutupan-simpanan/{penutupanSimpanan}/edit', [PenutupanSimpananController::class, 'edit'])->name('transaksi-simpanan.penutupan-simpanan.edit');
+    Route::put('/transaksi-simpanan/penutupan-simpanan/{penutupanSimpanan}', [PenutupanSimpananController::class, 'update'])->name('transaksi-simpanan.penutupan-simpanan.update');
+    Route::delete('/transaksi-simpanan/penutupan-simpanan/{penutupanSimpanan}', [PenutupanSimpananController::class, 'destroy'])->name('transaksi-simpanan.penutupan-simpanan.destroy');
+    Route::get('/transaksi-simpanan/penutupan-simpanan/{penutupanSimpanan}', [PenutupanSimpananController::class, 'show'])->name('transaksi-simpanan.penutupan-simpanan.show');
 
     // Transaksi Simpanan Berjangka
     // Setoran Simpanan Berjangka

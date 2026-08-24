@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Anggota;
+use App\Models\Kantor;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 
@@ -29,13 +30,24 @@ function buatAnggotaUji(array $overrides = []): Anggota
 {
     $uniq = uniqid('t');
 
+    // Kanton uji dibuat sendiri agar test tidak bergantung pada data existing.
+    $kantor = Kantor::create([
+        'kode' => "KT-{$uniq}",
+        'nama_kantor' => "Kantor Uji {$uniq}",
+        'alamat_kantor' => 'Jl. Test No. 1',
+        'pejabat' => 'Pejabat Uji',
+        'jabatan' => 'Kepala Kantor',
+        'bendahara' => 'Bendahara Uji',
+        'user_id' => anggotaTestUser()->id,
+    ]);
+
     return Anggota::create([
         'no_anggota' => "TEST-{$uniq}",
         'pin' => '123456',
         'nama' => 'Anggota Uji '.$uniq,
         'alamat' => 'Jl. Test No. 1',
         'kelompok_id' => 1,
-        'kantor_id' => 1,
+        'kantor_id' => $kantor->id,
         'provinsi_id' => '11',
         'kota_id' => '1101',
         'kecamatan_id' => '110101',
@@ -66,6 +78,11 @@ function buatAnggotaUji(array $overrides = []): Anggota
 function hapusAnggotaUji(): void
 {
     Anggota::where('no_anggota', 'LIKE', 'TEST-%')->delete();
+
+    // Bersihkan kantor uji yang dibuat oleh buatAnggotaUji.
+    Kantor::where('kode', 'LIKE', 'KT-%')
+        ->where('nama_kantor', 'LIKE', 'Kantor Uji %')
+        ->delete();
 }
 
 test('index memuat komponen Inertia dan data terpaginasi', function () {
@@ -179,6 +196,8 @@ test('destroy menghapus anggota uji', function () {
 
     $response->assertStatus(302);
     expect(Anggota::find($anggota->id))->toBeNull();
+
+    hapusAnggotaUji();
 });
 
 test('template export dapat diunduh sebagai xlsx', function () {
