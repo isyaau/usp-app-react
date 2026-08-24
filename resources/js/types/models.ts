@@ -362,3 +362,50 @@ export interface SimpananFormValues {
     tgl_blokir: string;
     kantor_id: string;
 }
+
+/* ===================== Simpanan Rencana ===================== */
+
+/** Baris daftar rencana simpanan. */
+export interface RencanaRow {
+    id: number;
+    tanggal_mulai: string;
+    tanggal_jatuhtempo: string;
+    no_bukti: string;
+    jangka_waktu: string;
+    satuan: string;
+    nominal: string;
+    bunga: string;
+    keterangan: string | null;
+    kantor?: { id: number; nama_kantor: string } | null;
+    details_count?: number;
+}
+
+/** Rekening yang terlibat dalam sebuah rencana. */
+export interface RencanaDetailItem {
+    id: number;
+    simpanan_id: number;
+    no_rekening: string;
+    anggota_nama: string | null;
+}
+
+/** Opsi rekening simpanan untuk pemilih di form rencana. */
+export interface RekeningOption {
+    id: number;
+    no_rekening: string;
+    jenis_nama?: string | null;
+    anggota_nama?: string | null;
+}
+
+/** Nilai form simpanan rencana. */
+export interface RencanaFormValues {
+    tanggal_mulai: string;
+    tanggal_jatuhtempo: string;
+    no_bukti: string;
+    jangka_waktu: string;
+    satuan: string;
+    nominal: string;
+    bunga: string;
+    keterangan: string;
+    kantor_id: string;
+    simpanan_ids: number[];
+}

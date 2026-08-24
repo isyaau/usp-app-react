@@ -18,6 +18,7 @@ use App\Http\Controllers\Superadmin\TarikanSimpananController;
 use App\Http\Controllers\Superadmin\BerjangkaprodukController;
 use App\Http\Controllers\Superadmin\BerjangkaController;
 use App\Http\Controllers\Superadmin\SimpananController;
+use App\Http\Controllers\Superadmin\SimpananRencanaController;
 use App\Http\Controllers\Superadmin\PinjamanProdukController;
 use App\Http\Controllers\Superadmin\SimpananProdukController;
 use App\Http\Controllers\Superadmin\UserController;
@@ -134,10 +135,7 @@ use App\Livewire\Superadmin\Marketing\Show as MarketingShow;
 // Data Simpanan sudah dimigrasikan ke Inertia (SimpananController).
 
 // SIMPANAN RENCANA
-use App\Livewire\Superadmin\Simpananrencana\Index as SimpananrencanaIndex;
-use App\Livewire\Superadmin\Simpananrencana\Create as SimpananrencanaCreate;
-use App\Livewire\Superadmin\Simpananrencana\Edit as SimpananrencanaEdit;
-use App\Livewire\Superadmin\Simpananrencana\Show as SimpananrencanaShow;
+// Simpanan Rencana sudah dimigrasikan ke Inertia (SimpananRencanaController).
 
 // SIMPANAN BERJANGKA PRODUK
 use App\Livewire\Superadmin\Berjangkaproduk\Index as BerjangkaprodukIndex;
@@ -463,12 +461,11 @@ Route::prefix('superadmin')->name('superadmin.')->middleware(['auth', 'role:supe
     Route::get('/marketing/{marketing}', [MarketingController::class, 'show'])->name('marketing.show');
 
     // Simpanan
-    Route::get('/simpanan/rencana', SimpananrencanaIndex::class)->name('simpanan.rencana');
-    Route::get('/simpanan/rencana/create', SimpananrencanaCreate::class)->name('simpanan.rencana.create');
-    Route::get('/simpanan/rencana/export', SimpananrencanaIndex::class)->name('simpanan.rencana.export-pdf');
-    Route::get('/simpanan/rencana/{id}/edit', SimpananrencanaEdit::class)->name('simpanan.rencana.edit');
-    Route::get('/simpanan/rencana/{id}', SimpananrencanaShow::class)->name('simpanan.rencana.show');
-    Route::get('export-simpanan-rencana', [SimpananrencanaIndex::class, 'export']);
+    // Simpanan Rencana (Inertia + React)
+    Route::get('/simpanan/rencana', [SimpananRencanaController::class, 'index'])->name('simpanan.rencana');
+    Route::get('/simpanan/rencana/create', [SimpananRencanaController::class, 'create'])->name('simpanan.rencana.create');
+    Route::post('/simpanan/rencana', [SimpananRencanaController::class, 'store'])->name('simpanan.rencana.store');
+    Route::delete('/simpanan/rencana/{rencana}', [SimpananRencanaController::class, 'destroy'])->name('simpanan.rencana.destroy');
 
     // Simpanan
     // Data Simpanan (Inertia + React)
