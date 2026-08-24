@@ -19,6 +19,7 @@ use App\Http\Controllers\Superadmin\BerjangkaprodukController;
 use App\Http\Controllers\Superadmin\BerjangkaController;
 use App\Http\Controllers\Superadmin\SimpananController;
 use App\Http\Controllers\Superadmin\SimpananRencanaController;
+use App\Http\Controllers\Superadmin\PinjamanController;
 use App\Http\Controllers\Superadmin\PinjamanProdukController;
 use App\Http\Controllers\Superadmin\SimpananProdukController;
 use App\Http\Controllers\Superadmin\UserController;
@@ -71,10 +72,7 @@ use App\Livewire\Superadmin\Jaminan\Edit as JaminanEdit;
 use App\Livewire\Superadmin\Jaminan\Show as JaminanShow;
 
 // PINJAMAN
-use App\Livewire\Superadmin\Pinjaman\Index as PinjamanIndex;
-use App\Livewire\Superadmin\Pinjaman\Create as PinjamanCreate;
-use App\Livewire\Superadmin\Pinjaman\Edit as PinjamanEdit;
-use App\Livewire\Superadmin\Pinjaman\Show as PinjamanShow;
+// Data Pinjaman sudah dimigrasikan ke Inertia (PinjamanController).
 
 // PINJAMAN PRODUK
 use App\Livewire\Superadmin\Pinjamanproposal\Index as PinjamanproposalIndex;
@@ -374,13 +372,11 @@ Route::prefix('superadmin')->name('superadmin.')->middleware(['auth', 'role:supe
     Route::delete('/pinjaman/jaminan/{jaminan}', [JaminanController::class, 'destroy'])->name('pinjaman.jaminan.destroy');
     Route::get('/pinjaman/jaminan/{jaminan}', [JaminanController::class, 'show'])->name('pinjaman.jaminan.show');
 
-    // Pinjaman Pinjaman
-    Route::get('/pinjaman/pinjaman', PinjamanIndex::class)->name('pinjaman.pinjaman');
-    Route::get('/pinjaman/pinjaman/create', PinjamanCreate::class)->name('pinjaman.pinjaman.create');
-    Route::get('/pinjaman/pinjaman/export', PinjamanIndex::class)->name('pinjaman.pinjaman.export-pdf');
-    Route::get('/pinjaman/pinjaman/{id}/edit', PinjamanEdit::class)->name('pinjaman.pinjaman.edit');
-    Route::get('/pinjaman/pinjaman/{id}', PinjamanShow::class)->name('pinjaman.pinjaman.show');
-    Route::get('export-pinjaman-pinjaman', [PinjamanIndex::class, 'export']);
+    // Data Pinjaman (Inertia + React)
+    Route::get('/pinjaman/pinjaman', [PinjamanController::class, 'index'])->name('pinjaman.pinjaman');
+    Route::get('/pinjaman/pinjaman/create', [PinjamanController::class, 'create'])->name('pinjaman.pinjaman.create');
+    Route::post('/pinjaman/pinjaman', [PinjamanController::class, 'store'])->name('pinjaman.pinjaman.store');
+    Route::delete('/pinjaman/pinjaman/{pinjaman}', [PinjamanController::class, 'destroy'])->name('pinjaman.pinjaman.destroy');
 
     // Pinjaman Proposal
     Route::get('/pinjaman/proposal', PinjamanproposalIndex::class)->name('pinjaman.proposal');

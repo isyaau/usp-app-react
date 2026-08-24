@@ -19,7 +19,7 @@ class Pinjaman extends Model
         'sektor_id',
         'angsuran',
         'plafon',
-        'noinal_angsuran',
+        'nominal_angsuran',
         'bunga',
         'jangka_waktu',
         'periode',
@@ -40,17 +40,20 @@ class Pinjaman extends Model
         'user_id',
     ];
 
-    /**
-     * Get the account associated with the pinjaman produk.
-     */
-    public function proposal()
+    /** Produk pinjaman terkait (pinj_jenis). */
+    public function jenisPinjaman()
     {
-        return $this->belongsTo(Account::class, 'account_id');
+        return $this->belongsTo(PinjamanProduk::class, 'jenis_id');
     }
 
     public function anggota()
     {
-        return $this->belongsTo(Account::class, 'account_id');
+        return $this->belongsTo(Anggota::class, 'anggota_id');
+    }
+
+    public function kantor()
+    {
+        return $this->belongsTo(Kantor::class, 'kantor_id');
     }
 
     /**

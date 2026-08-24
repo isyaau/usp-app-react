@@ -409,3 +409,46 @@ export interface RencanaFormValues {
     kantor_id: string;
     simpanan_ids: number[];
 }
+
+/* ===================== Data Pinjaman ===================== */
+
+/** Opsi anggota ringkas untuk dropdown pinjaman. */
+export interface PinjamanAnggotaOption {
+    id: number;
+    no_anggota: string;
+    nama: string;
+}
+
+/** Opsi produk pinjaman ringkas untuk dropdown. */
+export interface PinjamanJenisOptionLite {
+    id: number;
+    nama: string;
+}
+
+/** Baris daftar pinjaman. */
+export interface PinjamanRow {
+    id: number;
+    tanggal: string;
+    no_pinjaman: string;
+    plafon: string;
+    bunga: string;
+    jangka_waktu: string;
+    satuan: string;
+    angsuranke: string;
+    aktif: string;
+    jenisPinjaman?: { id: number; nama: string } | null;
+    anggota?: { id: number; no_anggota: string; nama: string } | null;
+    kantor?: { id: number; nama_kantor: string } | null;
+}
+
+/** Nilai form pinjaman. */
+export interface PinjamanFormValues {
+    tanggal: string;
+    no_pinjaman: string;
+    anggota_id: string;
+    jenis_id: string;
+    plafon: string;
+    bunga: string;
+    jangka_waktu: string;
+    satuan: string;
+}
