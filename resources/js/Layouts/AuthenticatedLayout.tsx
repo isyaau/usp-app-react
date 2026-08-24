@@ -16,6 +16,7 @@ import {
     Menu,
     X,
     Landmark,
+    DollarSign,
 } from 'lucide-react';
 
 import { Button } from '@/Components/ui/button';
@@ -103,6 +104,14 @@ const MENU: MenuItem[] = [
             { label: 'Simpanan Berjangka', route: 'superadmin.simpanan-berjangka' },
         ],
     },
+    {
+        label: 'Kas Harian',
+        icon: DollarSign,
+        children: [
+            { label: 'Daftar Kas Harian', route: 'superadmin.kas-harian' },
+            { label: 'Tambah Kas Harian', route: 'superadmin.kas-harian.create' },
+        ],
+    },
     { header: 'Front Office' },
     {
         label: 'Transaksi Simpanan',
@@ -171,7 +180,11 @@ function NavGroup({ item }: { item: MenuParent }) {
                             <NavLink
                                 key={child.route}
                                 item={child}
-                                active={route().current(child.route) || route().current(child.route + '.*')}
+                                active={
+                                    ['superadmin.simpanan', 'superadmin.simpanan-berjangka'].includes(child.route)
+                                        ? route().current(child.route) && !route().current(child.route + '.*')
+                                        : route().current(child.route) || route().current(child.route + '.*')
+                                }
                             />
                         ))}
                     </div>
@@ -196,7 +209,7 @@ function SidebarContent() {
             </div>
 
             {/* Menu */}
-            <nav className="flex-1 space-y-0.5 overflow-y-auto overflow-x-hidden px-3 py-4">
+            <nav className="flex-1 space-y-0.5 overflow-y-auto overflow-x-hidden px-3 py-4 sidebar-scroll">
                 {MENU.map((item, i) => {
                     if ('header' in item) {
                         return (

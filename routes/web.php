@@ -7,6 +7,7 @@ use App\Http\Controllers\Superadmin\AccHeaderController;
 use App\Http\Controllers\Superadmin\AccountController;
 use App\Http\Controllers\Superadmin\AnggotaController;
 use App\Http\Controllers\Superadmin\JaminanController;
+use App\Http\Controllers\Superadmin\KasHarianController;
 use App\Http\Controllers\Superadmin\KodetransaksiController;
 use App\Http\Controllers\Superadmin\KantorController;
 use App\Http\Controllers\Superadmin\KelompokController;
@@ -162,6 +163,15 @@ Route::prefix('superadmin')->name('superadmin.')->middleware(['auth', 'role:supe
     Route::put('/anggota/{anggota}', [AnggotaController::class, 'update'])->name('anggota.update');
     Route::delete('/anggota/{anggota}', [AnggotaController::class, 'destroy'])->name('anggota.destroy');
     Route::get('/anggota/{anggota}', [AnggotaController::class, 'show'])->name('anggota.show');
+
+    // Kas Harian (Inertia + React)
+    Route::get('/kas-harian', [KasHarianController::class, 'index'])->name('kas-harian');
+    Route::get('/kas-harian/create', [KasHarianController::class, 'create'])->name('kas-harian.create');
+    Route::post('/kas-harian', [KasHarianController::class, 'store'])->name('kas-harian.store');
+    Route::get('/kas-harian/{kasHarian}/edit', [KasHarianController::class, 'edit'])->name('kas-harian.edit');
+    Route::put('/kas-harian/{kasHarian}', [KasHarianController::class, 'update'])->name('kas-harian.update');
+    Route::delete('/kas-harian/{kasHarian}', [KasHarianController::class, 'destroy'])->name('kas-harian.destroy');
+    Route::get('/kas-harian/{kasHarian}', [KasHarianController::class, 'show'])->name('kas-harian.show');
 
     //Kantor (Inertia + React)
     Route::get('/kantor', [KantorController::class, 'index'])->name('kantor');

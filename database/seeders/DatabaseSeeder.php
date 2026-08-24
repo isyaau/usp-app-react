@@ -32,6 +32,7 @@ class DatabaseSeeder extends Seeder
             SimpananSeeder::class,
             JaminanSeeder::class,
             JaminanDetailSeeder::class,
+            KasHarianSeeder::class,
         ]);
     }
 }

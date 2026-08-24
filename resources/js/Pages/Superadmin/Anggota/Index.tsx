@@ -11,6 +11,7 @@ import {
     Sheet,
     Upload,
     Users,
+    AlertCircle,
 } from 'lucide-react';
 
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
@@ -84,53 +85,80 @@ export default function AnggotaIndex({ anggota, filters }: Props) {
 
             <div className="grid gap-5 lg:grid-cols-3">
                 {/* ============================ Ekspor ============================ */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2 text-base">
-                            <FileDown className="size-4 text-brand-600" />
-                            Ekspor Data
-                        </CardTitle>
-                        <CardDescription>
-                            Filter berdasarkan rentang tanggal dibuat (format
-                            bebas, boleh dikosongkan).
+                <Card className="border-border/50 shadow-sm hover:shadow-md transition-shadow duration-200">
+                    <CardHeader className="pb-3">
+                        <div className="flex items-center justify-between">
+                            <CardTitle className="flex items-center gap-2 text-base font-semibold">
+                                <div className="p-2 rounded-lg bg-brand-50 text-brand-600">
+                                    <FileDown className="size-4" />
+                                </div>
+                                Ekspor Data
+                            </CardTitle>
+                        </div>
+                        <CardDescription className="text-sm text-muted-foreground">
+                            Ekspor data anggota ke PDF atau Excel dengan filter tanggal opsional.
                         </CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-4">
+                    <CardContent className="space-y-4 pt-0">
                         <div className="grid grid-cols-2 gap-3">
-                            <div className="space-y-2">
-                                <Label htmlFor="export-mulai">Dari</Label>
+                            <div className="space-y-1.5">
+                                <Label htmlFor="export-mulai" className="text-xs font-medium text-muted-foreground">
+                                    Periode Mulai
+                                </Label>
                                 <Input
                                     id="export-mulai"
                                     type="date"
                                     value={mulai}
                                     onChange={(e) => setMulai(e.target.value)}
+                                    className="h-9 text-sm"
+                                    placeholder="DD/MM/YYYY"
+                                    title="Opsional: filter data dari tanggal ini"
                                 />
+                                <p className="text-[10px] text-muted-foreground">Kosongkan untuk semua data</p>
                             </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="export-sampai">Sampai</Label>
+                            <div className="space-y-1.5">
+                                <Label htmlFor="export-sampai" className="text-xs font-medium text-muted-foreground">
+                                    Periode Selesai
+                                </Label>
                                 <Input
                                     id="export-sampai"
                                     type="date"
                                     value={sampai}
                                     onChange={(e) => setSampai(e.target.value)}
+                                    className="h-9 text-sm"
+                                    placeholder="DD/MM/YYYY"
+                                    title="Opsional: filter data sampai tanggal ini"
                                 />
+                                <p className="text-[10px] text-muted-foreground">Kosongkan untuk semua data</p>
                             </div>
                         </div>
-                        <div className="flex flex-wrap gap-2">
-                            <Button variant="outline" size="sm" asChild>
+                        <div className="flex flex-wrap gap-2 pt-1">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                asChild
+                                className="flex-1 min-w-[120px] gap-1.5 hover:bg-brand-50 hover:text-brand-700 hover:border-brand-200 border-brand-100 text-brand-700"
+                            >
                                 <a
                                     id="btn-export-pdf"
                                     href={`${route('superadmin.anggota.export-pdf')}?${exportQuery()}`}
                                 >
-                                    <FileText /> PDF
+                                    <FileText className="size-3.5" />
+                                    PDF
                                 </a>
                             </Button>
-                            <Button variant="outline" size="sm" asChild>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                asChild
+                                className="flex-1 min-w-[120px] gap-1.5 hover:bg-green-50 hover:text-green-700 hover:border-green-200 border-green-100 text-green-700"
+                            >
                                 <a
                                     id="btn-export-excel"
                                     href={`${route('superadmin.anggota.export-excel')}?${exportQuery()}`}
                                 >
-                                    <FileSpreadsheet /> Excel
+                                    <FileSpreadsheet className="size-3.5" />
+                                    Excel
                                 </a>
                             </Button>
                         </div>
@@ -138,26 +166,43 @@ export default function AnggotaIndex({ anggota, filters }: Props) {
                 </Card>
 
                 {/* ============================ Impor ============================= */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2 text-base">
-                            <Upload className="size-4 text-brand-600" />
-                            Impor Data
-                        </CardTitle>
-                        <CardDescription>
-                            Unggah file Excel sesuai template. Kolom Kelompok &amp;
-                            Kantor dicocokkan dari nama.
+                <Card className="border-border/50 shadow-sm hover:shadow-md transition-shadow duration-200 lg:col-span-2">
+                    <CardHeader className="pb-3">
+                        <div className="flex items-center justify-between">
+                            <CardTitle className="flex items-center gap-2 text-base font-semibold">
+                                <div className="p-2 rounded-lg bg-green-50 text-green-600">
+                                    <Upload className="size-4" />
+                                </div>
+                                Impor Data
+                            </CardTitle>
+                        </div>
+                        <CardDescription className="text-sm text-muted-foreground">
+                            Impor data anggota dari file Excel. Unduh template terlebih dahulu untuk format yang benar.
                         </CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-4">
-                        <a
-                            id="link-template"
-                            href={route('superadmin.anggota.template')}
-                            className="inline-flex items-center gap-1.5 text-sm font-medium text-brand-600 underline-offset-4 hover:underline"
-                        >
-                            <Sheet className="size-4" />
-                            Unduh Template Excel
-                        </a>
+                    <CardContent className="space-y-4 pt-0">
+                        <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/30 border border-border/50">
+                            <Sheet className="size-5 text-muted-foreground shrink-0" />
+                            <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium text-foreground">Template Impor Anggota</p>
+                                <p className="text-xs text-muted-foreground">Kolom: No Anggota, Nama, Alamat, Telepon, No HP, Kelompok, Kantor, Status</p>
+                            </div>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                asChild
+                                className="shrink-0 text-brand-600 hover:text-brand-700 hover:bg-brand-50 gap-1.5"
+                            >
+                                <a
+                                    id="link-template"
+                                    href={route('superadmin.anggota.template')}
+                                    className="flex items-center gap-1.5"
+                                >
+                                    <FileDown className="size-3.5" />
+                                    Unduh Template (.xlsx)
+                                </a>
+                            </Button>
+                        </div>
 
                         <form
                             onSubmit={(e) => {
@@ -169,19 +214,33 @@ export default function AnggotaIndex({ anggota, filters }: Props) {
                             }}
                             className="space-y-3"
                         >
-                            <Input
-                                id="import-file"
-                                type="file"
-                                accept=".xlsx,.csv"
-                                onChange={(e) =>
-                                    importForm.setData(
-                                        'file',
-                                        e.target.files?.[0] ?? null,
-                                    )
-                                }
-                            />
+                            <div className="relative">
+                                <Input
+                                    id="import-file"
+                                    type="file"
+                                    accept=".xlsx,.csv"
+                                    onChange={(e) =>
+                                        importForm.setData(
+                                            'file',
+                                            e.target.files?.[0] ?? null,
+                                        )
+                                    }
+                                    className="file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 cursor-pointer"
+                                />
+                                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                    <div className="text-center px-4">
+                                        <p className="text-sm font-medium text-muted-foreground">
+                                            Seret file Excel (.xlsx) ke sini
+                                        </p>
+                                        <p className="text-xs text-muted-foreground/70 mt-0.5">
+                                            atau klik untuk memilih file
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
                             {importForm.errors.file && (
-                                <p className="text-sm text-destructive">
+                                <p className="text-sm text-destructive flex items-center gap-1.5">
+                                    <AlertCircle className="size-4" />
                                     {importForm.errors.file}
                                 </p>
                             )}
@@ -191,12 +250,12 @@ export default function AnggotaIndex({ anggota, filters }: Props) {
                                 disabled={
                                     importForm.processing || !importForm.data.file
                                 }
-                                className="bg-brand-600 hover:bg-brand-500"
+                                className="w-full sm:w-auto bg-brand-600 hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed gap-2"
                             >
                                 {importForm.processing && (
-                                    <LoaderCircle className="animate-spin" />
+                                    <LoaderCircle className="animate-spin size-4" />
                                 )}
-                                Impor Sekarang
+                                {importForm.processing ? 'Memproses...' : 'Impor Sekarang'}
                             </Button>
                         </form>
                     </CardContent>
@@ -249,9 +308,7 @@ export default function AnggotaIndex({ anggota, filters }: Props) {
                                 <TableHead className="w-12">#</TableHead>
                                 <TableHead>No Anggota</TableHead>
                                 <TableHead>Nama</TableHead>
-                                <TableHead>Alamat</TableHead>
-                                <TableHead>Telepon</TableHead>
-                                <TableHead>No HP</TableHead>
+                                <TableHead>Kontak</TableHead>
                                 <TableHead>Foto</TableHead>
                                 <TableHead>Status</TableHead>
                                 <TableHead className="text-right">
@@ -263,7 +320,7 @@ export default function AnggotaIndex({ anggota, filters }: Props) {
                             {anggota.data.length === 0 && (
                                 <TableRow>
                                     <TableCell
-                                        colSpan={9}
+                                        colSpan={7}
                                         className="py-10 text-center text-muted-foreground"
                                     >
                                         Tidak ada data anggota.
@@ -284,11 +341,14 @@ export default function AnggotaIndex({ anggota, filters }: Props) {
                                     <TableCell className="font-medium">
                                         {item.nama}
                                     </TableCell>
-                                    <TableCell className="max-w-56 truncate">
-                                        {item.alamat ?? '-'}
+                                    <TableCell className="font-mono text-xs">
+                                        {[
+                                            item.telepon,
+                                            item.no_hp,
+                                        ]
+                                            .filter(Boolean)
+                                            .join(' / ') || '-'}
                                     </TableCell>
-                                    <TableCell>{item.telepon ?? '-'}</TableCell>
-                                    <TableCell>{item.no_hp ?? '-'}</TableCell>
                                     <TableCell>
                                         {item.foto ? (
                                             <img

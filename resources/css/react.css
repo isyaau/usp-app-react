@@ -125,3 +125,335 @@
         @apply bg-background text-foreground;
     }
 }
+
+/* ============================================================
+   Custom Scrollbar — Sidebar & Global
+   Tipis, halus, senada tema dark
+   ============================================================ */
+:root {
+    /* Scrollbar variables */
+    --scrollbar-track: transparent;
+    --scrollbar-thumb: oklch(0.35 0.02 260 / 0.4);
+    --scrollbar-thumb-hover: oklch(0.45 0.04 260 / 0.6);
+    --scrollbar-thumb-active: oklch(0.55 0.06 260 / 0.8);
+    --scrollbar-width-thin: 6px;
+    --scrollbar-width-auto: 8px;
+}
+
+/* Webkit (Chrome, Edge, Safari) */
+::-webkit-scrollbar {
+    width: var(--scrollbar-width-thin);
+    height: var(--scrollbar-width-thin);
+}
+
+::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+    border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 9999px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+    transition: background 0.2s ease, transform 0.1s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
+    background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:active {
+    background: var(--scrollbar-thumb-active);
+    background-clip: content-box;
+}
+
+::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+/* Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+/* Sidebar specific — lebih tipis & hanya muncul saat hover */
+.sidebar-scroll::-webkit-scrollbar {
+    width: 4px;
+}
+
+.sidebar-scroll::-webkit-scrollbar-thumb {
+    background: oklch(0.4 0.02 260 / 0.35);
+}
+
+.sidebar-scroll::-webkit-scrollbar-thumb:hover {
+    background: oklch(0.5 0.03 260 / 0.55);
+}
+
+.sidebar-scroll:hover::-webkit-scrollbar-thumb {
+    background: oklch(0.4 0.02 260 / 0.35);
+}
+
+/* Content area scrollbar */
+.content-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.content-scroll::-webkit-scrollbar-thumb {
+    background: oklch(0.4 0.02 260 / 0.4);
+}
+
+.content-scroll::-webkit-scrollbar-thumb:hover {
+    background: oklch(0.5 0.04 260 / 0.6);
+}
+
+/* ============================================================
+   Custom Scrollbar — Sidebar & Global
+   Tipis, halus, senada tema dark
+   ============================================================ */
+:root {
+    /* Scrollbar variables */
+    --scrollbar-track: transparent;
+    --scrollbar-thumb: oklch(0.35 0.02 260 / 0.4);
+    --scrollbar-thumb-hover: oklch(0.45 0.04 260 / 0.6);
+    --scrollbar-thumb-active: oklch(0.55 0.06 260 / 0.8);
+    --scrollbar-width-thin: 6px;
+    --scrollbar-width-auto: 8px;
+}
+
+/* Webkit (Chrome, Edge, Safari) */
+::-webkit-scrollbar {
+    width: var(--scrollbar-width-thin);
+    height: var(--scrollbar-width-thin);
+}
+
+::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+    border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 9999px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+    transition: background 0.2s ease, transform 0.1s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
+    background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:active {
+    background: var(--scrollbar-thumb-active);
+    background-clip: content-box;
+}
+
+::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+/* Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+/* Sidebar specific — lebih tipis & hanya muncul saat hover */
+.sidebar-scroll::-webkit-scrollbar {
+    width: 4px;
+}
+
+.sidebar-scroll::-webkit-scrollbar-thumb {
+    background: oklch(0.4 0.02 260 / 0.35);
+}
+
+.sidebar-scroll::-webkit-scrollbar-thumb:hover {
+    background: oklch(0.5 0.03 260 / 0.55);
+}
+
+.sidebar-scroll:hover::-webkit-scrollbar-thumb {
+    background: oklch(0.4 0.02 260 / 0.35);
+}
+
+/* Content area scrollbar */
+.content-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.content-scroll::-webkit-scrollbar-thumb {
+    background: oklch(0.4 0.02 260 / 0.4);
+}
+
+.content-scroll::-webkit-scrollbar-thumb:hover {
+    background: oklch(0.5 0.04 260 / 0.6);
+}
+
+/* ============================================================
+   Custom Scrollbar — Sidebar & Global
+   Tipis, halus, senada tema dark
+   ============================================================ */
+:root {
+    /* Scrollbar variables */
+    --scrollbar-track: transparent;
+    --scrollbar-thumb: oklch(0.35 0.02 260 / 0.4);
+    --scrollbar-thumb-hover: oklch(0.45 0.04 260 / 0.6);
+    --scrollbar-thumb-active: oklch(0.55 0.06 260 / 0.8);
+    --scrollbar-width-thin: 6px;
+    --scrollbar-width-auto: 8px;
+}
+
+/* Webkit (Chrome, Edge, Safari) */
+::-webkit-scrollbar {
+    width: var(--scrollbar-width-thin);
+    height: var(--scrollbar-width-thin);
+}
+
+::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+    border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 9999px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+    transition: background 0.2s ease, transform 0.1s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
+    background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:active {
+    background: var(--scrollbar-thumb-active);
+    background-clip: content-box;
+}
+
+::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+/* Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+/* Sidebar specific — lebih tipis & hanya muncul saat hover */
+.sidebar-scroll::-webkit-scrollbar {
+    width: 4px;
+}
+
+.sidebar-scroll::-webkit-scrollbar-thumb {
+    background: oklch(0.4 0.02 260 / 0.35);
+}
+
+.sidebar-scroll::-webkit-scrollbar-thumb:hover {
+    background: oklch(0.5 0.03 260 / 0.55);
+}
+
+.sidebar-scroll:hover::-webkit-scrollbar-thumb {
+    background: oklch(0.4 0.02 260 / 0.35);
+}
+
+/* Content area scrollbar */
+.content-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.content-scroll::-webkit-scrollbar-thumb {
+    background: oklch(0.4 0.02 260 / 0.4);
+}
+
+.content-scroll::-webkit-scrollbar-thumb:hover {
+    background: oklch(0.5 0.04 260 / 0.6);
+}
+
+/* ============================================================
+   Custom Scrollbar — Sidebar & Global
+   Tipis, halus, senada tema dark
+   ============================================================ */
+:root {
+    /* Scrollbar variables */
+    --scrollbar-track: transparent;
+    --scrollbar-thumb: oklch(0.35 0.02 260 / 0.4);
+    --scrollbar-thumb-hover: oklch(0.45 0.04 260 / 0.6);
+    --scrollbar-thumb-active: oklch(0.55 0.06 260 / 0.8);
+    --scrollbar-width-thin: 6px;
+    --scrollbar-width-auto: 8px;
+}
+
+/* Webkit (Chrome, Edge, Safari) */
+::-webkit-scrollbar {
+    width: var(--scrollbar-width-thin);
+    height: var(--scrollbar-width-thin);
+}
+
+::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+    border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 9999px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+    transition: background 0.2s ease, transform 0.1s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
+    background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:active {
+    background: var(--scrollbar-thumb-active);
+    background-clip: content-box;
+}
+
+::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+/* Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+/* Sidebar specific — lebih tipis & hanya muncul saat hover */
+.sidebar-scroll::-webkit-scrollbar {
+    width: 4px;
+}
+
+.sidebar-scroll::-webkit-scrollbar-thumb {
+    background: oklch(0.4 0.02 260 / 0.35);
+}
+
+.sidebar-scroll::-webkit-scrollbar-thumb:hover {
+    background: oklch(0.5 0.03 260 / 0.55);
+}
+
+.sidebar-scroll:hover::-webkit-scrollbar-thumb {
+    background: oklch(0.4 0.02 260 / 0.35);
+}
+
+/* Content area scrollbar */
+.content-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.content-scroll::-webkit-scrollbar-thumb {
+    background: oklch(0.4 0.02 260 / 0.4);
+}
+
+.content-scroll::-webkit-scrollbar-thumb:hover {
+    background: oklch(0.5 0.04 260 / 0.6);
+}
