@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Head, router } from '@inertiajs/react';
+import { Link, Head, router} from '@inertiajs/react';
 import { Banknote, Plus, Search } from 'lucide-react';
 
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
@@ -60,10 +60,10 @@ export default function PinjamanIndex({ pinjaman, filters }: Props) {
                 icon={Banknote}
             >
                 <Button asChild className="bg-brand-600 hover:bg-brand-500">
-                    <a href={route('superadmin.pinjaman.pinjaman.create')}>
+                    <Link href={route('superadmin.pinjaman.pinjaman.create')}>
                         <Plus />
                         Tambah Pinjaman
-                    </a>
+                    </Link>
                 </Button>
             </PageHeader>
 

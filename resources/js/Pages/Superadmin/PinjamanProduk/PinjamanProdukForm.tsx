@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useForm } from '@inertiajs/react';
+import { Link, useForm} from '@inertiajs/react';
 import { FunctionSquare, LoaderCircle, Plus, Trash2 } from 'lucide-react';
 
 import { Button } from '@/Components/ui/button';
@@ -801,7 +801,7 @@ export function PinjamanProdukForm({
             {/* ===== Aksi ===== */}
             <div className="flex items-center justify-end gap-3">
                 <Button variant="outline" asChild>
-                    <a href={route('superadmin.pinjaman.produk')}>Kembali</a>
+                    <Link href={route('superadmin.pinjaman.produk')}>Kembali</Link>
                 </Button>
                 <Button
                     type="submit"

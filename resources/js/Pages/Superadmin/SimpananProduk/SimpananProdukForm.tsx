@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { useForm } from '@inertiajs/react';
+import { Link, useForm} from '@inertiajs/react';
 import { LoaderCircle, Plus, Trash2, X } from 'lucide-react';
 
 import { Badge } from '@/Components/ui/badge';
@@ -752,7 +752,7 @@ export function SimpananProdukForm({
             {/* ===== Aksi ===== */}
             <div className="flex items-center justify-end gap-3">
                 <Button variant="outline" asChild>
-                    <a href={route('superadmin.simpanan.produk-simpanan')}>Kembali</a>
+                    <Link href={route('superadmin.simpanan.produk-simpanan')}>Kembali</Link>
                 </Button>
                 <Button type="submit" disabled={form.processing} className="bg-brand-600 hover:bg-brand-500">
                     {form.processing && <LoaderCircle className="animate-spin" />}

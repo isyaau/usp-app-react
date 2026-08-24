@@ -1,4 +1,4 @@
-import { useForm, Head } from '@inertiajs/react';
+import { Link, useForm, Head} from '@inertiajs/react';
 import { LoaderCircle, Package, Plus, Trash2 } from 'lucide-react';
 
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
@@ -112,7 +112,7 @@ export default function JaminanCreate() {
 
                 <div className="mt-5 flex items-center justify-end gap-3">
                     <Button variant="outline" asChild>
-                        <a href={route('superadmin.pinjaman.jaminan')}>Kembali</a>
+                        <Link href={route('superadmin.pinjaman.jaminan')}>Kembali</Link>
                     </Button>
                     <Button
                         type="submit"

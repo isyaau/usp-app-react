@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Head, router } from '@inertiajs/react';
+import { Link, Head, router} from '@inertiajs/react';
 import { Building2, Eye, Pencil, Plus, Search } from 'lucide-react';
 
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
@@ -56,10 +56,10 @@ export default function KantorIndex({ kantor, filters }: Props) {
                 icon={Building2}
             >
                 <Button asChild className="bg-brand-600 hover:bg-brand-500">
-                    <a href={route('superadmin.kantor.create')}>
+                    <Link href={route('superadmin.kantor.create')}>
                         <Plus />
                         Tambah Kantor
-                    </a>
+                    </Link>
                 </Button>
             </PageHeader>
 
@@ -146,14 +146,14 @@ export default function KantorIndex({ kantor, filters }: Props) {
                                     <TableCell>
                                         <div className="flex items-center justify-end gap-1">
                                             <Button variant="ghost" size="icon" className="size-8" asChild>
-                                                <a href={route('superadmin.kantor.show', item.id)} aria-label={`Lihat ${item.nama_kantor}`}>
+                                                <Link href={route('superadmin.kantor.show', item.id)} aria-label={`Lihat ${item.nama_kantor}`}>
                                                     <Eye className="size-4" />
-                                                </a>
+                                                </Link>
                                             </Button>
                                             <Button variant="ghost" size="icon" className="size-8" asChild>
-                                                <a href={route('superadmin.kantor.edit', item.id)} aria-label={`Edit ${item.nama_kantor}`}>
+                                                <Link href={route('superadmin.kantor.edit', item.id)} aria-label={`Edit ${item.nama_kantor}`}>
                                                     <Pencil className="size-4" />
-                                                </a>
+                                                </Link>
                                             </Button>
                                             <ConfirmDelete
                                                 routeName="superadmin.kantor.destroy"

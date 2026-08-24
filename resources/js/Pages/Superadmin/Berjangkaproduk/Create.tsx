@@ -1,4 +1,4 @@
-import { Head, useForm } from '@inertiajs/react';
+import { Link, Head, useForm} from '@inertiajs/react';
 import { LoaderCircle, Package } from 'lucide-react';
 
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
@@ -265,7 +265,7 @@ export default function ProdukForm({ accountOptions }: Props) {
 
                 <div className="mt-5 flex items-center justify-end gap-3">
                     <Button variant="outline" asChild>
-                        <a href={route('superadmin.simpanan-berjangka.produk')}>Kembali</a>
+                        <Link href={route('superadmin.simpanan-berjangka.produk')}>Kembali</Link>
                     </Button>
                     <Button
                         type="submit"

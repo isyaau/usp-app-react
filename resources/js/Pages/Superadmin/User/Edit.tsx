@@ -1,4 +1,4 @@
-import { useForm, Head } from '@inertiajs/react';
+import { Link, useForm, Head} from '@inertiajs/react';
 import { LoaderCircle, Pencil, ShieldCheck } from 'lucide-react';
 
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
@@ -180,7 +180,7 @@ export default function UserEdit({ userData }: Props) {
 
                 <div className="mt-5 flex items-center justify-end gap-3">
                     <Button variant="outline" asChild>
-                        <a href={route('superadmin.user')}>Kembali</a>
+                        <Link href={route('superadmin.user')}>Kembali</Link>
                     </Button>
                     <Button
                         type="submit"

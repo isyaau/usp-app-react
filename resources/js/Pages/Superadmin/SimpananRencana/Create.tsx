@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Head, useForm } from '@inertiajs/react';
+import { Link, Head, useForm} from '@inertiajs/react';
 import { CalendarClock, LoaderCircle, Plus, Trash2 } from 'lucide-react';
 
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
@@ -362,7 +362,7 @@ export default function SimpananRencanaCreate({
 
                 <div className="mt-5 flex items-center justify-end gap-3">
                     <Button variant="outline" asChild>
-                        <a href={route('superadmin.simpanan.rencana')}>Kembali</a>
+                        <Link href={route('superadmin.simpanan.rencana')}>Kembali</Link>
                     </Button>
                     <Button
                         type="submit"

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Head, router, useForm } from '@inertiajs/react';
+import { Link, Head, router, useForm} from '@inertiajs/react';
 import {
     Bookmark,
     Eye,
@@ -91,10 +91,10 @@ export default function AccHeaderIndex({ headers, filters }: Props) {
                     Kelola Grup
                 </Button>
                 <Button asChild className="bg-brand-600 hover:bg-brand-500">
-                    <a href={route('superadmin.account-header.create')}>
+                    <Link href={route('superadmin.account-header.create')}>
                         <Plus />
                         Tambah Header
-                    </a>
+                    </Link>
                 </Button>
             </PageHeader>
 
@@ -222,14 +222,14 @@ export default function AccHeaderIndex({ headers, filters }: Props) {
                                     <TableCell>
                                         <div className="flex items-center justify-end gap-1">
                                             <Button variant="ghost" size="icon" className="size-8" asChild>
-                                                <a href={route('superadmin.account-header.show', item.id)} aria-label={`Lihat ${item.nama}`}>
+                                                <Link href={route('superadmin.account-header.show', item.id)} aria-label={`Lihat ${item.nama}`}>
                                                     <Eye className="size-4" />
-                                                </a>
+                                                </Link>
                                             </Button>
                                             <Button variant="ghost" size="icon" className="size-8" asChild>
-                                                <a href={route('superadmin.account-header.edit', item.id)} aria-label={`Edit ${item.nama}`}>
+                                                <Link href={route('superadmin.account-header.edit', item.id)} aria-label={`Edit ${item.nama}`}>
                                                     <Pencil className="size-4" />
-                                                </a>
+                                                </Link>
                                             </Button>
                                             <ConfirmDelete
                                                 routeName="superadmin.account-header.destroy"

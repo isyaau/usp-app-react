@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Head, router } from '@inertiajs/react';
+import { Link, Head, router} from '@inertiajs/react';
 import { CalendarClock, Eye, Pencil, Plus, Search } from 'lucide-react';
 
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
@@ -57,10 +57,10 @@ export default function BerjangkaIndex({ berjangka, filters }: Props) {
                 icon={CalendarClock}
             >
                 <Button asChild className="bg-brand-600 hover:bg-brand-500">
-                    <a href={route('superadmin.simpanan-berjangka.create')}>
+                    <Link href={route('superadmin.simpanan-berjangka.create')}>
                         <Plus />
                         Tambah Deposito
-                    </a>
+                    </Link>
                 </Button>
             </PageHeader>
 
@@ -155,20 +155,18 @@ export default function BerjangkaIndex({ berjangka, filters }: Props) {
                                     <TableCell>
                                         <div className="flex items-center justify-end gap-1">
                                             <Button variant="ghost" size="icon" className="size-8" asChild>
-                                                <a
-                                                    href={route('superadmin.simpanan-berjangka.show', item.id)}
+                                                <Link href={route('superadmin.simpanan-berjangka.show', item.id)}
                                                     aria-label={`Lihat ${item.no_deposito}`}
                                                 >
                                                     <Eye className="size-4" />
-                                                </a>
+                                                </Link>
                                             </Button>
                                             <Button variant="ghost" size="icon" className="size-8" asChild>
-                                                <a
-                                                    href={route('superadmin.simpanan-berjangka.edit', item.id)}
+                                                <Link href={route('superadmin.simpanan-berjangka.edit', item.id)}
                                                     aria-label={`Edit ${item.no_deposito}`}
                                                 >
                                                     <Pencil className="size-4" />
-                                                </a>
+                                                </Link>
                                             </Button>
                                             <ConfirmDelete
                                                 routeName="superadmin.simpanan-berjangka.destroy"

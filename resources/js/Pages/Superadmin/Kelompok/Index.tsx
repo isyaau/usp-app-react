@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Head, router } from '@inertiajs/react';
+import { Link, Head, router} from '@inertiajs/react';
 import { Eye, Pencil, Plus, Search, Users } from 'lucide-react';
 
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
@@ -56,10 +56,10 @@ export default function KelompokIndex({ kelompok, filters }: Props) {
                 icon={Users}
             >
                 <Button asChild className="bg-brand-600 hover:bg-brand-500">
-                    <a href={route('superadmin.kelompok.create')}>
+                    <Link href={route('superadmin.kelompok.create')}>
                         <Plus />
                         Tambah Kelompok
-                    </a>
+                    </Link>
                 </Button>
             </PageHeader>
 
@@ -133,14 +133,14 @@ export default function KelompokIndex({ kelompok, filters }: Props) {
                                     <TableCell>
                                         <div className="flex items-center justify-end gap-1">
                                             <Button variant="ghost" size="icon" className="size-8" asChild>
-                                                <a href={route('superadmin.kelompok.show', item.id)} aria-label={`Lihat ${item.nama}`}>
+                                                <Link href={route('superadmin.kelompok.show', item.id)} aria-label={`Lihat ${item.nama}`}>
                                                     <Eye className="size-4" />
-                                                </a>
+                                                </Link>
                                             </Button>
                                             <Button variant="ghost" size="icon" className="size-8" asChild>
-                                                <a href={route('superadmin.kelompok.edit', item.id)} aria-label={`Edit ${item.nama}`}>
+                                                <Link href={route('superadmin.kelompok.edit', item.id)} aria-label={`Edit ${item.nama}`}>
                                                     <Pencil className="size-4" />
-                                                </a>
+                                                </Link>
                                             </Button>
                                             <ConfirmDelete
                                                 routeName="superadmin.kelompok.destroy"

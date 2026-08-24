@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Head, router } from '@inertiajs/react';
+import { Link, Head, router} from '@inertiajs/react';
 import { Eye, Pencil, Plus, Search, Wallet } from 'lucide-react';
 
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
@@ -57,10 +57,10 @@ export default function SimpananIndex({ simpanan, filters }: Props) {
                 icon={Wallet}
             >
                 <Button asChild className="bg-brand-600 hover:bg-brand-500">
-                    <a href={route('superadmin.simpanan.create')}>
+                    <Link href={route('superadmin.simpanan.create')}>
                         <Plus />
                         Tambah Simpanan
-                    </a>
+                    </Link>
                 </Button>
             </PageHeader>
 
@@ -169,20 +169,18 @@ export default function SimpananIndex({ simpanan, filters }: Props) {
                                     <TableCell>
                                         <div className="flex items-center justify-end gap-1">
                                             <Button variant="ghost" size="icon" className="size-8" asChild>
-                                                <a
-                                                    href={route('superadmin.simpanan.show', item.id)}
+                                                <Link href={route('superadmin.simpanan.show', item.id)}
                                                     aria-label={`Lihat ${item.no_rekening}`}
                                                 >
                                                     <Eye className="size-4" />
-                                                </a>
+                                                </Link>
                                             </Button>
                                             <Button variant="ghost" size="icon" className="size-8" asChild>
-                                                <a
-                                                    href={route('superadmin.simpanan.edit', item.id)}
+                                                <Link href={route('superadmin.simpanan.edit', item.id)}
                                                     aria-label={`Edit ${item.no_rekening}`}
                                                 >
                                                     <Pencil className="size-4" />
-                                                </a>
+                                                </Link>
                                             </Button>
                                             <ConfirmDelete
                                                 routeName="superadmin.simpanan.destroy"

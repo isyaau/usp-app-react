@@ -1,4 +1,4 @@
-import { useForm, Head } from '@inertiajs/react';
+import { Link, useForm, Head} from '@inertiajs/react';
 import { LoaderCircle, Pencil } from 'lucide-react';
 
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
@@ -171,7 +171,7 @@ export default function KantorEdit({ kantorData }: Props) {
 
                 <div className="mt-5 flex items-center justify-end gap-3">
                     <Button variant="outline" asChild>
-                        <a href={route('superadmin.kantor')}>Kembali</a>
+                        <Link href={route('superadmin.kantor')}>Kembali</Link>
                     </Button>
                     <Button
                         type="submit"

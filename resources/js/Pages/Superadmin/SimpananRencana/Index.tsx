@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Head, router } from '@inertiajs/react';
+import { Link, Head, router} from '@inertiajs/react';
 import { CalendarClock, Plus, Search } from 'lucide-react';
 
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
@@ -59,10 +59,10 @@ export default function SimpananRencanaIndex({ rencana, filters }: Props) {
                 icon={CalendarClock}
             >
                 <Button asChild className="bg-brand-600 hover:bg-brand-500">
-                    <a href={route('superadmin.simpanan.rencana.create')}>
+                    <Link href={route('superadmin.simpanan.rencana.create')}>
                         <Plus />
                         Tambah Rencana
-                    </a>
+                    </Link>
                 </Button>
             </PageHeader>
 

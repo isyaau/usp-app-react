@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useForm, Head } from '@inertiajs/react';
+import { Link, useForm, Head} from '@inertiajs/react';
 import { Bookmark, LoaderCircle } from 'lucide-react';
 
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
@@ -232,7 +232,7 @@ export default function AccHeaderCreate({ groups }: Props) {
 
                 <div className="mt-5 flex items-center justify-end gap-3">
                     <Button variant="outline" asChild>
-                        <a href={route('superadmin.account-header')}>Kembali</a>
+                        <Link href={route('superadmin.account-header')}>Kembali</Link>
                     </Button>
                     <Button
                         type="submit"

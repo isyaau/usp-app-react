@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useForm, Head } from '@inertiajs/react';
+import { Link, useForm, Head} from '@inertiajs/react';
 import { LoaderCircle, Search, Users } from 'lucide-react';
 
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
@@ -191,7 +191,7 @@ export default function KelompokCreate({ initialKetua = null }: Props) {
 
                 <div className="mt-5 flex items-center justify-end gap-3">
                     <Button variant="outline" asChild>
-                        <a href={route('superadmin.kelompok')}>Kembali</a>
+                        <Link href={route('superadmin.kelompok')}>Kembali</Link>
                     </Button>
                     <Button
                         type="submit"

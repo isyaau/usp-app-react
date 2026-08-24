@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Head, router } from '@inertiajs/react';
+import { Link, Head, router} from '@inertiajs/react';
 import {
     Eye,
     Pencil,
@@ -70,10 +70,10 @@ export default function UserIndex({ users, filters }: Props) {
                 icon={ShieldCheck}
             >
                 <Button asChild className="bg-brand-600 hover:bg-brand-500">
-                    <a href={route('superadmin.user.create')}>
+                    <Link href={route('superadmin.user.create')}>
                         <Plus />
                         Tambah User
-                    </a>
+                    </Link>
                 </Button>
             </PageHeader>
 
@@ -150,20 +150,18 @@ export default function UserIndex({ users, filters }: Props) {
                                     <TableCell>
                                         <div className="flex items-center justify-end gap-1">
                                             <Button variant="ghost" size="icon" className="size-8" asChild>
-                                                <a
-                                                    href={route('superadmin.user.show', user.id)}
+                                                <Link href={route('superadmin.user.show', user.id)}
                                                     aria-label={`Lihat ${user.nama}`}
                                                 >
                                                     <Eye className="size-4" />
-                                                </a>
+                                                </Link>
                                             </Button>
                                             <Button variant="ghost" size="icon" className="size-8" asChild>
-                                                <a
-                                                    href={route('superadmin.user.edit', user.id)}
+                                                <Link href={route('superadmin.user.edit', user.id)}
                                                     aria-label={`Edit ${user.nama}`}
                                                 >
                                                     <Pencil className="size-4" />
-                                                </a>
+                                                </Link>
                                             </Button>
                                             <ConfirmDelete
                                                 routeName="superadmin.user.destroy"

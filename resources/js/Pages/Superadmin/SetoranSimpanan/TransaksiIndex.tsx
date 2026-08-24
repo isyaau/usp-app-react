@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Head, router } from '@inertiajs/react';
+import { Link, Head, router} from '@inertiajs/react';
 import { Eye, Pencil, Wallet } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -110,7 +110,7 @@ function TransaksiIndex({ transaksi, filters, config }: Props & { config: ModulC
                 icon={config.icon}
             >
                 <Button asChild className="bg-brand-600 hover:bg-brand-500">
-                    <a href={route(config.routeCreate)}>Tambah Transaksi</a>
+                    <Link href={route(config.routeCreate)}>Tambah Transaksi</Link>
                 </Button>
             </PageHeader>
 
@@ -250,14 +250,13 @@ function TransaksiIndex({ transaksi, filters, config }: Props & { config: ModulC
                                             asChild
                                             title="Detail"
                                         >
-                                            <a
-                                                href={route(
+                                            <Link href={route(
                                                     `${config.routeIndex}.show`,
                                                     item.id,
                                                 )}
                                             >
                                                 <Eye className="size-4" />
-                                            </a>
+                                            </Link>
                                         </Button>
                                         <Button
                                             variant="ghost"
@@ -265,14 +264,13 @@ function TransaksiIndex({ transaksi, filters, config }: Props & { config: ModulC
                                             asChild
                                             title="Edit"
                                         >
-                                            <a
-                                                href={route(
+                                            <Link href={route(
                                                     `${config.routeIndex}.edit`,
                                                     item.id,
                                                 )}
                                             >
                                                 <Pencil className="size-4" />
-                                            </a>
+                                            </Link>
                                         </Button>
                                         <ConfirmDelete
                                             routeName={`${config.routeIndex}.destroy`}

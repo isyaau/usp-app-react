@@ -1,4 +1,4 @@
-import { Head, useForm } from '@inertiajs/react';
+import { Link, Head, useForm} from '@inertiajs/react';
 import { LoaderCircle, Wallet } from 'lucide-react';
 
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
@@ -394,7 +394,7 @@ export default function SimpananEdit({
 
                 <div className="mt-5 flex items-center justify-end gap-3">
                     <Button variant="outline" asChild>
-                        <a href={route('superadmin.simpanan')}>Kembali</a>
+                        <Link href={route('superadmin.simpanan')}>Kembali</Link>
                     </Button>
                     <Button
                         type="submit"

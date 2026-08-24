@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Head, router } from '@inertiajs/react';
+import { Link, Head, router} from '@inertiajs/react';
 import { BookOpen, Eye, Pencil, Plus, Search } from 'lucide-react';
 
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
@@ -56,10 +56,10 @@ export default function AccountIndex({ accounts, filters }: Props) {
                 icon={BookOpen}
             >
                 <Button asChild className="bg-brand-600 hover:bg-brand-500">
-                    <a href={route('superadmin.account.create')}>
+                    <Link href={route('superadmin.account.create')}>
                         <Plus />
                         Tambah Account
-                    </a>
+                    </Link>
                 </Button>
             </PageHeader>
 
@@ -147,14 +147,14 @@ export default function AccountIndex({ accounts, filters }: Props) {
                                     <TableCell>
                                         <div className="flex items-center justify-end gap-1">
                                             <Button variant="ghost" size="icon" className="size-8" asChild>
-                                                <a href={route('superadmin.account.show', item.id)} aria-label={`Lihat ${item.nama}`}>
+                                                <Link href={route('superadmin.account.show', item.id)} aria-label={`Lihat ${item.nama}`}>
                                                     <Eye className="size-4" />
-                                                </a>
+                                                </Link>
                                             </Button>
                                             <Button variant="ghost" size="icon" className="size-8" asChild>
-                                                <a href={route('superadmin.account.edit', item.id)} aria-label={`Edit ${item.nama}`}>
+                                                <Link href={route('superadmin.account.edit', item.id)} aria-label={`Edit ${item.nama}`}>
                                                     <Pencil className="size-4" />
-                                                </a>
+                                                </Link>
                                             </Button>
                                             <ConfirmDelete
                                                 routeName="superadmin.account.destroy"

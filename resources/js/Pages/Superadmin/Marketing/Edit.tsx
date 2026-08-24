@@ -1,4 +1,4 @@
-import { useForm, Head } from '@inertiajs/react';
+import { Link, useForm, Head} from '@inertiajs/react';
 import { LoaderCircle, Pencil } from 'lucide-react';
 
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
@@ -194,7 +194,7 @@ export default function MarketingEdit({ marketingData, kantorOptions }: Props) {
 
                 <div className="mt-5 flex items-center justify-end gap-3">
                     <Button variant="outline" asChild>
-                        <a href={route('superadmin.marketing')}>Kembali</a>
+                        <Link href={route('superadmin.marketing')}>Kembali</Link>
                     </Button>
                     <Button
                         type="submit"
