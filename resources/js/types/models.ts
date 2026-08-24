@@ -301,3 +301,64 @@ export interface PemindahbukuanSimpananRow extends Omit<TransaksiSimpananRow, 's
     simpananDari?: { id: number; no_rekening: string } | null;
     simpananKe?: { id: number; no_rekening: string } | null;
 }
+
+/* ===================== Data Simpanan (rekening simpanan) ===================== */
+
+/** Opsi produk simpanan untuk dropdown form rekening. */
+export interface SimpananJenisOption {
+    id: number;
+    kode: string | null;
+    nama: string | null;
+    bunga: string | null;
+}
+
+/** Baris daftar rekening simpanan. */
+export interface SimpananRow {
+    id: number;
+    tanggal: string | null;
+    no_rekening: string;
+    anggota?: { id: number; no_anggota: string; nama: string } | null;
+    jenis_simpanan?: { id: number; kode: string | null; nama: string | null } | null;
+    marketing?: { id: number; nama: string } | null;
+    kantor?: { id: number; nama_kantor: string } | null;
+    nominal_setor: string | null;
+    bunga: string | null;
+    aktif: string | null;
+    sms: string | null;
+}
+
+/** Detail rekening simpanan untuk halaman show/edit. */
+export interface SimpananDetail extends SimpananRow {
+    qq: string | null;
+    baris: string | null;
+    ttd: string | null;
+    blokir_simpanan: string | null;
+    blokir_nominal: string | null;
+    nominal_blokir: string | null;
+    blokir_tgl: string | null;
+    tgl_blokir: string | null;
+    kantor_id: number | null;
+    anggota_id: number;
+    jenis_id: number;
+    marketing_id: number;
+}
+
+/** Nilai form rekening simpanan. */
+export interface SimpananFormValues {
+    tanggal: string;
+    no_rekening: string;
+    anggota_id: string;
+    jenis_id: string;
+    marketing_id: string;
+    qq: string;
+    bunga: string;
+    nominal_setor: string;
+    aktif: boolean;
+    sms: boolean;
+    blokir_simpanan: boolean;
+    blokir_nominal: boolean;
+    nominal_blokir: string;
+    blokir_tgl: boolean;
+    tgl_blokir: string;
+    kantor_id: string;
+}

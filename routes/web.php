@@ -17,6 +17,7 @@ use App\Http\Controllers\Superadmin\SetoranSimpananController;
 use App\Http\Controllers\Superadmin\TarikanSimpananController;
 use App\Http\Controllers\Superadmin\BerjangkaprodukController;
 use App\Http\Controllers\Superadmin\BerjangkaController;
+use App\Http\Controllers\Superadmin\SimpananController;
 use App\Http\Controllers\Superadmin\PinjamanProdukController;
 use App\Http\Controllers\Superadmin\SimpananProdukController;
 use App\Http\Controllers\Superadmin\UserController;
@@ -130,10 +131,7 @@ use App\Livewire\Superadmin\Marketing\Edit as MarketingEdit;
 use App\Livewire\Superadmin\Marketing\Show as MarketingShow;
 
 // SIMPANAN
-use App\Livewire\Superadmin\Simpanan\Index as SimpananIndex;
-use App\Livewire\Superadmin\Simpanan\Create as SimpananCreate;
-use App\Livewire\Superadmin\Simpanan\Edit as SimpananEdit;
-use App\Livewire\Superadmin\Simpanan\Show as SimpananShow;
+// Data Simpanan sudah dimigrasikan ke Inertia (SimpananController).
 
 // SIMPANAN RENCANA
 use App\Livewire\Superadmin\Simpananrencana\Index as SimpananrencanaIndex;
@@ -473,12 +471,14 @@ Route::prefix('superadmin')->name('superadmin.')->middleware(['auth', 'role:supe
     Route::get('export-simpanan-rencana', [SimpananrencanaIndex::class, 'export']);
 
     // Simpanan
-    Route::get('/simpanan', SimpananIndex::class)->name('simpanan');
-    Route::get('/simpanan/create', SimpananCreate::class)->name('simpanan.create');
-    Route::get('/simpanan/export', SimpananIndex::class)->name('simpanan.export-pdf');
-    Route::get('/simpanan/{id}/edit', SimpananEdit::class)->name('simpanan.edit');
-    Route::get('/simpanan/{id}', SimpananShow::class)->name('simpanan.show');
-    Route::get('export-simpanan', [SimpananIndex::class, 'export']);
+    // Data Simpanan (Inertia + React)
+    Route::get('/simpanan', [SimpananController::class, 'index'])->name('simpanan');
+    Route::get('/simpanan/create', [SimpananController::class, 'create'])->name('simpanan.create');
+    Route::post('/simpanan', [SimpananController::class, 'store'])->name('simpanan.store');
+    Route::get('/simpanan/{simpanan}/edit', [SimpananController::class, 'edit'])->name('simpanan.edit');
+    Route::put('/simpanan/{simpanan}', [SimpananController::class, 'update'])->name('simpanan.update');
+    Route::delete('/simpanan/{simpanan}', [SimpananController::class, 'destroy'])->name('simpanan.destroy');
+    Route::get('/simpanan/{simpanan}', [SimpananController::class, 'show'])->name('simpanan.show');
 
 
     // Berjangka
