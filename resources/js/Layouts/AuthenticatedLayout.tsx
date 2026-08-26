@@ -124,6 +124,15 @@ const MENU: MenuItem[] = [
         ],
     },
     {
+        label: 'Transaksi Simpanan Berjangka',
+        icon: CalendarClock,
+        children: [
+            { label: 'Setoran Berjangka', route: 'superadmin.transaksi-simpanan-berjangka.setoran-simpanan-berjangka' },
+            { label: 'Pencairan Berjangka', route: 'superadmin.transaksi-simpanan-berjangka.pencairan-simpanan-berjangka' },
+            { label: 'Penalti Berjangka', route: 'superadmin.transaksi-simpanan-berjangka.penalti-simpanan-berjangka' },
+        ],
+    },
+    {
         label: 'Transaksi Pinjaman',
         icon: HandCoins,
         children: [

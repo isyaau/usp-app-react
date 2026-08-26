@@ -28,6 +28,7 @@ use App\Http\Controllers\Superadmin\UserController;
 use App\Http\Controllers\Superadmin\AngsuranPinjamanController;
 use App\Http\Controllers\Superadmin\PenaltiPinjamanController;
 use App\Http\Controllers\Superadmin\AngsuranKolektifController;
+use App\Http\Controllers\Superadmin\TransaksiSimpananBerjangkaController;
 
 // Route Livewire lama modul Anggota dihapus — sudah dimigrasikan ke Inertia.
 use App\Http\Controllers\WilayahController;
@@ -275,6 +276,28 @@ Route::prefix('superadmin')->name('superadmin.')->middleware(['auth', 'role:supe
     Route::get('/transaksi-pinjaman/angsuran-kolektif/{angsuranKolektif}/edit', [AngsuranKolektifController::class, 'edit'])->name('transaksi-pinjaman.angsuran-kolektif.edit');
     Route::put('/transaksi-pinjaman/angsuran-kolektif/{angsuranKolektif}', [AngsuranKolektifController::class, 'update'])->name('transaksi-pinjaman.angsuran-kolektif.update');
     Route::delete('/transaksi-pinjaman/angsuran-kolektif/{angsuranKolektif}', [AngsuranKolektifController::class, 'destroy'])->name('transaksi-pinjaman.angsuran-kolektif.destroy');
+
+    // Transaksi Simpanan Berjangka — JSON helpers
+    Route::get('/transaksi-simpanan-berjangka/deposito-by-anggota/{anggota}', [TransaksiSimpananBerjangkaController::class, 'depositoByAnggota'])
+        ->name('transaksi-simpanan-berjangka.deposito-by-anggota');
+
+    // Variant routes for Transaksi Simpanan Berjangka
+    $berjangkaVariants = [
+        'setoran-simpanan-berjangka',
+        'pencairan-simpanan-berjangka',
+        'penalti-simpanan-berjangka',
+    ];
+    $berjangkaMethods = ['index', 'create', 'store', 'show', 'edit', 'update', 'destroy'];
+    foreach ($berjangkaVariants as $variant) {
+        $param = 'transaksiBerjangka';
+        Route::get("/transaksi-simpanan-berjangka/{$variant}", [TransaksiSimpananBerjangkaController::class, 'index'])->name("transaksi-simpanan-berjangka.{$variant}");
+        Route::get("/transaksi-simpanan-berjangka/{$variant}/create", [TransaksiSimpananBerjangkaController::class, 'create'])->name("transaksi-simpanan-berjangka.{$variant}.create");
+        Route::post("/transaksi-simpanan-berjangka/{$variant}", [TransaksiSimpananBerjangkaController::class, 'store'])->name("transaksi-simpanan-berjangka.{$variant}.store");
+        Route::get("/transaksi-simpanan-berjangka/{$variant}/{{$param}}", [TransaksiSimpananBerjangkaController::class, 'show'])->name("transaksi-simpanan-berjangka.{$variant}.show");
+        Route::get("/transaksi-simpanan-berjangka/{$variant}/{{$param}}/edit", [TransaksiSimpananBerjangkaController::class, 'edit'])->name("transaksi-simpanan-berjangka.{$variant}.edit");
+        Route::put("/transaksi-simpanan-berjangka/{$variant}/{{$param}}", [TransaksiSimpananBerjangkaController::class, 'update'])->name("transaksi-simpanan-berjangka.{$variant}.update");
+        Route::delete("/transaksi-simpanan-berjangka/{$variant}/{{$param}}", [TransaksiSimpananBerjangkaController::class, 'destroy'])->name("transaksi-simpanan-berjangka.{$variant}.destroy");
+    }
 
     // Variant routes for Angsuran Kolektif — reuse same controller
     $kolektifVariants = [
