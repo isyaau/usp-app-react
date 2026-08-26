@@ -1,22 +1,22 @@
-<?php
+﻿<?php
 
-namespace Database\Seeders;
+namespace Database\\Seeders;
 
-use App\Models\JaminanDetail;
-use App\Models\User;
-use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
+use App\\Models\\JaminanDetail;
+use App\\Models\\User;
+use Illuminate\\Database\\Seeder;
+use Illuminate\\Support\\Facades\\Hash;
 
 class DatabaseSeeder extends Seeder
 {
-    protected static ?string $password;
+    protected static ?string \;
 
     /**
      * Seed the application's database.
      */
     public function run(): void
     {
-        $this->call([
+        \->call([
             UserSeeder::class,
             AccGroupSeeder::class,
             AccHeaderSeeder::class,
@@ -35,5 +35,6 @@ class DatabaseSeeder extends Seeder
             KasHarianSeeder::class,
             PencairanPinjamanSeeder::class,
         ]);
+    
     }
 }

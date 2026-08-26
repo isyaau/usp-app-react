@@ -1,4 +1,4 @@
-/* ============================================================
+﻿/* ============================================================
    Tipe entitas modul Master Data (C2)
    ============================================================ */
 
@@ -451,4 +451,65 @@ export interface PinjamanFormValues {
     bunga: string;
     jangka_waktu: string;
     satuan: string;
+}
+
+/* ===================== Pencairan Pinjaman ===================== */
+
+/** Opsi pinjaman ringkas untuk dropdown pencairan. */
+export interface PinjamanOptionLite {
+    id: number;
+    no_pinjaman: string;
+    plafon: string;
+    anggota?: { id: number; no_anggota: string; nama: string } | null;
+    jenisPinjaman?: { id: number; nama: string } | null;
+}
+
+/** Baris daftar pencairan pinjaman. */
+export interface PencairanPinjamanRow {
+    id: number;
+    pinjaman_id: number;
+    tanggal_cair: string;
+    nominal_cair: string;
+    metode_cair: 'transfer' | 'tunai' | 'cek' | 'giro';
+    no_rekening: string | null;
+    nama_rekening: string | null;
+    bank_id: string | null;
+    biaya_admin: string;
+    potongan_simpanan: string;
+    keterangan: string | null;
+    status: 'pending' | 'disetujui' | 'ditolak' | 'dicairkan';
+    approved_by: number | null;
+    approved_at: string | null;
+    cair_oleh: number | null;
+    cair_at: string | null;
+    created_by: number | null;
+    kantor_id: number | null;
+    created_at: string;
+    updated_at: string;
+    pinjaman?: {
+        id: number;
+        no_pinjaman: string;
+        plafon: string;
+        anggota?: { id: number; no_anggota: string; nama: string } | null;
+        jenisPinjaman?: { id: number; nama: string } | null;
+    } | null;
+    approvedBy?: { id: number; name: string } | null;
+    cairOleh?: { id: number; name: string } | null;
+    createdBy?: { id: number; name: string } | null;
+    kantor?: { id: number; nama_kantor: string } | null;
+}
+
+/** Nilai form pencairan pinjaman. */
+export interface PencairanPinjamanFormValues {
+    pinjaman_id: string;
+    tanggal_cair: string;
+    nominal_cair: string;
+    metode_cair: 'transfer' | 'tunai' | 'cek' | 'giro';
+    no_rekening: string;
+    nama_rekening: string;
+    bank_id: string;
+    biaya_admin: string;
+    potongan_simpanan: string;
+    keterangan: string;
+    status: 'pending' | 'disetujui' | 'ditolak' | 'dicairkan';
 }

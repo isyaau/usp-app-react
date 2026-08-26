@@ -20,10 +20,14 @@ use App\Http\Controllers\Superadmin\BerjangkaprodukController;
 use App\Http\Controllers\Superadmin\BerjangkaController;
 use App\Http\Controllers\Superadmin\SimpananController;
 use App\Http\Controllers\Superadmin\SimpananRencanaController;
+use App\Http\Controllers\Superadmin\PencairanPinjamanController;
 use App\Http\Controllers\Superadmin\PinjamanController;
 use App\Http\Controllers\Superadmin\PinjamanProdukController;
 use App\Http\Controllers\Superadmin\SimpananProdukController;
 use App\Http\Controllers\Superadmin\UserController;
+use App\Http\Controllers\Superadmin\AngsuranPinjamanController;
+use App\Http\Controllers\Superadmin\PenaltiPinjamanController;
+use App\Http\Controllers\Superadmin\AngsuranKolektifController;
 
 // Route Livewire lama modul Anggota dihapus — sudah dimigrasikan ke Inertia.
 use App\Http\Controllers\WilayahController;
@@ -227,6 +231,70 @@ Route::prefix('superadmin')->name('superadmin.')->middleware(['auth', 'role:supe
     Route::post('/pinjaman/pinjaman', [PinjamanController::class, 'store'])->name('pinjaman.pinjaman.store');
     Route::delete('/pinjaman/pinjaman/{pinjaman}', [PinjamanController::class, 'destroy'])->name('pinjaman.pinjaman.destroy');
 
+    // Pencairan Pinjaman (Inertia + React)
+    Route::get('/pencairan-pinjaman', [PencairanPinjamanController::class, 'index'])->name('pencairan-pinjaman');
+    Route::get('/pencairan-pinjaman/create', [PencairanPinjamanController::class, 'create'])->name('pencairan-pinjaman.create');
+    Route::post('/pencairan-pinjaman', [PencairanPinjamanController::class, 'store'])->name('pencairan-pinjaman.store');
+    Route::get('/pencairan-pinjaman/{pencairan}', [PencairanPinjamanController::class, 'show'])->name('pencairan-pinjaman.show');
+    Route::get('/pencairan-pinjaman/{pencairan}/edit', [PencairanPinjamanController::class, 'edit'])->name('pencairan-pinjaman.edit');
+    Route::put('/pencairan-pinjaman/{pencairan}', [PencairanPinjamanController::class, 'update'])->name('pencairan-pinjaman.update');
+    Route::delete('/pencairan-pinjaman/{pencairan}', [PencairanPinjamanController::class, 'destroy'])->name('pencairan-pinjaman.destroy');
+    Route::post('/pencairan-pinjaman/{pencairan}/approve', [PencairanPinjamanController::class, 'approve'])->name('pencairan-pinjaman.approve');
+    Route::post('/pencairan-pinjaman/{pencairan}/reject', [PencairanPinjamanController::class, 'reject'])->name('pencairan-pinjaman.reject');
+    Route::post('/pencairan-pinjaman/{pencairan}/cairkan', [PencairanPinjamanController::class, 'cairkan'])->name('pencairan-pinjaman.cairkan');
+
+    // Transaksi Pinjaman — JSON helpers
+    Route::get('/transaksi-pinjaman/pinjaman-by-anggota/{anggota}', [AngsuranPinjamanController::class, 'pinjamanByAnggota'])
+        ->name('transaksi-pinjaman.pinjaman-by-anggota');
+    Route::get('/transaksi-pinjaman/pinjaman-by-kelompok/{kelompok}', [AngsuranKolektifController::class, 'pinjamanByKelompok'])
+        ->name('transaksi-pinjaman.pinjaman-by-kelompok');
+
+    // Angsuran Pinjaman (Inertia + React)
+    Route::get('/transaksi-pinjaman/angsuran-pinjaman', [AngsuranPinjamanController::class, 'index'])->name('transaksi-pinjaman.angsuran-pinjaman');
+    Route::get('/transaksi-pinjaman/angsuran-pinjaman/create', [AngsuranPinjamanController::class, 'create'])->name('transaksi-pinjaman.angsuran-pinjaman.create');
+    Route::post('/transaksi-pinjaman/angsuran-pinjaman', [AngsuranPinjamanController::class, 'store'])->name('transaksi-pinjaman.angsuran-pinjaman.store');
+    Route::get('/transaksi-pinjaman/angsuran-pinjaman/{angsuranPinjaman}', [AngsuranPinjamanController::class, 'show'])->name('transaksi-pinjaman.angsuran-pinjaman.show');
+    Route::get('/transaksi-pinjaman/angsuran-pinjaman/{angsuranPinjaman}/edit', [AngsuranPinjamanController::class, 'edit'])->name('transaksi-pinjaman.angsuran-pinjaman.edit');
+    Route::put('/transaksi-pinjaman/angsuran-pinjaman/{angsuranPinjaman}', [AngsuranPinjamanController::class, 'update'])->name('transaksi-pinjaman.angsuran-pinjaman.update');
+    Route::delete('/transaksi-pinjaman/angsuran-pinjaman/{angsuranPinjaman}', [AngsuranPinjamanController::class, 'destroy'])->name('transaksi-pinjaman.angsuran-pinjaman.destroy');
+
+    // Penalti Pinjaman (Inertia + React)
+    Route::get('/transaksi-pinjaman/penalti-pinjaman', [PenaltiPinjamanController::class, 'index'])->name('transaksi-pinjaman.penalti-pinjaman');
+    Route::get('/transaksi-pinjaman/penalti-pinjaman/create', [PenaltiPinjamanController::class, 'create'])->name('transaksi-pinjaman.penalti-pinjaman.create');
+    Route::post('/transaksi-pinjaman/penalti-pinjaman', [PenaltiPinjamanController::class, 'store'])->name('transaksi-pinjaman.penalti-pinjaman.store');
+    Route::get('/transaksi-pinjaman/penalti-pinjaman/{penaltiPinjaman}', [PenaltiPinjamanController::class, 'show'])->name('transaksi-pinjaman.penalti-pinjaman.show');
+    Route::get('/transaksi-pinjaman/penalti-pinjaman/{penaltiPinjaman}/edit', [PenaltiPinjamanController::class, 'edit'])->name('transaksi-pinjaman.penalti-pinjaman.edit');
+    Route::put('/transaksi-pinjaman/penalti-pinjaman/{penaltiPinjaman}', [PenaltiPinjamanController::class, 'update'])->name('transaksi-pinjaman.penalti-pinjaman.update');
+    Route::delete('/transaksi-pinjaman/penalti-pinjaman/{penaltiPinjaman}', [PenaltiPinjamanController::class, 'destroy'])->name('transaksi-pinjaman.penalti-pinjaman.destroy');
+
+    // Angsuran Kolektif (Inertia + React) — shared for all kolektif variants
+    Route::get('/transaksi-pinjaman/angsuran-kolektif', [AngsuranKolektifController::class, 'index'])->name('transaksi-pinjaman.angsuran-kolektif');
+    Route::get('/transaksi-pinjaman/angsuran-kolektif/create', [AngsuranKolektifController::class, 'create'])->name('transaksi-pinjaman.angsuran-kolektif.create');
+    Route::post('/transaksi-pinjaman/angsuran-kolektif', [AngsuranKolektifController::class, 'store'])->name('transaksi-pinjaman.angsuran-kolektif.store');
+    Route::get('/transaksi-pinjaman/angsuran-kolektif/{angsuranKolektif}', [AngsuranKolektifController::class, 'show'])->name('transaksi-pinjaman.angsuran-kolektif.show');
+    Route::get('/transaksi-pinjaman/angsuran-kolektif/{angsuranKolektif}/edit', [AngsuranKolektifController::class, 'edit'])->name('transaksi-pinjaman.angsuran-kolektif.edit');
+    Route::put('/transaksi-pinjaman/angsuran-kolektif/{angsuranKolektif}', [AngsuranKolektifController::class, 'update'])->name('transaksi-pinjaman.angsuran-kolektif.update');
+    Route::delete('/transaksi-pinjaman/angsuran-kolektif/{angsuranKolektif}', [AngsuranKolektifController::class, 'destroy'])->name('transaksi-pinjaman.angsuran-kolektif.destroy');
+
+    // Variant routes for Angsuran Kolektif — reuse same controller
+    $kolektifVariants = [
+        ['slug' => 'penalti-kolektif-tunai', 'path' => 'penalti-kolektif-tunai'],
+        ['slug' => 'setoran-angsuran-bank', 'path' => 'setoran-angsuran-bank'],
+        ['slug' => 'setoran-angsuran-custom', 'path' => 'setoran-angsuran-custom'],
+        ['slug' => 'angsuran-kolektif-tunai', 'path' => 'angsuran-kolektif-tunai'],
+        ['slug' => 'angsuran-kolektif-debet-simpanan', 'path' => 'angsuran-kolektif-debet-simpanan'],
+    ];
+
+    foreach ($kolektifVariants as $kv) {
+        $prefix = "transaksi-pinjaman.{$kv['slug']}";
+        Route::get("/transaksi-pinjaman/{$kv['path']}", [AngsuranKolektifController::class, 'index'])->name($prefix);
+        Route::get("/transaksi-pinjaman/{$kv['path']}/create", [AngsuranKolektifController::class, 'create'])->name("{$prefix}.create");
+        Route::post("/transaksi-pinjaman/{$kv['path']}", [AngsuranKolektifController::class, 'store'])->name("{$prefix}.store");
+        Route::get("/transaksi-pinjaman/{$kv['path']}/{angsuranKolektif}", [AngsuranKolektifController::class, 'show'])->name("{$prefix}.show");
+        Route::get("/transaksi-pinjaman/{$kv['path']}/{angsuranKolektif}/edit", [AngsuranKolektifController::class, 'edit'])->name("{$prefix}.edit");
+        Route::put("/transaksi-pinjaman/{$kv['path']}/{angsuranKolektif}", [AngsuranKolektifController::class, 'update'])->name("{$prefix}.update");
+        Route::delete("/transaksi-pinjaman/{$kv['path']}/{angsuranKolektif}", [AngsuranKolektifController::class, 'destroy'])->name("{$prefix}.destroy");
+    }
 
     // Simpanan
     // Kode Transaksi

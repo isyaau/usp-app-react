@@ -16,6 +16,7 @@
         "laravel/framework": "^13.0",
         "laravel/tinker": "^3.0",
         "laravolt/indonesia": "^0.41",
+        "livewire/livewire": "*",
         "maatwebsite/excel": "^3.1",
         "tightenco/ziggy": "*"
     },

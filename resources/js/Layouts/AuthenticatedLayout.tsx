@@ -85,6 +85,7 @@ const MENU: MenuItem[] = [
             { label: 'Produk Pinjaman', route: 'superadmin.pinjaman.produk' },
             { label: 'Jaminan', route: 'superadmin.pinjaman.jaminan' },
             { label: 'Pinjaman', route: 'superadmin.pinjaman.pinjaman' },
+            { label: 'Pencairan Pinjaman', route: 'superadmin.pencairan-pinjaman' },
         ],
     },
     {
@@ -120,7 +121,20 @@ const MENU: MenuItem[] = [
             { label: 'Setoran Simpanan', route: 'superadmin.transaksi-simpanan.setoran-simpanan' },
             { label: 'Tarikan Simpanan', route: 'superadmin.transaksi-simpanan.tarikan-simpanan' },
             { label: 'Pemindahbukuan', route: 'superadmin.transaksi-simpanan.pemindahbukuan-simpanan' },
-            { label: 'Penutupan Simpanan', route: 'superadmin.transaksi-simpanan.penutupan-simpanan' },
+        ],
+    },
+    {
+        label: 'Transaksi Pinjaman',
+        icon: HandCoins,
+        children: [
+            { label: 'Pencairan Pinjaman', route: 'superadmin.pencairan-pinjaman' },
+            { label: 'Penalti Pinjaman', route: 'superadmin.transaksi-pinjaman.penalti-pinjaman' },
+            { label: 'Penalti Kolektif Tunai', route: 'superadmin.transaksi-pinjaman.penalti-kolektif-tunai' },
+            { label: 'Angsuran Pinjaman', route: 'superadmin.transaksi-pinjaman.angsuran-pinjaman' },
+            { label: 'Angsuran Kolektif Debet Simpanan', route: 'superadmin.transaksi-pinjaman.angsuran-kolektif-debet-simpanan' },
+            { label: 'Angsuran Kolektif Tunai', route: 'superadmin.transaksi-pinjaman.angsuran-kolektif-tunai' },
+            { label: 'Setoran & Angsuran Bank', route: 'superadmin.transaksi-pinjaman.setoran-angsuran-bank' },
+            { label: 'Setoran & Angsuran Custom', route: 'superadmin.transaksi-pinjaman.setoran-angsuran-custom' },
         ],
     },
     {
