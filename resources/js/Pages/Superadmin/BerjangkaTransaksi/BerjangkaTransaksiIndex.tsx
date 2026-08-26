@@ -80,6 +80,7 @@ export default function BerjangkaTransaksiIndex({ transaksi, filters, variantTit
     const getNominal = (row: TransaksiRow) => {
         if (row.nominal !== undefined) return Rp(row.nominal);
         if (row.nominal_pokok !== undefined) return Rp(row.nominal_pokok);
+        if ((row as any).nominal_penarikan !== undefined) return Rp((row as any).nominal_penarikan);
         if (row.total_penalti !== undefined) return Rp(row.total_penalti);
         return '-';
     };

@@ -1,4 +1,4 @@
-﻿import { CalendarClock } from 'lucide-react';
+import { CalendarClock } from 'lucide-react';
 import BerjangkaTransaksiCreate from '../BerjangkaTransaksi/BerjangkaTransaksiCreate';
 
 export default function Create(props: any) {

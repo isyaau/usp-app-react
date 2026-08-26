@@ -9,6 +9,7 @@ import { CalendarClock } from 'lucide-react';
 interface Props {
     transaksi: any;
     variantTitle: string;
+    config?: { label?: string; routeIndex: string; icon?: any };
 }
 
 const STATUS: Record<string, string> = {
@@ -21,20 +22,20 @@ function Rp(v: number | string | undefined) {
     return 'Rp ' + Number(v ?? 0).toLocaleString('id-ID');
 }
 
-function getRouteBase(no_transaksi: string) {
-    if (no_transaksi?.startsWith('SB')) return 'setoran-simpanan-berjangka';
-    if (no_transaksi?.startsWith('PC')) return 'pencairan-simpanan-berjangka';
-    return 'penalti-simpanan-berjangka';
-}
-
-export default function BerjangkaTransaksiShow({ transaksi: t, variantTitle }: Props) {
-    const routeBase = 'superadmin.transaksi-simpanan-berjangka.' + getRouteBase(t.no_transaksi);
+export default function BerjangkaTransaksiShow({ transaksi: t, variantTitle, config }: Props) {
+    const Icon = config?.icon || CalendarClock;
+    const routeBase = config?.routeIndex || (() => {
+        if (t.no_transaksi?.startsWith('SB')) return 'superadmin.transaksi-simpanan-berjangka.setoran-simpanan-berjangka';
+        if (t.no_transaksi?.startsWith('PC')) return 'superadmin.transaksi-simpanan-berjangka.pencairan-simpanan-berjangka';
+        if (t.no_transaksi?.startsWith('DT')) return 'superadmin.transaksi-titipan.penarikan-dana-titipan';
+        return 'superadmin.transaksi-simpanan-berjangka.penalti-simpanan-berjangka';
+    })();
 
     return (
         <AuthenticatedLayout>
-            <Head title={(variantTitle || 'Transaksi') + ' — Detail'} />
+            <Head title={(variantTitle || config?.label || 'Transaksi') + ' — Detail'} />
 
-            <PageHeader title={variantTitle || 'Transaksi'} description="Detail transaksi." icon={CalendarClock}>
+            <PageHeader title={variantTitle || config?.label || 'Transaksi'} description="Detail transaksi." icon={Icon}>
                 <Button variant="outline" asChild>
                     <Link href={route(routeBase + '.edit', t.id)}>Edit</Link>
                 </Button>
@@ -55,6 +56,7 @@ export default function BerjangkaTransaksiShow({ transaksi: t, variantTitle }: P
                     {t.nominal_bunga !== undefined && <div><p className="text-xs text-muted-foreground">Bunga</p><p>{Rp(t.nominal_bunga)}</p></div>}
                     {t.nominal_pajak !== undefined && <div><p className="text-xs text-muted-foreground">Pajak</p><p>{Rp(t.nominal_pajak)}</p></div>}
                     {t.nominal_penalti !== undefined && <div><p className="text-xs text-muted-foreground">Penalti</p><p>{Rp(t.nominal_penalti)}</p></div>}
+                    {t.nominal_penarikan !== undefined && <div><p className="text-xs text-muted-foreground">Nominal Penarikan</p><p className="font-bold">{Rp(t.nominal_penarikan)}</p></div>}
                     {t.nominal_diterima !== undefined && <div><p className="text-xs text-muted-foreground">Diterima</p><p className="font-bold text-emerald-600">{Rp(t.nominal_diterima)}</p></div>}
                     {t.total_penalti !== undefined && <div><p className="text-xs text-muted-foreground">Total Penalti</p><p className="font-bold text-rose-600">{Rp(t.total_penalti)}</p></div>}
                     <div><p className="text-xs text-muted-foreground">Status</p><Badge className={STATUS[t.status] ?? ''}>{t.status}</Badge></div>

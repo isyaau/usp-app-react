@@ -1,4 +1,4 @@
-﻿import { CalendarClock } from 'lucide-react';
+import { CalendarClock } from 'lucide-react';
 import BerjangkaTransaksiIndex, { type BerjangkaModulConfig } from '../BerjangkaTransaksi/BerjangkaTransaksiIndex';
 
 const config: BerjangkaModulConfig = {

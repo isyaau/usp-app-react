@@ -29,6 +29,8 @@ use App\Http\Controllers\Superadmin\AngsuranPinjamanController;
 use App\Http\Controllers\Superadmin\PenaltiPinjamanController;
 use App\Http\Controllers\Superadmin\AngsuranKolektifController;
 use App\Http\Controllers\Superadmin\TransaksiSimpananBerjangkaController;
+use App\Http\Controllers\Superadmin\PenarikanDanaTitipanController;
+use App\Http\Controllers\Superadmin\LaporanController;
 
 // Route Livewire lama modul Anggota dihapus — sudah dimigrasikan ke Inertia.
 use App\Http\Controllers\WilayahController;
@@ -297,6 +299,29 @@ Route::prefix('superadmin')->name('superadmin.')->middleware(['auth', 'role:supe
         Route::get("/transaksi-simpanan-berjangka/{$variant}/{{$param}}/edit", [TransaksiSimpananBerjangkaController::class, 'edit'])->name("transaksi-simpanan-berjangka.{$variant}.edit");
         Route::put("/transaksi-simpanan-berjangka/{$variant}/{{$param}}", [TransaksiSimpananBerjangkaController::class, 'update'])->name("transaksi-simpanan-berjangka.{$variant}.update");
         Route::delete("/transaksi-simpanan-berjangka/{$variant}/{{$param}}", [TransaksiSimpananBerjangkaController::class, 'destroy'])->name("transaksi-simpanan-berjangka.{$variant}.destroy");
+    }
+
+    // Transaksi Titipan — Penarikan Dana Titipan Anggota
+    $titipanPrefix = 'transaksi-titipan.penarikan-dana-titipan';
+    Route::get('/transaksi-titipan/penarikan-dana-titipan', [PenarikanDanaTitipanController::class, 'index'])->name($titipanPrefix);
+    Route::get('/transaksi-titipan/penarikan-dana-titipan/create', [PenarikanDanaTitipanController::class, 'create'])->name("{$titipanPrefix}.create");
+    Route::post('/transaksi-titipan/penarikan-dana-titipan', [PenarikanDanaTitipanController::class, 'store'])->name("{$titipanPrefix}.store");
+    Route::get('/transaksi-titipan/penarikan-dana-titipan/{penarikanDanaTitipan}', [PenarikanDanaTitipanController::class, 'show'])->name("{$titipanPrefix}.show");
+    Route::get('/transaksi-titipan/penarikan-dana-titipan/{penarikanDanaTitipan}/edit', [PenarikanDanaTitipanController::class, 'edit'])->name("{$titipanPrefix}.edit");
+    Route::put('/transaksi-titipan/penarikan-dana-titipan/{penarikanDanaTitipan}', [PenarikanDanaTitipanController::class, 'update'])->name("{$titipanPrefix}.update");
+    Route::delete('/transaksi-titipan/penarikan-dana-titipan/{penarikanDanaTitipan}', [PenarikanDanaTitipanController::class, 'destroy'])->name("{$titipanPrefix}.destroy");
+
+    // Laporan routes — variant-based
+    $laporanVariants = ['laporan-kas-harian', 'laporan-transaksi-simpanan', 'laporan-transaksi-pinjaman'];
+    foreach ($laporanVariants as $lv) {
+        $param = 'laporanItem';
+        Route::get("/laporan/{$lv}", [LaporanController::class, 'index'])->name("laporan.{$lv}");
+        Route::get("/laporan/{$lv}/create", [LaporanController::class, 'create'])->name("laporan.{$lv}.create");
+        Route::post("/laporan/{$lv}", [LaporanController::class, 'store'])->name("laporan.{$lv}.store");
+        Route::get("/laporan/{$lv}/{{$param}}", [LaporanController::class, 'show'])->name("laporan.{$lv}.show");
+        Route::get("/laporan/{$lv}/{{$param}}/edit", [LaporanController::class, 'edit'])->name("laporan.{$lv}.edit");
+        Route::put("/laporan/{$lv}/{{$param}}", [LaporanController::class, 'update'])->name("laporan.{$lv}.update");
+        Route::delete("/laporan/{$lv}/{{$param}}", [LaporanController::class, 'destroy'])->name("laporan.{$lv}.destroy");
     }
 
     // Variant routes for Angsuran Kolektif — reuse same controller

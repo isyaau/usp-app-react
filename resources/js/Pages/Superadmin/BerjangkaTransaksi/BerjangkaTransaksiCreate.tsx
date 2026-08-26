@@ -14,7 +14,7 @@ interface Kantor { id: number; kode: string; nama_kantor: string; }
 
 interface Props {
     anggotas: Anggota[];
-    depositos: Deposito[];
+    depositos?: Deposito[];
     kantors: Kantor[];
     config: {
         label: string;

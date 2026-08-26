@@ -15,7 +15,7 @@ interface Kantor { id: number; kode: string; nama_kantor: string; }
 interface Props {
     transaksi: any;
     anggotas: Anggota[];
-    depositos: Deposito[];
+    depositos?: Deposito[];
     kantors: Kantor[];
     config: {
         label: string;
@@ -32,7 +32,7 @@ export default function BerjangkaTransaksiEdit({ transaksi: t, anggotas, deposit
         tgl_transaksi: t.tgl_transaksi?.split('T')[0] || '',
         anggota_id: String(t.anggota_id ?? ''),
         deposito_id: String(t.deposito_id ?? ''),
-        nominal: String(t.nominal ?? t.nominal_pokok ?? t.nominal_penalti ?? ''),
+        nominal: String(t.nominal ?? t.nominal_pokok ?? t.nominal_penalti ?? t.nominal_penarikan ?? ''),
         keterangan: t.keterangan ?? '',
         kantor_id: String(t.kantor_id ?? ''),
         status: t.status ?? 'draft',
@@ -40,7 +40,7 @@ export default function BerjangkaTransaksiEdit({ transaksi: t, anggotas, deposit
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [submitting, setSubmitting] = useState(false);
 
-    const filteredDepositos = depositos.filter(d => d.anggota_id === Number(form.anggota_id));
+    const filteredDepositos = (depositos ?? []).filter(d => d.anggota_id === Number(form.anggota_id));
 
     const handleSubmit = () => {
         setSubmitting(true);

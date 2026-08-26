@@ -11,6 +11,7 @@ import {
     CalendarClock,
     ArrowDownUp,
     Settings,
+    Banknote,
     ChevronRight,
     LogOut,
     Menu,
@@ -121,6 +122,20 @@ const MENU: MenuItem[] = [
             { label: 'Setoran Simpanan', route: 'superadmin.transaksi-simpanan.setoran-simpanan' },
             { label: 'Tarikan Simpanan', route: 'superadmin.transaksi-simpanan.tarikan-simpanan' },
             { label: 'Pemindahbukuan', route: 'superadmin.transaksi-simpanan.pemindahbukuan-simpanan' },
+        ],
+    },
+    {
+        label: 'Penarikan Dana Titipan',
+        route: 'superadmin.transaksi-titipan.penarikan-dana-titipan',
+        icon: Banknote,
+    },
+    {
+        label: 'Laporan',
+        icon: Receipt,
+        children: [
+            { label: 'Laporan Kas Harian', route: 'superadmin.laporan.laporan-kas-harian' },
+            { label: 'Laporan Transaksi Simpanan', route: 'superadmin.laporan.laporan-transaksi-simpanan' },
+            { label: 'Laporan Transaksi Pinjaman', route: 'superadmin.laporan.laporan-transaksi-pinjaman' },
         ],
     },
     {
