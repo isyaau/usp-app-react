@@ -1,6 +1,6 @@
-import { router, useForm } from '@inertiajs/react';
+import { Head, router, useForm } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
-import { LoaderCircle } from 'lucide-react';
+import { LoaderCircle, Users } from 'lucide-react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { PageHeader } from '@/Components/PageHeader';
 import { Button } from '@/Components/ui/button';
@@ -101,70 +101,77 @@ export default function Create({ kelompoks, kantors }: Props) {
     const jenisLabel = { angsuran: 'Angsuran', penalti: 'Penalti', angsuran_dan_setoran: 'Angsuran & Setoran' } as const;
     const metodeLabel = { tunai: 'Tunai', debet_simpanan: 'Debet Simpanan', bank: 'Bank', custom: 'Custom' } as const;
 
+    const base = 'superadmin.transaksi-pinjaman.angsuran-kolektif-debet-simpanan';
+
     return (
         <AuthenticatedLayout>
-            <PageHeader title="Tambah Angsuran Kolektif Debet Simpanan" />
-            <div className="max-w-5xl mx-auto p-6">
-                <form onSubmit={submit} className="space-y-6">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Form Angsuran Kolektif Debet Simpanan</CardTitle>
-                            <CardDescription>Isi data transaksi kolektif per kelompok.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="grid gap-4 sm:grid-cols-2">
-                                <div className="space-y-2">
-                                    <Label>Tanggal Transaksi</Label>
-                                    <Input type="date" value={data.tgl_transaksi} onChange={e => setData('tgl_transaksi', e.target.value)} />
-                                    {errors.tgl_transaksi && <p className="text-sm text-red-500">{errors.tgl_transaksi}</p>}
-                                </div>
-                                <div className="space-y-2">
-                                    <Label>Kantor</Label>
-                                    <Select value={data.kantor_id} onValueChange={v => setData('kantor_id', v)}>
-                                        <SelectTrigger><SelectValue placeholder="Pilih kantor" /></SelectTrigger>
-                                        <SelectContent>
-                                            {kantors.map(k => <SelectItem key={k.id} value={String(k.id)}>{k.nama_kantor}</SelectItem>)}
-                                        </SelectContent>
-                                    </Select>
-                                    {errors.kantor_id && <p className="text-sm text-red-500">{errors.kantor_id}</p>}
-                                </div>
-                            </div>
-                            <div className="grid gap-4 sm:grid-cols-3">
-                                <div className="space-y-2">
-                                    <Label>Kelompok</Label>
-                                    <Select value={data.kelompok_id} onValueChange={v => setData('kelompok_id', v)}>
-                                        <SelectTrigger><SelectValue placeholder="Pilih kelompok" /></SelectTrigger>
-                                        <SelectContent>
-                                            {kelompoks.map(k => <SelectItem key={k.id} value={String(k.id)}>{k.nama}</SelectItem>)}
-                                        </SelectContent>
-                                    </Select>
-                                    {errors.kelompok_id && <p className="text-sm text-red-500">{errors.kelompok_id}</p>}
-                                </div>
-                                <div className="space-y-2">
-                                    <Label>Jenis</Label>
-                                    <Select value={data.jenis} onValueChange={v => setData('jenis', v)}>
-                                        <SelectTrigger><SelectValue /></SelectTrigger>
-                                        <SelectContent>
-                                            {Object.entries(jenisLabel).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <div className="space-y-2">
-                                    <Label>Metode Pembayaran</Label>
-                                    <Select value={data.metode_pembayaran} onValueChange={v => setData('metode_pembayaran', v)}>
-                                        <SelectTrigger><SelectValue /></SelectTrigger>
-                                        <SelectContent>
-                                            {Object.entries(metodeLabel).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
+            <Head title="Tambah Angsuran Kolektif Debet Simpanan" />
+            <PageHeader
+                title="Tambah Angsuran Kolektif Debet Simpanan"
+                description="Isi data transaksi kolektif per kelompok."
+                icon={Users}
+                backHref={route(base)}
+            />
+            <form onSubmit={submit} className="max-w-5xl space-y-4">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Form Angsuran Kolektif Debet Simpanan</CardTitle>
+                        <CardDescription>Isi data transaksi kolektif per kelompok.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="grid gap-4 sm:grid-cols-2">
+                            <div className="space-y-2">
+                                <Label>Tanggal Transaksi <span className="text-red-500">*</span></Label>
+                                <Input type="date" value={data.tgl_transaksi} onChange={e => setData('tgl_transaksi', e.target.value)} />
+                                {errors.tgl_transaksi && <p className="text-sm text-red-500">{errors.tgl_transaksi}</p>}
                             </div>
                             <div className="space-y-2">
-                                <Label>Keterangan</Label>
-                                <Textarea value={data.keterangan} onChange={e => setData('keterangan', e.target.value)} rows={2} />
+                                <Label>Kantor <span className="text-red-500">*</span></Label>
+                                <Select value={data.kantor_id} onValueChange={v => setData('kantor_id', v)}>
+                                    <SelectTrigger><SelectValue placeholder="Pilih kantor" /></SelectTrigger>
+                                    <SelectContent>
+                                        {kantors.map(k => <SelectItem key={k.id} value={String(k.id)}>{k.nama_kantor}</SelectItem>)}
+                                    </SelectContent>
+                                </Select>
+                                {errors.kantor_id && <p className="text-sm text-red-500">{errors.kantor_id}</p>}
                             </div>
-                        </CardContent>
-                    </Card>
+                        </div>
+                        <div className="grid gap-4 sm:grid-cols-3">
+                            <div className="space-y-2">
+                                <Label>Kelompok <span className="text-red-500">*</span></Label>
+                                <Select value={data.kelompok_id} onValueChange={v => setData('kelompok_id', v)}>
+                                    <SelectTrigger><SelectValue placeholder="Pilih kelompok" /></SelectTrigger>
+                                    <SelectContent>
+                                        {kelompoks.map(k => <SelectItem key={k.id} value={String(k.id)}>{k.nama}</SelectItem>)}
+                                    </SelectContent>
+                                </Select>
+                                {errors.kelompok_id && <p className="text-sm text-red-500">{errors.kelompok_id}</p>}
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Jenis</Label>
+                                <Select value={data.jenis} onValueChange={v => setData('jenis', v)}>
+                                    <SelectTrigger><SelectValue /></SelectTrigger>
+                                    <SelectContent>
+                                        {Object.entries(jenisLabel).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Metode Pembayaran</Label>
+                                <Select value={data.metode_pembayaran} onValueChange={v => setData('metode_pembayaran', v)}>
+                                    <SelectTrigger><SelectValue /></SelectTrigger>
+                                    <SelectContent>
+                                        {Object.entries(metodeLabel).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Keterangan</Label>
+                            <Textarea value={data.keterangan} onChange={e => setData('keterangan', e.target.value)} rows={2} />
+                        </div>
+                    </CardContent>
+                </Card>
 
                     {details.length > 0 && (
                         <Card>
@@ -216,15 +223,16 @@ export default function Create({ kelompoks, kantors }: Props) {
                         </Card>
                     )}
 
-                    <div className="flex justify-end gap-3">
-                        <Button type="button" variant="outline" onClick={() => router.get(route('angsuran-kolektif-debet-simpanan:angsuran-kolektif-debet-simpanan'))}>Batal</Button>
-                        <Button type="submit" disabled={processing || details.length === 0}>
+                    <div className="flex gap-2 pt-2">
+                        <Button type="submit" disabled={processing || details.length === 0} className="bg-brand-600 hover:bg-brand-500">
                             {processing && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
                             Simpan Kolektif ({details.length} anggota)
                         </Button>
+                        <Button type="button" variant="outline" onClick={() => router.get(route(base))}>
+                            Batal
+                        </Button>
                     </div>
-                </form>
-            </div>
+            </form>
         </AuthenticatedLayout>
     );
 }

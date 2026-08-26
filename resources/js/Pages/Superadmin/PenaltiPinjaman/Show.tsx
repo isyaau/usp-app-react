@@ -1,4 +1,5 @@
 import { Link, Head } from '@inertiajs/react';
+import { ShieldAlert } from 'lucide-react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { PageHeader } from '@/Components/PageHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
@@ -18,38 +19,38 @@ interface Props { transaksi: Transaksi; }
 
 export default function Show({ transaksi: t }: Props) {
     const SC = { draft: 'bg-amber-500', posted: 'bg-emerald-600', batal: 'bg-rose-600' } as Record<string, string>;
+    const base = 'superadmin.transaksi-pinjaman.penalti-pinjaman';
 
     return (
         <AuthenticatedLayout>
-            <Head title={`Penalti ${t.no_transaksi}`} />
-            <PageHeader title={`Detail Penalti - ${t.no_transaksi}`} />
-            <div className="max-w-3xl mx-auto p-6 space-y-6">
+            <Head title={`Detail Penalti — ${t.no_transaksi}`} />
+            <PageHeader
+                title={`Detail Penalti — ${t.no_transaksi}`}
+                description="Informasi detail penalti pinjaman."
+                icon={ShieldAlert}
+                backHref={route(base)}
+            >
+                <Button variant="outline" asChild><Link href={route(base + '.edit', t.id)}>Edit</Link></Button>
+            </PageHeader>
+            <div className="max-w-3xl space-y-4">
                 <Card>
                     <CardHeader><CardTitle>Informasi Transaksi</CardTitle></CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="grid gap-4 sm:grid-cols-2">
-                            <div><p className="text-sm text-muted-foreground">No. Transaksi</p><p className="font-mono">{t.no_transaksi}</p></div>
-                            <div><p className="text-sm text-muted-foreground">Status</p><Badge className={SC[t.status] ?? ''}>{t.status}</Badge></div>
-                            <div><p className="text-sm text-muted-foreground">Tanggal</p><p>{new Date(t.tgl_transaksi).toLocaleDateString('id-ID')}</p></div>
-                            <div><p className="text-sm text-muted-foreground">Pinjaman</p><p className="font-mono">{t.pinjaman.no_pinjaman}</p></div>
-                            <div><p className="text-sm text-muted-foreground">Anggota</p><p>{t.pinjaman.anggota.no_anggota} - {t.pinjaman.anggota.nama}</p></div>
-                        </div>
+                    <CardContent className="grid gap-3 sm:grid-cols-2">
+                        <div><p className="text-xs text-muted-foreground">No. Transaksi</p><p className="font-mono font-bold">{t.no_transaksi}</p></div>
+                        <div><p className="text-xs text-muted-foreground">Status</p><Badge className={SC[t.status] ?? ''}>{t.status}</Badge></div>
+                        <div><p className="text-xs text-muted-foreground">Tanggal</p><p>{new Date(t.tgl_transaksi).toLocaleDateString('id-ID')}</p></div>
+                        <div><p className="text-xs text-muted-foreground">Pinjaman</p><p className="font-mono">{t.pinjaman.no_pinjaman}</p></div>
+                        <div><p className="text-xs text-muted-foreground">Anggota</p><p>{t.pinjaman.anggota.no_anggota} — {t.pinjaman.anggota.nama}</p></div>
                     </CardContent>
                 </Card>
                 <Card>
                     <CardHeader><CardTitle>Detail Penalti</CardTitle></CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="grid gap-4 sm:grid-cols-2">
-                            <div><p className="text-sm text-muted-foreground">Nominal Penalti</p><p className="font-mono text-lg font-bold text-red-600">Rp {Number(t.nominal_penalti).toLocaleString('id-ID')}</p></div>
-                            {Number(t.denda) > 0 && <div><p className="text-sm text-muted-foreground">Denda Tambahan</p><p className="font-mono text-red-600">Rp {Number(t.denda).toLocaleString('id-ID')}</p></div>}
-                        </div>
-                        {t.keterangan && <div><p className="text-sm text-muted-foreground">Keterangan</p><p>{t.keterangan}</p></div>}
+                    <CardContent className="grid gap-3 sm:grid-cols-2">
+                        <div><p className="text-xs text-muted-foreground">Nominal Penalti</p><p className="font-mono text-lg font-bold text-red-600">Rp {Number(t.nominal_penalti).toLocaleString('id-ID')}</p></div>
+                        {Number(t.denda) > 0 && <div><p className="text-xs text-muted-foreground">Denda Tambahan</p><p className="font-mono text-red-600">Rp {Number(t.denda).toLocaleString('id-ID')}</p></div>}
+                        <div className="sm:col-span-2"><p className="text-xs text-muted-foreground">Keterangan</p><p>{t.keterangan || '-'}</p></div>
                     </CardContent>
                 </Card>
-                <div className="flex gap-3">
-                    <Button variant="outline" asChild><Link href={route('superadmin.transaksi-pinjaman.penalti-pinjaman')}>Kembali</Link></Button>
-                    <Button asChild><Link href={route('superadmin.transaksi-pinjaman.penalti-pinjaman.edit', t.id)}>Edit</Link></Button>
-                </div>
             </div>
         </AuthenticatedLayout>
     );

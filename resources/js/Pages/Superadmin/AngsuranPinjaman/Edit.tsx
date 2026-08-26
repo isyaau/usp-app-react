@@ -1,5 +1,5 @@
-import { router, useForm } from '@inertiajs/react';
-import { LoaderCircle } from 'lucide-react';
+import { Head, router, useForm } from '@inertiajs/react';
+import { LoaderCircle, CreditCard } from 'lucide-react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { PageHeader } from '@/Components/PageHeader';
 import { Button } from '@/Components/ui/button';
@@ -21,7 +21,7 @@ interface Props { transaksi: Transaksi; anggotas: { id: number; nama: string }[]
 
 export default function Edit({ transaksi, anggotas, kantors }: Props) {
     const { data, setData, put, processing, errors } = useForm({
-        tgl_transaksi: transaksi.tgl_transaksi,
+        tgl_transaksi: transaksi.tgl_transaksi?.split('T')[0] || transaksi.tgl_transaksi,
         angsuran_ke: String(transaksi.angsuran_ke),
         nominal_pokok: String(transaksi.nominal_pokok),
         nominal_bunga: String(transaksi.nominal_bunga),
@@ -39,50 +39,88 @@ export default function Edit({ transaksi, anggotas, kantors }: Props) {
 
     return (
         <AuthenticatedLayout>
-            <PageHeader title={`Edit Angsuran - ${transaksi.no_transaksi}`} />
-            <div className="max-w-3xl mx-auto p-6">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Edit Angsuran Pinjaman</CardTitle>
-                        <CardDescription>Pinjaman: {transaksi.pinjaman.no_pinjaman} ({transaksi.pinjaman.anggota.nama})</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <form onSubmit={submit} className="space-y-6">
-                            <div className="grid gap-4 sm:grid-cols-2">
-                                <div className="space-y-2">
-                                    <Label>Tanggal Transaksi</Label>
-                                    <Input type="date" value={data.tgl_transaksi} onChange={e => setData('tgl_transaksi', e.target.value)} />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label>Status</Label>
-                                    <Select value={data.status} onValueChange={v => setData('status', v as any)}>
-                                        <SelectTrigger><SelectValue /></SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="draft">Draft</SelectItem>
-                                            <SelectItem value="posted">Posted</SelectItem>
-                                            <SelectItem value="batal">Batal</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
+            <Head title={`Edit Angsuran — ${transaksi.no_transaksi}`} />
+            <PageHeader
+                title={`Edit Angsuran — ${transaksi.no_transaksi}`}
+                description={`Pinjaman: ${transaksi.pinjaman.no_pinjaman} (${transaksi.pinjaman.anggota.nama})`}
+                icon={CreditCard}
+                backHref={route('superadmin.transaksi-pinjaman.angsuran-pinjaman')}
+            />
+            <Card className="max-w-3xl">
+                <CardHeader>
+                    <CardTitle>Edit Angsuran Pinjaman</CardTitle>
+                    <CardDescription>Perbarui data angsuran pinjaman.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <form onSubmit={submit} className="space-y-4">
+                        <div className="grid gap-4 sm:grid-cols-2">
+                            <div className="space-y-2">
+                                <Label>Tanggal Transaksi</Label>
+                                <Input type="date" value={data.tgl_transaksi} onChange={e => setData('tgl_transaksi', e.target.value)} />
+                                {errors.tgl_transaksi && <p className="text-sm text-red-500">{errors.tgl_transaksi}</p>}
                             </div>
-                            <div className="grid gap-4 sm:grid-cols-3">
-                                <div className="space-y-2"><Label>Angsuran Ke</Label><Input type="number" value={data.angsuran_ke} onChange={e => setData('angsuran_ke', e.target.value)} /></div>
-                                <div className="space-y-2"><Label>Nominal Pokok</Label><Input type="number" value={data.nominal_pokok} onChange={e => setData('nominal_pokok', e.target.value)} /></div>
-                                <div className="space-y-2"><Label>Nominal Bunga</Label><Input type="number" value={data.nominal_bunga} onChange={e => setData('nominal_bunga', e.target.value)} /></div>
+                            <div className="space-y-2">
+                                <Label>Kantor</Label>
+                                <Select value={data.kantor_id} onValueChange={v => setData('kantor_id', v)}>
+                                    <SelectTrigger><SelectValue placeholder="Pilih kantor" /></SelectTrigger>
+                                    <SelectContent>
+                                        {kantors.map(k => <SelectItem key={k.id} value={String(k.id)}>{k.nama_kantor}</SelectItem>)}
+                                    </SelectContent>
+                                </Select>
+                                {errors.kantor_id && <p className="text-sm text-red-500">{errors.kantor_id}</p>}
                             </div>
-                            <div className="grid gap-4 sm:grid-cols-2">
-                                <div className="space-y-2"><Label>Total Angsuran</Label><Input type="number" value={data.total_angsuran} onChange={e => setData('total_angsuran', e.target.value)} /></div>
-                                <div className="space-y-2"><Label>Denda</Label><Input type="number" value={data.denda} onChange={e => setData('denda', e.target.value)} /></div>
+                        </div>
+                        <div className="grid gap-4 sm:grid-cols-3">
+                            <div className="space-y-2">
+                                <Label>Angsuran Ke</Label>
+                                <Input type="number" min="1" value={data.angsuran_ke} onChange={e => setData('angsuran_ke', e.target.value)} />
                             </div>
-                            <div className="space-y-2"><Label>Keterangan</Label><Textarea value={data.keterangan} onChange={e => setData('keterangan', e.target.value)} rows={3} /></div>
-                            <div className="flex justify-end gap-3">
-                                <Button type="button" variant="outline" onClick={() => router.get(route('superadmin.transaksi-pinjaman.angsuran-pinjaman'))}>Batal</Button>
-                                <Button type="submit" disabled={processing}>{processing && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}Update</Button>
+                            <div className="space-y-2">
+                                <Label>Nominal Pokok</Label>
+                                <Input type="number" min="0" value={data.nominal_pokok} onChange={e => setData('nominal_pokok', e.target.value)} />
                             </div>
-                        </form>
-                    </CardContent>
-                </Card>
-            </div>
+                            <div className="space-y-2">
+                                <Label>Nominal Bunga</Label>
+                                <Input type="number" min="0" value={data.nominal_bunga} onChange={e => setData('nominal_bunga', e.target.value)} />
+                            </div>
+                        </div>
+                        <div className="grid gap-4 sm:grid-cols-2">
+                            <div className="space-y-2">
+                                <Label>Total Angsuran</Label>
+                                <Input type="number" value={data.total_angsuran} readOnly className="bg-muted" />
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Denda</Label>
+                                <Input type="number" min="0" value={data.denda} onChange={e => setData('denda', e.target.value)} />
+                            </div>
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Keterangan</Label>
+                            <Textarea value={data.keterangan} onChange={e => setData('keterangan', e.target.value)} rows={3} />
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Status</Label>
+                            <Select value={data.status} onValueChange={v => setData('status', v as any)}>
+                                <SelectTrigger><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="draft">Draft</SelectItem>
+                                    <SelectItem value="posted">Posted</SelectItem>
+                                    <SelectItem value="batal">Batal</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="flex gap-2 pt-2">
+                            <Button type="submit" disabled={processing} className="bg-brand-600 hover:bg-brand-500">
+                                {processing && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
+                                Update
+                            </Button>
+                            <Button type="button" variant="outline" onClick={() => router.get(route('superadmin.transaksi-pinjaman.angsuran-pinjaman'))}>
+                                Batal
+                            </Button>
+                        </div>
+                    </form>
+                </CardContent>
+            </Card>
         </AuthenticatedLayout>
     );
 }

@@ -1,4 +1,5 @@
 import { Link, Head } from '@inertiajs/react';
+import { CreditCard } from 'lucide-react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { PageHeader } from '@/Components/PageHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
@@ -18,51 +19,43 @@ interface Transaksi {
 interface Props { transaksi: Transaksi; }
 
 export default function Show({ transaksi: t }: Props) {
-    const STATUS_COLOR = { draft: 'bg-amber-500', posted: 'bg-emerald-600', batal: 'bg-rose-600' } as Record<string, string>;
+    const SC = { draft: 'bg-amber-500', posted: 'bg-emerald-600', batal: 'bg-rose-600' } as Record<string, string>;
+    const base = 'superadmin.transaksi-pinjaman.angsuran-pinjaman';
 
     return (
         <AuthenticatedLayout>
-            <Head title={`Angsuran ${t.no_transaksi}`} />
-            <PageHeader title={`Detail Angsuran - ${t.no_transaksi}`} />
-            <div className="max-w-3xl mx-auto p-6 space-y-6">
+            <Head title={`Detail Angsuran — ${t.no_transaksi}`} />
+            <PageHeader
+                title={`Detail Angsuran — ${t.no_transaksi}`}
+                description="Informasi detail angsuran pinjaman."
+                icon={CreditCard}
+                backHref={route(base)}
+            >
+                <Button variant="outline" asChild><Link href={route(base + '.edit', t.id)}>Edit</Link></Button>
+            </PageHeader>
+            <div className="max-w-3xl space-y-4">
                 <Card>
                     <CardHeader><CardTitle>Informasi Transaksi</CardTitle></CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="grid gap-4 sm:grid-cols-2">
-                            <div><Label>No. Transaksi</Label><p className="font-mono">{t.no_transaksi}</p></div>
-                            <div><Label>Status</Label><Badge className={STATUS_COLOR[t.status] ?? ''}>{t.status}</Badge></div>
-                            <div><Label>Tanggal</Label><p>{new Date(t.tgl_transaksi).toLocaleDateString('id-ID')}</p></div>
-                            <div><Label>Angsuran Ke</Label><p>{t.angsuran_ke}</p></div>
-                        </div>
+                    <CardContent className="grid gap-3 sm:grid-cols-2">
+                        <div><p className="text-xs text-muted-foreground">No. Transaksi</p><p className="font-mono font-bold">{t.no_transaksi}</p></div>
+                        <div><p className="text-xs text-muted-foreground">Status</p><Badge className={SC[t.status] ?? ''}>{t.status}</Badge></div>
+                        <div><p className="text-xs text-muted-foreground">Tanggal</p><p>{new Date(t.tgl_transaksi).toLocaleDateString('id-ID')}</p></div>
+                        <div><p className="text-xs text-muted-foreground">Angsuran Ke</p><p>{t.angsuran_ke}</p></div>
                     </CardContent>
                 </Card>
                 <Card>
                     <CardHeader><CardTitle>Detail Pinjaman</CardTitle></CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="grid gap-4 sm:grid-cols-2">
-                            <div><Label>No. Pinjaman</Label><p className="font-mono">{t.pinjaman.no_pinjaman}</p></div>
-                            <div><Label>Anggota</Label><p>{t.pinjaman.anggota.no_anggota} - {t.pinjaman.anggota.nama}</p></div>
-                        </div>
-                        <div className="grid gap-4 sm:grid-cols-3">
-                            <div><Label>Pokok</Label><p className="font-mono">Rp {Number(t.nominal_pokok).toLocaleString('id-ID')}</p></div>
-                            <div><Label>Bunga</Label><p className="font-mono">Rp {Number(t.nominal_bunga).toLocaleString('id-ID')}</p></div>
-                            <div><Label>Total</Label><p className="font-mono text-lg font-bold">Rp {Number(t.total_angsuran).toLocaleString('id-ID')}</p></div>
-                        </div>
-                        {Number(t.denda) > 0 && (
-                            <div><Label>Denda</Label><p className="font-mono text-red-600">Rp {Number(t.denda).toLocaleString('id-ID')}</p></div>
-                        )}
-                        {t.keterangan && <div><Label>Keterangan</Label><p>{t.keterangan}</p></div>}
+                    <CardContent className="grid gap-3 sm:grid-cols-2">
+                        <div><p className="text-xs text-muted-foreground">No. Pinjaman</p><p className="font-mono">{t.pinjaman.no_pinjaman}</p></div>
+                        <div><p className="text-xs text-muted-foreground">Anggota</p><p>{t.pinjaman.anggota.no_anggota} — {t.pinjaman.anggota.nama}</p></div>
+                        <div><p className="text-xs text-muted-foreground">Pokok</p><p className="font-mono">Rp {Number(t.nominal_pokok).toLocaleString('id-ID')}</p></div>
+                        <div><p className="text-xs text-muted-foreground">Bunga</p><p className="font-mono">Rp {Number(t.nominal_bunga).toLocaleString('id-ID')}</p></div>
+                        <div><p className="text-xs text-muted-foreground">Total</p><p className="font-mono text-lg font-bold">Rp {Number(t.total_angsuran).toLocaleString('id-ID')}</p></div>
+                        {Number(t.denda) > 0 && <div><p className="text-xs text-muted-foreground">Denda</p><p className="font-mono text-red-600">Rp {Number(t.denda).toLocaleString('id-ID')}</p></div>}
+                        <div className="sm:col-span-2"><p className="text-xs text-muted-foreground">Keterangan</p><p>{t.keterangan || '-'}</p></div>
                     </CardContent>
                 </Card>
-                <div className="flex gap-3">
-                    <Button variant="outline" asChild><Link href={route('superadmin.transaksi-pinjaman.angsuran-pinjaman')}>Kembali</Link></Button>
-                    <Button asChild><Link href={route('superadmin.transaksi-pinjaman.angsuran-pinjaman.edit', t.id)}>Edit</Link></Button>
-                </div>
             </div>
         </AuthenticatedLayout>
     );
-}
-
-function Label({ children }: { children: React.ReactNode }) {
-    return <span className="text-sm text-muted-foreground">{children}</span>;
 }

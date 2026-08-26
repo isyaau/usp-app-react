@@ -1,6 +1,6 @@
-import { router, useForm } from '@inertiajs/react';
+import { Head, router, useForm } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
-import { LoaderCircle } from 'lucide-react';
+import { LoaderCircle, ShieldAlert } from 'lucide-react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { PageHeader } from '@/Components/PageHeader';
 import { Button } from '@/Components/ui/button';
@@ -45,83 +45,91 @@ export default function Create({ anggotas, kantors }: Props) {
 
     return (
         <AuthenticatedLayout>
-            <PageHeader title="Tambah Penalti Pinjaman" />
-            <div className="max-w-3xl mx-auto p-6">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Form Penalti Pinjaman</CardTitle>
-                        <CardDescription>Isi data penalti atau denda keterlambatan.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <form onSubmit={submit} className="space-y-6">
-                            <div className="grid gap-4 sm:grid-cols-2">
-                                <div className="space-y-2">
-                                    <Label>Tanggal Transaksi</Label>
-                                    <Input type="date" value={data.tgl_transaksi} onChange={e => setData('tgl_transaksi', e.target.value)} />
-                                    {errors.tgl_transaksi && <p className="text-sm text-red-500">{errors.tgl_transaksi}</p>}
-                                </div>
-                                <div className="space-y-2">
-                                    <Label>Kantor</Label>
-                                    <Select value={data.kantor_id} onValueChange={v => setData('kantor_id', v)}>
-                                        <SelectTrigger><SelectValue placeholder="Pilih kantor" /></SelectTrigger>
-                                        <SelectContent>
-                                            {kantors.map(k => <SelectItem key={k.id} value={String(k.id)}>{k.nama_kantor}</SelectItem>)}
-                                        </SelectContent>
-                                    </Select>
-                                    {errors.kantor_id && <p className="text-sm text-red-500">{errors.kantor_id}</p>}
-                                </div>
-                            </div>
+            <Head title="Tambah Penalti Pinjaman" />
 
+            <PageHeader
+                title="Tambah Penalti Pinjaman"
+                description="Isi data penalti atau denda keterlambatan."
+                icon={ShieldAlert}
+                backHref={route('superadmin.transaksi-pinjaman.penalti-pinjaman')}
+            />
+
+            <Card className="max-w-3xl">
+                <CardHeader>
+                    <CardTitle>Form Penalti Pinjaman</CardTitle>
+                    <CardDescription>Nomor transaksi digenerate otomatis oleh sistem.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <form onSubmit={submit} className="space-y-4">
+                        <div className="grid gap-4 sm:grid-cols-2">
                             <div className="space-y-2">
-                                <Label>Anggota</Label>
-                                <Select value={data.anggota_id} onValueChange={v => { setData('anggota_id', v); setData('pinjaman_id', ''); }}>
-                                    <SelectTrigger><SelectValue placeholder="Pilih anggota" /></SelectTrigger>
+                                <Label>Tanggal Transaksi <span className="text-red-500">*</span></Label>
+                                <Input type="date" value={data.tgl_transaksi} onChange={e => setData('tgl_transaksi', e.target.value)} />
+                                {errors.tgl_transaksi && <p className="text-sm text-red-500">{errors.tgl_transaksi}</p>}
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Kantor <span className="text-red-500">*</span></Label>
+                                <Select value={data.kantor_id} onValueChange={v => setData('kantor_id', v)}>
+                                    <SelectTrigger><SelectValue placeholder="Pilih kantor" /></SelectTrigger>
                                     <SelectContent>
-                                        {anggotas.map(a => <SelectItem key={a.id} value={String(a.id)}>{a.no_anggota} - {a.nama}</SelectItem>)}
+                                        {kantors.map(k => <SelectItem key={k.id} value={String(k.id)}>{k.nama_kantor}</SelectItem>)}
                                     </SelectContent>
                                 </Select>
-                                {errors.anggota_id && <p className="text-sm text-red-500">{errors.anggota_id}</p>}
+                                {errors.kantor_id && <p className="text-sm text-red-500">{errors.kantor_id}</p>}
                             </div>
+                        </div>
 
+                        <div className="space-y-2">
+                            <Label>Anggota <span className="text-red-500">*</span></Label>
+                            <Select value={data.anggota_id} onValueChange={v => { setData('anggota_id', v); setData('pinjaman_id', ''); }}>
+                                <SelectTrigger><SelectValue placeholder="Pilih anggota" /></SelectTrigger>
+                                <SelectContent>
+                                    {anggotas.map(a => <SelectItem key={a.id} value={String(a.id)}>{a.no_anggota} — {a.nama}</SelectItem>)}
+                                </SelectContent>
+                            </Select>
+                            {errors.anggota_id && <p className="text-sm text-red-500">{errors.anggota_id}</p>}
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label>Pinjaman <span className="text-red-500">*</span></Label>
+                            <Select value={data.pinjaman_id} onValueChange={v => setData('pinjaman_id', v)} disabled={!data.anggota_id}>
+                                <SelectTrigger><SelectValue placeholder="Pilih pinjaman" /></SelectTrigger>
+                                <SelectContent>
+                                    {pinjamanList.map(p => <SelectItem key={p.id} value={String(p.id)}>{p.no_pinjaman} (Rp {Number(p.plafon).toLocaleString('id-ID')})</SelectItem>)}
+                                </SelectContent>
+                            </Select>
+                            {errors.pinjaman_id && <p className="text-sm text-red-500">{errors.pinjaman_id}</p>}
+                        </div>
+
+                        <div className="grid gap-4 sm:grid-cols-2">
                             <div className="space-y-2">
-                                <Label>Pinjaman</Label>
-                                <Select value={data.pinjaman_id} onValueChange={v => setData('pinjaman_id', v)} disabled={!data.anggota_id}>
-                                    <SelectTrigger><SelectValue placeholder="Pilih pinjaman" /></SelectTrigger>
-                                    <SelectContent>
-                                        {pinjamanList.map(p => <SelectItem key={p.id} value={String(p.id)}>{p.no_pinjaman} (Rp {Number(p.plafon).toLocaleString('id-ID')})</SelectItem>)}
-                                    </SelectContent>
-                                </Select>
-                                {errors.pinjaman_id && <p className="text-sm text-red-500">{errors.pinjaman_id}</p>}
+                                <Label>Nominal Penalti <span className="text-red-500">*</span></Label>
+                                <Input type="number" min="0" value={data.nominal_penalti} onChange={e => setData('nominal_penalti', e.target.value)} placeholder="0" />
+                                {errors.nominal_penalti && <p className="text-sm text-red-500">{errors.nominal_penalti}</p>}
                             </div>
-
-                            <div className="grid gap-4 sm:grid-cols-2">
-                                <div className="space-y-2">
-                                    <Label>Nominal Penalti</Label>
-                                    <Input type="number" min="0" value={data.nominal_penalti} onChange={e => setData('nominal_penalti', e.target.value)} />
-                                    {errors.nominal_penalti && <p className="text-sm text-red-500">{errors.nominal_penalti}</p>}
-                                </div>
-                                <div className="space-y-2">
-                                    <Label>Denda Tambahan</Label>
-                                    <Input type="number" min="0" value={data.denda} onChange={e => setData('denda', e.target.value)} />
-                                </div>
-                            </div>
-
                             <div className="space-y-2">
-                                <Label>Keterangan</Label>
-                                <Textarea value={data.keterangan} onChange={e => setData('keterangan', e.target.value)} rows={3} />
+                                <Label>Denda Tambahan</Label>
+                                <Input type="number" min="0" value={data.denda} onChange={e => setData('denda', e.target.value)} placeholder="0" />
                             </div>
+                        </div>
 
-                            <div className="flex justify-end gap-3">
-                                <Button type="button" variant="outline" onClick={() => router.get(route('superadmin.transaksi-pinjaman.penalti-pinjaman'))}>Batal</Button>
-                                <Button type="submit" disabled={processing}>
-                                    {processing && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
-                                    Simpan
-                                </Button>
-                            </div>
-                        </form>
-                    </CardContent>
-                </Card>
-            </div>
+                        <div className="space-y-2">
+                            <Label>Keterangan</Label>
+                            <Textarea value={data.keterangan} onChange={e => setData('keterangan', e.target.value)} placeholder="Catatan tambahan..." rows={3} />
+                        </div>
+
+                        <div className="flex gap-2 pt-2">
+                            <Button type="submit" disabled={processing} className="bg-brand-600 hover:bg-brand-500">
+                                {processing && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
+                                Simpan
+                            </Button>
+                            <Button type="button" variant="outline" onClick={() => router.get(route('superadmin.transaksi-pinjaman.penalti-pinjaman'))}>
+                                Batal
+                            </Button>
+                        </div>
+                    </form>
+                </CardContent>
+            </Card>
         </AuthenticatedLayout>
     );
 }

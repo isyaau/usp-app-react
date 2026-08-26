@@ -58,7 +58,7 @@ class TarikanSimpananController extends Controller
     {
         return inertia('Superadmin/TarikanSimpanan/Create', [
             ...$this->formData(),
-            'simpananUrl' => route('superadmin.transaksi-simpanan.simpanan-by-anggota'),
+            'simpananUrl' => '/superadmin/transaksi-simpanan/simpanan-by-anggota',
         ]);
     }
 
@@ -92,7 +92,7 @@ class TarikanSimpananController extends Controller
     {
         return inertia('Superadmin/TarikanSimpanan/Edit', [
             ...$this->formData(),
-            'simpananUrl' => route('superadmin.transaksi-simpanan.simpanan-by-anggota'),
+            'simpananUrl' => '/superadmin/transaksi-simpanan/simpanan-by-anggota',
             'transaksiData' => $tarikanSimpanan,
         ]);
     }

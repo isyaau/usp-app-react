@@ -42,13 +42,7 @@ export default function Create({ anggotas, kantors, kodeTransaksis }: Props) {
                 >
                     <TransaksiFormFields
                         form={form}
-                        simpananUrl={
-                            typeof route !== 'undefined'
-                                ? route(
-                                      'superadmin.transaksi-simpanan.simpanan-by-anggota',
-                                  )
-                                : ''
-                        }
+                        simpananUrl="/superadmin/transaksi-simpanan/simpanan-by-anggota"
                         anggotas={anggotas}
                         kantors={kantors}
                         kodeTransaksis={kodeTransaksis}

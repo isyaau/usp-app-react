@@ -65,6 +65,14 @@ class Pinjaman extends Model
     }
 
     /**
+     * Pencairan pinjaman terkait.
+     */
+    public function pencairan()
+    {
+        return $this->hasMany(PencairanPinjaman::class, 'pinjaman_id');
+    }
+
+    /**
      * Get the komponen records for the pinjaman produk.
      */
     public function komponen()

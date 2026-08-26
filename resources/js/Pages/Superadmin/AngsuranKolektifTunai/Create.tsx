@@ -1,6 +1,6 @@
-import { router, useForm } from '@inertiajs/react';
+import { Head, router, useForm } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
-import { LoaderCircle } from 'lucide-react';
+import { LoaderCircle, Users } from 'lucide-react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { PageHeader } from '@/Components/PageHeader';
 import { Button } from '@/Components/ui/button';
@@ -101,20 +101,27 @@ export default function Create({ kelompoks, kantors }: Props) {
     const jenisLabel = { angsuran: 'Angsuran', penalti: 'Penalti', angsuran_dan_setoran: 'Angsuran & Setoran' } as const;
     const metodeLabel = { tunai: 'Tunai', debet_simpanan: 'Debet Simpanan', bank: 'Bank', custom: 'Custom' } as const;
 
+    const base = 'superadmin.transaksi-pinjaman.angsuran-kolektif-tunai';
+
     return (
         <AuthenticatedLayout>
-            <PageHeader title="Tambah Angsuran Kolektif Tunai" />
-            <div className="max-w-5xl mx-auto p-6">
-                <form onSubmit={submit} className="space-y-6">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Form Angsuran Kolektif Tunai</CardTitle>
-                            <CardDescription>Isi data transaksi kolektif per kelompok.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="grid gap-4 sm:grid-cols-2">
-                                <div className="space-y-2">
-                                    <Label>Tanggal Transaksi</Label>
+            <Head title="Tambah Angsuran Kolektif Tunai" />
+            <PageHeader
+                title="Tambah Angsuran Kolektif Tunai"
+                description="Isi data transaksi kolektif tunai per kelompok."
+                icon={Users}
+                backHref={route(base)}
+            />
+            <form onSubmit={submit} className="max-w-5xl space-y-4">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Form Angsuran Kolektif Tunai</CardTitle>
+                        <CardDescription>Isi data transaksi kolektif per kelompok.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="grid gap-4 sm:grid-cols-2">
+                            <div className="space-y-2">
+                                <Label>Tanggal Transaksi <span className="text-red-500">*</span></Label>
                                     <Input type="date" value={data.tgl_transaksi} onChange={e => setData('tgl_transaksi', e.target.value)} />
                                     {errors.tgl_transaksi && <p className="text-sm text-red-500">{errors.tgl_transaksi}</p>}
                                 </div>
