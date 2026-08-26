@@ -1,6 +1,6 @@
-import { router, useForm } from '@inertiajs/react';
+import { Head, router, useForm } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
-import { LoaderCircle } from 'lucide-react';
+import { LoaderCircle, Landmark } from 'lucide-react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { PageHeader } from '@/Components/PageHeader';
 import { Button } from '@/Components/ui/button';
@@ -101,25 +101,32 @@ export default function Create({ kelompoks, kantors }: Props) {
     const jenisLabel = { angsuran: 'Angsuran', penalti: 'Penalti', angsuran_dan_setoran: 'Angsuran & Setoran' } as const;
     const metodeLabel = { tunai: 'Tunai', debet_simpanan: 'Debet Simpanan', bank: 'Bank', custom: 'Custom' } as const;
 
+    const base = 'superadmin.transaksi-pinjaman.setoran-angsuran-bank';
+
     return (
         <AuthenticatedLayout>
-            <PageHeader title="Tambah Setoran Simpanan & Angsuran Bank" />
-            <div className="max-w-5xl mx-auto p-6">
-                <form onSubmit={submit} className="space-y-6">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Form Setoran Simpanan & Angsuran Bank</CardTitle>
-                            <CardDescription>Isi data transaksi kolektif per kelompok.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="grid gap-4 sm:grid-cols-2">
-                                <div className="space-y-2">
-                                    <Label>Tanggal Transaksi</Label>
+            <Head title="Tambah Setoran Angsuran Bank" />
+            <PageHeader
+                title="Tambah Setoran Angsuran Bank"
+                description="Isi data transaksi kolektif per kelompok."
+                icon={Landmark}
+                backHref={route(base)}
+            />
+            <form onSubmit={submit} className="max-w-5xl space-y-4">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Form Setoran Angsuran Bank</CardTitle>
+                        <CardDescription>Isi data transaksi kolektif per kelompok.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="grid gap-4 sm:grid-cols-2">
+                            <div className="space-y-2">
+                                <Label>Tanggal Transaksi <span className="text-red-500">*</span></Label>
                                     <Input type="date" value={data.tgl_transaksi} onChange={e => setData('tgl_transaksi', e.target.value)} />
                                     {errors.tgl_transaksi && <p className="text-sm text-red-500">{errors.tgl_transaksi}</p>}
                                 </div>
                                 <div className="space-y-2">
-                                    <Label>Kantor</Label>
+                                <Label>Kantor <span className="text-red-500">*</span></Label>
                                     <Select value={data.kantor_id} onValueChange={v => setData('kantor_id', v)}>
                                         <SelectTrigger><SelectValue placeholder="Pilih kantor" /></SelectTrigger>
                                         <SelectContent>
@@ -131,7 +138,7 @@ export default function Create({ kelompoks, kantors }: Props) {
                             </div>
                             <div className="grid gap-4 sm:grid-cols-3">
                                 <div className="space-y-2">
-                                    <Label>Kelompok</Label>
+                                <Label>Kelompok <span className="text-red-500">*</span></Label>
                                     <Select value={data.kelompok_id} onValueChange={v => setData('kelompok_id', v)}>
                                         <SelectTrigger><SelectValue placeholder="Pilih kelompok" /></SelectTrigger>
                                         <SelectContent>
@@ -216,15 +223,16 @@ export default function Create({ kelompoks, kantors }: Props) {
                         </Card>
                     )}
 
-                    <div className="flex justify-end gap-3">
-                        <Button type="button" variant="outline" onClick={() => router.get(route('setoran-angsuran-bank:setoran-angsuran-bank'))}>Batal</Button>
-                        <Button type="submit" disabled={processing || details.length === 0}>
+                    <div className="flex gap-2 pt-2">
+                        <Button type="submit" disabled={processing || details.length === 0} className="bg-brand-600 hover:bg-brand-500">
                             {processing && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
                             Simpan Kolektif ({details.length} anggota)
                         </Button>
+                        <Button type="button" variant="outline" onClick={() => router.get(route(base))}>
+                            Batal
+                        </Button>
                     </div>
                 </form>
-            </div>
         </AuthenticatedLayout>
     );
 }

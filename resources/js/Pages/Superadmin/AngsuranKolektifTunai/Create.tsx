@@ -126,7 +126,7 @@ export default function Create({ kelompoks, kantors }: Props) {
                                     {errors.tgl_transaksi && <p className="text-sm text-red-500">{errors.tgl_transaksi}</p>}
                                 </div>
                                 <div className="space-y-2">
-                                    <Label>Kantor</Label>
+                                <Label>Kantor <span className="text-red-500">*</span></Label>
                                     <Select value={data.kantor_id} onValueChange={v => setData('kantor_id', v)}>
                                         <SelectTrigger><SelectValue placeholder="Pilih kantor" /></SelectTrigger>
                                         <SelectContent>
@@ -138,7 +138,7 @@ export default function Create({ kelompoks, kantors }: Props) {
                             </div>
                             <div className="grid gap-4 sm:grid-cols-3">
                                 <div className="space-y-2">
-                                    <Label>Kelompok</Label>
+                                <Label>Kelompok <span className="text-red-500">*</span></Label>
                                     <Select value={data.kelompok_id} onValueChange={v => setData('kelompok_id', v)}>
                                         <SelectTrigger><SelectValue placeholder="Pilih kelompok" /></SelectTrigger>
                                         <SelectContent>
@@ -223,15 +223,16 @@ export default function Create({ kelompoks, kantors }: Props) {
                         </Card>
                     )}
 
-                    <div className="flex justify-end gap-3">
-                        <Button type="button" variant="outline" onClick={() => router.get(route('angsuran-kolektif-tunai:angsuran-kolektif-tunai'))}>Batal</Button>
-                        <Button type="submit" disabled={processing || details.length === 0}>
+                    <div className="flex gap-2 pt-2">
+                        <Button type="submit" disabled={processing || details.length === 0} className="bg-brand-600 hover:bg-brand-500">
                             {processing && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
                             Simpan Kolektif ({details.length} anggota)
                         </Button>
+                        <Button type="button" variant="outline" onClick={() => router.get(route(base))}>
+                            Batal
+                        </Button>
                     </div>
-                </form>
-            </div>
+            </form>
         </AuthenticatedLayout>
     );
 }
