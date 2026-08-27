@@ -37,6 +37,52 @@ class LaporanSimpananController extends Controller
         return $query->paginate($request->integer('per_page', 10))->withQueryString();
     }
 
+    private function paginateFlat($query, Request $request, callable $row)
+    {
+        $pag = $query->paginate($request->integer('per_page', 10))->withQueryString();
+        $pag->setCollection($pag->getCollection()->map($row));
+        return $pag;
+    }
+
+    private function simpananBase(Simpanan $s): array
+    {
+        return [
+            'id' => $s->id,
+            'no_rekening' => (string) $s->no_rekening,
+            'no_anggota' => (string) ($s->anggota?->no_anggota ?? ''),
+            'nama_anggota' => (string) ($s->anggota?->nama ?? ''),
+            'jenis_simpanan' => (string) ($s->jenis_simpanan?->nama ?? ''),
+            'kantor' => (string) ($s->kantor?->nama_kantor ?? ''),
+        ];
+    }
+
+    private function simpananSaldo(int $simpananId): float
+    {
+        static $cache = [];
+        if (!array_key_exists($simpananId, $cache)) {
+            $cache[$simpananId] = (float) SetoranSimpanan::where('simpanan_id', $simpananId)
+                ->with('kodeTransaksi:id,kode,nama,setoran')
+                ->get()
+                ->reduce(function ($carry, $t) {
+                    $nominal = (float) $t->nominal;
+                    return $carry + (((bool) ($t->kodeTransaksi->setoran ?? false)) ? $nominal : -$nominal);
+                }, 0);
+        }
+        return $cache[$simpananId];
+    }
+
+    private function runningSaldoById($collection): array
+    {
+        $running = 0.0;
+        $map = [];
+        foreach ($collection as $t) {
+            $nominal = (float) $t->nominal;
+            $running += (((bool) ($t->kodeTransaksi->setoran ?? false)) ? $nominal : -$nominal);
+            $map[$t->id] = $running;
+        }
+        return $map;
+    }
+
     private function streamPdf($view, array $data, string $filename, string $paper = 'A4', string $orientation = 'landscape')
     {
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView($view, $data)->setPaper($paper, $orientation);
@@ -66,7 +112,7 @@ class LaporanSimpananController extends Controller
         $query->when($request->filled('jenis_id'), fn ($q) => $q->where('jenis_id', $request->input('jenis_id')));
 
         return inertia('Superadmin/LaporanCS/Simpanan/KartuSimpananDepan', [
-            'data' => $this->paginated($query->orderBy('no_rekening'), $request),
+            'data' => $this->paginateFlat($query->orderBy('no_rekening'), $request, fn ($s) => $this->simpananBase($s)),
             'filters' => $this->baseFilters($request),
             'kantors' => Kantor::select('id', 'kode', 'nama_kantor')->get(),
             'jenisList' => SimpananJenis::select('id', 'kode', 'nama')->get(),
@@ -116,7 +162,7 @@ class LaporanSimpananController extends Controller
         $query->when($request->filled('jenis_id'), fn ($q) => $q->where('jenis_id', $request->input('jenis_id')));
 
         return inertia('Superadmin/LaporanCS/Simpanan/KartuSimpananBelakang', [
-            'data' => $this->paginated($query->orderBy('no_rekening'), $request),
+            'data' => $this->paginateFlat($query->orderBy('no_rekening'), $request, fn ($s) => $this->simpananBase($s)),
             'filters' => $this->baseFilters($request),
             'kantors' => Kantor::select('id', 'kode', 'nama_kantor')->get(),
             'jenisList' => SimpananJenis::select('id', 'kode', 'nama')->get(),
@@ -166,7 +212,7 @@ class LaporanSimpananController extends Controller
         $query->when($request->filled('jenis_id'), fn ($q) => $q->where('jenis_id', $request->input('jenis_id')));
 
         return inertia('Superadmin/LaporanCS/Simpanan/KartuSimpananBelakangData', [
-            'data' => $this->paginated($query->orderBy('no_rekening'), $request),
+            'data' => $this->paginateFlat($query->orderBy('no_rekening'), $request, fn ($s) => $this->simpananBase($s)),
             'filters' => $this->baseFilters($request),
             'kantors' => Kantor::select('id', 'kode', 'nama_kantor')->get(),
             'jenisList' => SimpananJenis::select('id', 'kode', 'nama')->get(),
@@ -232,8 +278,25 @@ class LaporanSimpananController extends Controller
         $query->when($request->filled('mulai'), fn ($q) => $q->whereDate('tgl_transaksi', '>=', $request->date('mulai')));
         $query->when($request->filled('sampai'), fn ($q) => $q->whereDate('tgl_transaksi', '<=', $request->date('sampai')));
 
+        $saldoMap = $this->runningSaldoById($query->orderBy('tgl_transaksi')->orderBy('id')->get());
+
         return inertia('Superadmin/LaporanCS/Simpanan/RekeningKoran', [
-            'data' => $this->paginated($query->orderByDesc('tgl_transaksi'), $request),
+            'data' => $this->paginateFlat($query->orderByDesc('tgl_transaksi'), $request, function ($t) use ($saldoMap) {
+                $isSetoran = (bool) ($t->kodeTransaksi->setoran ?? false);
+                return [
+                    'id' => $t->id,
+                    'no_transaksi' => (string) $t->no_transaksi,
+                    'tanggal' => $t->tgl_transaksi?->toDateString(),
+                    'no_rekening' => (string) ($t->simpanan?->no_rekening ?? ''),
+                    'nama_anggota' => (string) ($t->anggota?->nama ?? ''),
+                    'kode_transaksi' => (string) ($t->kodeTransaksi?->kode ?? ''),
+                    'keterangan' => (string) ($t->keterangan ?? ''),
+                    'debet' => $isSetoran ? 0 : (float) $t->nominal,
+                    'kredit' => $isSetoran ? (float) $t->nominal : 0,
+                    'saldo' => (float) ($saldoMap[$t->id] ?? 0),
+                    'kantor' => (string) ($t->kantor?->nama_kantor ?? ''),
+                ];
+            }),
             'filters' => $this->baseFilters($request),
             'kantors' => Kantor::select('id', 'kode', 'nama_kantor')->get(),
             'variantTitle' => 'Rekening Koran',
@@ -278,8 +341,26 @@ class LaporanSimpananController extends Controller
         $query->when($request->filled('mulai'), fn ($q) => $q->whereDate('tgl_transaksi', '>=', $request->date('mulai')));
         $query->when($request->filled('sampai'), fn ($q) => $q->whereDate('tgl_transaksi', '<=', $request->date('sampai')));
 
+        $saldoMap = $this->runningSaldoById($query->orderBy('tgl_transaksi')->orderBy('id')->get());
+
         return inertia('Superadmin/LaporanCS/Simpanan/RekeningKoranKolektif', [
-            'data' => $this->paginated($query->orderByDesc('tgl_transaksi'), $request),
+            'data' => $this->paginateFlat($query->orderByDesc('tgl_transaksi'), $request, function ($t) use ($saldoMap) {
+                $isSetoran = (bool) ($t->kodeTransaksi->setoran ?? false);
+                return [
+                    'id' => $t->id,
+                    'kelompok' => (string) ($t->anggota?->kelompok?->nama ?? ''),
+                    'no_transaksi' => (string) $t->no_transaksi,
+                    'tanggal' => $t->tgl_transaksi?->toDateString(),
+                    'nama_anggota' => (string) ($t->anggota?->nama ?? ''),
+                    'no_rekening' => (string) ($t->simpanan?->no_rekening ?? ''),
+                    'kode_transaksi' => (string) ($t->kodeTransaksi?->kode ?? ''),
+                    'keterangan' => (string) ($t->keterangan ?? ''),
+                    'debet' => $isSetoran ? 0 : (float) $t->nominal,
+                    'kredit' => $isSetoran ? (float) $t->nominal : 0,
+                    'saldo' => (float) ($saldoMap[$t->id] ?? 0),
+                    'kantor' => (string) ($t->kantor?->nama_kantor ?? ''),
+                ];
+            }),
             'filters' => $this->baseFilters($request),
             'kelompoks' => Kelompok::select('id', 'kode', 'nama')->get(),
             'kantors' => Kantor::select('id', 'kode', 'nama_kantor')->get(),
@@ -487,7 +568,13 @@ class LaporanSimpananController extends Controller
         $query->when($request->filled('jenis_id'), fn ($q) => $q->where('jenis_id', $request->input('jenis_id')));
 
         return inertia('Superadmin/LaporanCS/Simpanan/DaftarSimpanan', [
-            'data' => $this->paginated($query->orderBy('no_rekening'), $request),
+            'data' => $this->paginateFlat($query->orderBy('no_rekening'), $request, function ($s) {
+                return array_merge($this->simpananBase($s), [
+                    'nominal_setor' => (float) ($s->nominal_setor ?? 0),
+                    'status' => ($s->aktif ?? 0) ? 'aktif' : 'nonaktif',
+                    'marketing' => (string) ($s->marketing?->nama ?? ''),
+                ]);
+            }),
             'filters' => $this->baseFilters($request),
             'kantors' => Kantor::select('id', 'kode', 'nama_kantor')->get(),
             'jenisList' => SimpananJenis::select('id', 'kode', 'nama')->get(),
@@ -530,8 +617,22 @@ class LaporanSimpananController extends Controller
         $query->when($request->filled('mulai'), fn ($q) => $q->whereDate('tgl_transaksi', '>=', $request->date('mulai')));
         $query->when($request->filled('sampai'), fn ($q) => $q->whereDate('tgl_transaksi', '<=', $request->date('sampai')));
 
+        $saldoMap = $this->runningSaldoById($query->orderBy('tgl_transaksi')->orderBy('id')->get());
+
         return inertia('Superadmin/LaporanCS/Simpanan/MutasiSimpanan', [
-            'data' => $this->paginated($query->orderByDesc('tgl_transaksi'), $request),
+            'data' => $this->paginateFlat($query->orderByDesc('tgl_transaksi'), $request, function ($t) use ($saldoMap) {
+                $isSetoran = (bool) ($t->kodeTransaksi->setoran ?? false);
+                return [
+                    'id' => $t->id,
+                    'tanggal' => $t->tgl_transaksi?->toDateString(),
+                    'no_transaksi' => (string) $t->no_transaksi,
+                    'kode_transaksi' => (string) ($t->kodeTransaksi?->kode ?? ''),
+                    'keterangan' => (string) ($t->keterangan ?? ''),
+                    'setoran' => $isSetoran ? (float) $t->nominal : 0,
+                    'penarikan' => $isSetoran ? 0 : (float) $t->nominal,
+                    'saldo' => (float) ($saldoMap[$t->id] ?? 0),
+                ];
+            }),
             'filters' => $this->baseFilters($request),
             'kantors' => Kantor::select('id', 'kode', 'nama_kantor')->get(),
             'variantTitle' => 'Mutasi Simpanan',
@@ -632,7 +733,15 @@ class LaporanSimpananController extends Controller
         $query->when($request->filled('sampai'), fn ($q) => $q->whereDate('created_at', '<=', $request->date('sampai')));
 
         return inertia('Superadmin/LaporanCS/Simpanan/BagiHasilSimpanan', [
-            'data' => $this->paginated($query->orderBy('no_rekening'), $request),
+            'data' => $this->paginateFlat($query->orderBy('no_rekening'), $request, function ($s) {
+                $saldo = $this->simpananSaldo((int) $s->id);
+                $bunga = (float) ($s->bunga ?? 0);
+                $row = $this->simpananBase($s);
+                $row['saldo'] = $saldo;
+                $row['bunga'] = $bunga;
+                $row['bagi_hasil'] = $saldo * $bunga / 100;
+                return $row;
+            }),
             'filters' => $this->baseFilters($request),
             'kantors' => Kantor::select('id', 'kode', 'nama_kantor')->get(),
             'jenisList' => SimpananJenis::select('id', 'kode', 'nama')->get(),
@@ -676,7 +785,15 @@ class LaporanSimpananController extends Controller
         $query->when($request->filled('sampai'), fn ($q) => $q->whereDate('created_at', '<=', $request->date('sampai')));
 
         return inertia('Superadmin/LaporanCS/Simpanan/BagiHasilSimpanan2', [
-            'data' => $this->paginated($query->orderBy('no_rekening'), $request),
+            'data' => $this->paginateFlat($query->orderBy('no_rekening'), $request, function ($s) {
+                $saldo = $this->simpananSaldo((int) $s->id);
+                $bunga = (float) ($s->bunga ?? 0);
+                $row = $this->simpananBase($s);
+                $row['saldo'] = $saldo;
+                $row['bunga'] = $bunga;
+                $row['bagi_hasil'] = $saldo * $bunga / 100;
+                return $row;
+            }),
             'filters' => $this->baseFilters($request),
             'kantors' => Kantor::select('id', 'kode', 'nama_kantor')->get(),
             'jenisList' => SimpananJenis::select('id', 'kode', 'nama')->get(),
@@ -709,7 +826,8 @@ class LaporanSimpananController extends Controller
     public function nominatifSimpanan(Request $request)
     {
         $query = Simpanan::with([
-            'anggota:id,no_anggota,nama',
+            'anggota:id,no_anggota,nama,kelompok_id',
+            'anggota.kelompok:id,kode,nama',
             'jenis_simpanan:id,kode,nama',
             'kantor:id,kode,nama_kantor',
         ]);
@@ -718,7 +836,13 @@ class LaporanSimpananController extends Controller
         $query->when($request->filled('jenis_id'), fn ($q) => $q->where('jenis_id', $request->input('jenis_id')));
 
         return inertia('Superadmin/LaporanCS/Simpanan/NominatifSimpanan', [
-            'data' => $this->paginated($query->orderBy('anggota.no_anggota'), $request),
+            'data' => $this->paginateFlat($query->orderBy('anggota.no_anggota'), $request, function ($s) {
+                $row = $this->simpananBase($s);
+                $row['kelompok'] = (string) ($s->anggota?->kelompok?->nama ?? '');
+                $row['total_saldo'] = $this->simpananSaldo((int) $s->id);
+                $row['jumlah_simpanan'] = 1;
+                return $row;
+            }),
             'filters' => $this->baseFilters($request),
             'kantors' => Kantor::select('id', 'kode', 'nama_kantor')->get(),
             'jenisList' => SimpananJenis::select('id', 'kode', 'nama')->get(),
@@ -758,7 +882,7 @@ class LaporanSimpananController extends Controller
         $query->when($request->filled('jenis_id'), fn ($q) => $q->where('jenis_id', $request->input('jenis_id')));
 
         return inertia('Superadmin/LaporanCS/Simpanan/NominatifSimpananDetail', [
-            'data' => $this->paginated($query->orderBy('anggota.no_anggota'), $request),
+            'data' => $this->paginateFlat($query->orderBy('anggota.no_anggota'), $request, fn ($s) => $this->simpananBase($s)),
             'filters' => $this->baseFilters($request),
             'kantors' => Kantor::select('id', 'kode', 'nama_kantor')->get(),
             'jenisList' => SimpananJenis::select('id', 'kode', 'nama')->get(),
@@ -798,7 +922,11 @@ class LaporanSimpananController extends Controller
         $query->when($request->filled('jenis_id'), fn ($q) => $q->where('jenis_id', $request->input('jenis_id')));
 
         return inertia('Superadmin/LaporanCS/Simpanan/SaldoSimpanan', [
-            'data' => $this->paginated($query->orderBy('no_rekening'), $request),
+            'data' => $this->paginateFlat($query->orderBy('no_rekening'), $request, function ($s) {
+                $row = $this->simpananBase($s);
+                $row['saldo_akhir'] = $this->simpananSaldo((int) $s->id);
+                return $row;
+            }),
             'filters' => $this->baseFilters($request),
             'kantors' => Kantor::select('id', 'kode', 'nama_kantor')->get(),
             'jenisList' => SimpananJenis::select('id', 'kode', 'nama')->get(),
@@ -840,7 +968,11 @@ class LaporanSimpananController extends Controller
         $query->when($request->filled('sampai'), fn ($q) => $q->whereDate('created_at', '<=', $request->date('sampai')));
 
         return inertia('Superadmin/LaporanCS/Simpanan/SimpananBaru', [
-            'data' => $this->paginated($query->orderByDesc('created_at'), $request),
+            'data' => $this->paginateFlat($query->orderByDesc('created_at'), $request, function ($s) {
+                $row = $this->simpananBase($s);
+                $row['tanggal_buka'] = isset($s->created_at) ? (is_string($s->created_at) ? explode(' ', $s->created_at)[0] : $s->created_at->toDateString()) : null;
+                return $row;
+            }),
             'filters' => $this->baseFilters($request),
             'kantors' => Kantor::select('id', 'kode', 'nama_kantor')->get(),
             'jenisList' => SimpananJenis::select('id', 'kode', 'nama')->get(),
@@ -885,7 +1017,18 @@ class LaporanSimpananController extends Controller
         $query->when($request->filled('sampai'), fn ($q) => $q->whereDate('tgl_transaksi', '<=', $request->date('sampai')));
 
         return inertia('Superadmin/LaporanCS/Simpanan/PenutupanSimpanan', [
-            'data' => $this->paginated($query->orderByDesc('tgl_transaksi'), $request),
+            'data' => $this->paginateFlat($query->orderByDesc('tgl_transaksi'), $request, function ($t) {
+                return [
+                    'id' => $t->id,
+                    'no_transaksi' => (string) $t->no_transaksi,
+                    'tanggal' => isset($t->tgl_transaksi) ? (is_string($t->tgl_transaksi) ? explode(' ', $t->tgl_transaksi)[0] : $t->tgl_transaksi->toDateString()) : null,
+                    'no_rekening' => (string) ($t->simpanan?->no_rekening ?? ''),
+                    'nama_anggota' => (string) ($t->anggota?->nama ?? ''),
+                    'jenis_simpanan' => (string) ($t->simpanan?->jenis_simpanan?->nama ?? ''),
+                    'nominal_bunga' => (float) ($t->nominal ?? 0),
+                    'kantor' => (string) ($t->kantor?->nama_kantor ?? ''),
+                ];
+            }),
             'filters' => $this->baseFilters($request),
             'kantors' => Kantor::select('id', 'kode', 'nama_kantor')->get(),
             'variantTitle' => 'Laporan Penutupan Simpanan',
@@ -927,7 +1070,12 @@ class LaporanSimpananController extends Controller
         $query->when($request->filled('kantor_id'), fn ($q) => $q->where('kantor_id', $request->input('kantor_id')));
 
         return inertia('Superadmin/LaporanCS/Simpanan/TunggakanSetoranWajib', [
-            'data' => $this->paginated($query->orderBy('no_rekening'), $request),
+            'data' => $this->paginateFlat($query->orderBy('no_rekening'), $request, function ($s) {
+                $row = $this->simpananBase($s);
+                $row['tunggakan_bulan'] = 0;
+                $row['nominal_tunggakan'] = 0;
+                return $row;
+            }),
             'filters' => $this->baseFilters($request),
             'kantors' => Kantor::select('id', 'kode', 'nama_kantor')->get(),
             'variantTitle' => 'Laporan Tunggakan Setoran Simpanan Wajib',
@@ -967,7 +1115,11 @@ class LaporanSimpananController extends Controller
         $query->when($request->filled('jenis_id'), fn ($q) => $q->where('jenis_id', $request->input('jenis_id')));
 
         return inertia('Superadmin/LaporanCS/Simpanan/SimpananTidakAktif', [
-            'data' => $this->paginated($query->orderBy('no_rekening'), $request),
+            'data' => $this->paginateFlat($query->orderBy('no_rekening'), $request, function ($s) {
+                $row = $this->simpananBase($s);
+                $row['tanggal_aktif_terakhir'] = isset($s->tgl_blokir) ? (is_string($s->tgl_blokir) ? explode(' ', $s->tgl_blokir)[0] : $s->tgl_blokir->toDateString()) : null;
+                return $row;
+            }),
             'filters' => $this->baseFilters($request),
             'kantors' => Kantor::select('id', 'kode', 'nama_kantor')->get(),
             'jenisList' => SimpananJenis::select('id', 'kode', 'nama')->get(),
@@ -1011,7 +1163,7 @@ class LaporanSimpananController extends Controller
         $query->when($request->filled('sampai'), fn ($q) => $q->whereDate('created_at', '<=', $request->date('sampai')));
 
         return inertia('Superadmin/LaporanCS/Simpanan/SimpananJatuhTempo', [
-            'data' => $this->paginated($query->orderBy('no_rekening'), $request),
+            'data' => $this->paginateFlat($query->orderBy('no_rekening'), $request, fn ($s) => $this->simpananBase($s)),
             'filters' => $this->baseFilters($request),
             'kantors' => Kantor::select('id', 'kode', 'nama_kantor')->get(),
             'jenisList' => SimpananJenis::select('id', 'kode', 'nama')->get(),
@@ -1044,13 +1196,25 @@ class LaporanSimpananController extends Controller
 
     public function rekapitulasiProduk(Request $request)
     {
-        $query = SimpananJenis::withCount('simpanan');
+        $query = SimpananJenis::withCount('simpanan')
+            ->withSum('simpanan as total_saldo', 'nominal_setor');
         $query->when($request->filled('kantor_id'), function ($q) use ($request) {
             $q->whereHas('simpanan', fn ($sq) => $sq->where('kantor_id', $request->input('kantor_id')));
         });
 
         return inertia('Superadmin/LaporanCS/Simpanan/RekapitulasiProdukSimpanan', [
-            'data' => $this->paginated($query->orderBy('kode'), $request),
+            'data' => $this->paginateFlat($query->orderBy('kode'), $request, function ($j) {
+                $jumlah = (int) ($j->simpanan_count ?? 0);
+                $total = (float) ($j->total_saldo ?? 0);
+                return [
+                    'id' => $j->id,
+                    'kode_jenis' => (string) $j->kode,
+                    'nama_jenis' => (string) $j->nama,
+                    'jumlah_simpanan' => $jumlah,
+                    'total_saldo' => $total,
+                    'rata_rata_saldo' => $jumlah ? round($total / $jumlah) : 0,
+                ];
+            }),
             'filters' => $this->baseFilters($request),
             'kantors' => Kantor::select('id', 'kode', 'nama_kantor')->get(),
             'variantTitle' => 'Rekapitulasi Produk Simpanan',
@@ -1078,16 +1242,48 @@ class LaporanSimpananController extends Controller
         $query = SetoranSimpanan::with([
             'simpanan:id,jenis_id',
             'simpanan.jenis_simpanan:id,kode,nama',
+            'kodeTransaksi:id,kode,nama,setoran',
             'kantor:id,kode,nama_kantor',
         ]);
         $query->when($request->filled('kantor_id'), fn ($q) => $q->where('kantor_id', $request->input('kantor_id')));
         $query->when($request->filled('mulai'), fn ($q) => $q->whereDate('tgl_transaksi', '>=', $request->date('mulai')));
         $query->when($request->filled('sampai'), fn ($q) => $q->whereDate('tgl_transaksi', '<=', $request->date('sampai')));
 
-        $items = $query->orderByDesc('tgl_transaksi')->get();
+        $all = $query->orderBy('tgl_transaksi')->get();
+
+        $items = $all->groupBy(fn ($t) => $t->tgl_transaksi ? $t->tgl_transaksi->format('Y-m') : 'tanpa tanggal')
+            ->map(function ($group, $month) {
+                $setoran = 0.0;
+                $penarikan = 0.0;
+                foreach ($group as $t) {
+                    $n = (float) $t->nominal;
+                    if ((bool) ($t->kodeTransaksi->setoran ?? false)) {
+                        $setoran += $n;
+                    } else {
+                        $penarikan += $n;
+                    }
+                }
+                return [
+                    'id' => $month,
+                    'bulan' => $month,
+                    'total_setoran' => $setoran,
+                    'total_penarikan' => $penarikan,
+                    'saldo_akhir' => $setoran - $penarikan,
+                ];
+            })->values();
+
+        $perPage = $request->integer('per_page', 10);
+        $currentPage = $request->integer('page', 1);
+        $paginated = new \Illuminate\Pagination\LengthAwarePaginator(
+            $items->slice(($currentPage - 1) * $perPage, $perPage),
+            $items->count(),
+            $perPage,
+            $currentPage,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
 
         return inertia('Superadmin/LaporanCS/Simpanan/RekapitulasiSimpananGrafik', [
-            'data' => $items,
+            'data' => $paginated,
             'filters' => $this->baseFilters($request),
             'kantors' => Kantor::select('id', 'kode', 'nama_kantor')->get(),
             'variantTitle' => 'Rekapitulasi Simpanan Grafik',
@@ -1128,8 +1324,32 @@ class LaporanSimpananController extends Controller
         $query->when($request->filled('mulai'), fn ($q) => $q->whereDate('tgl_transaksi', '>=', $request->date('mulai')));
         $query->when($request->filled('sampai'), fn ($q) => $q->whereDate('tgl_transaksi', '<=', $request->date('sampai')));
 
+        $items = $query->get()->groupBy(function ($t) {
+            return ($t->simpanan?->jenis_simpanan?->nama ?? 'Lainnya').'|'.($t->kantor?->nama_kantor ?? '');
+        })->map(function ($group) {
+            $first = $group->first();
+            $total = (float) $group->sum('nominal');
+            return [
+                'id' => $first->id,
+                'jenis_simpanan' => (string) ($first->simpanan?->jenis_simpanan?->nama ?? 'Lainnya'),
+                'kantor' => (string) ($first->kantor?->nama_kantor ?? ''),
+                'total_saldo' => $total,
+                'total_bagi_hasil' => 0,
+            ];
+        })->values();
+
+        $perPage = $request->integer('per_page', 10);
+        $currentPage = $request->integer('page', 1);
+        $paginated = new \Illuminate\Pagination\LengthAwarePaginator(
+            $items->slice(($currentPage - 1) * $perPage, $perPage),
+            $items->count(),
+            $perPage,
+            $currentPage,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
+
         return inertia('Superadmin/LaporanCS/Simpanan/RekapitulasiBagiHasilSimpanan', [
-            'data' => $this->paginated($query->orderByDesc('tgl_transaksi'), $request),
+            'data' => $paginated,
             'filters' => $this->baseFilters($request),
             'kantors' => Kantor::select('id', 'kode', 'nama_kantor')->get(),
             'jenisList' => SimpananJenis::select('id', 'kode', 'nama')->get(),

@@ -34,6 +34,7 @@ use App\Http\Controllers\Superadmin\LaporanController;
 use App\Http\Controllers\Superadmin\LaporanCSController;
 use App\Http\Controllers\Superadmin\LaporanPinjamanController;
 use App\Http\Controllers\Superadmin\LaporanSimpananController;
+use App\Http\Controllers\Superadmin\LaporanSimpananBerjangkaController;
 
 // Route Livewire lama modul Anggota dihapus — sudah dimigrasikan ke Inertia.
 use App\Http\Controllers\WilayahController;
@@ -626,6 +627,33 @@ Route::prefix('superadmin')->name('superadmin.')->middleware(['auth', 'role:supe
         Route::get('/rekapitulasi-bagi-hasil/cetak', [LaporanSimpananController::class, 'cetakRekapitulasiBagiHasilSimpanan'])->name('rekapitulasi-bagi-hasil.cetak');
         Route::get('/buku-tabungan/cetak', [LaporanSimpananController::class, 'cetakBukuTabungan'])->name('buku-tabungan.cetak');
         Route::get('/buku-tabungan/data', [LaporanSimpananController::class, 'bukuTabunganData'])->name('buku-tabungan.data');
+    });
+
+    Route::prefix('laporan-cs/simpanan-berjangka')->name('laporan-cs.simpanan-berjangka.')->group(function () {
+        Route::get('/daftar-berjangka', [LaporanSimpananBerjangkaController::class, 'daftarBerjangka'])->name('daftar-berjangka');
+        Route::get('/daftar-berjangka/cetak', [LaporanSimpananBerjangkaController::class, 'cetakDaftarBerjangka'])->name('daftar-berjangka.cetak');
+        Route::get('/bilyet-berjangka', [LaporanSimpananBerjangkaController::class, 'bilyetBerjangka'])->name('bilyet-berjangka');
+        Route::get('/bilyet-berjangka/cetak', [LaporanSimpananBerjangkaController::class, 'cetakBilyetBerjangka'])->name('bilyet-berjangka.cetak');
+        Route::get('/kartu-berjangka', [LaporanSimpananBerjangkaController::class, 'kartuBerjangka'])->name('kartu-berjangka');
+        Route::get('/kartu-berjangka/cetak', [LaporanSimpananBerjangkaController::class, 'cetakKartuBerjangka'])->name('kartu-berjangka.cetak');
+        Route::get('/konfirmasi-perubahan-bagi-hasil', [LaporanSimpananBerjangkaController::class, 'konfirmasiPerubahanBagiHasil'])->name('konfirmasi-perubahan-bagi-hasil');
+        Route::get('/konfirmasi-perubahan-bagi-hasil/cetak', [LaporanSimpananBerjangkaController::class, 'cetakKonfirmasiPerubahanBagiHasil'])->name('konfirmasi-perubahan-bagi-hasil.cetak');
+        Route::get('/simpanan-berjangka-baru', [LaporanSimpananBerjangkaController::class, 'simpananBerjangkaBaru'])->name('simpanan-berjangka-baru');
+        Route::get('/simpanan-berjangka-baru/cetak', [LaporanSimpananBerjangkaController::class, 'cetakSimpananBerjangkaBaru'])->name('simpanan-berjangka-baru.cetak');
+        Route::get('/pencairan-berjangka', [LaporanSimpananBerjangkaController::class, 'pencairanBerjangka'])->name('pencairan-berjangka');
+        Route::get('/pencairan-berjangka/cetak', [LaporanSimpananBerjangkaController::class, 'cetakPencairanBerjangka'])->name('pencairan-berjangka.cetak');
+        Route::get('/bagi-hasil-berjangka', [LaporanSimpananBerjangkaController::class, 'bagiHasilBerjangka'])->name('bagi-hasil-berjangka');
+        Route::get('/bagi-hasil-berjangka/cetak', [LaporanSimpananBerjangkaController::class, 'cetakBagiHasilBerjangka'])->name('bagi-hasil-berjangka.cetak');
+        Route::get('/bagi-hasil-berjangka-2', [LaporanSimpananBerjangkaController::class, 'bagiHasilBerjangka2'])->name('bagi-hasil-berjangka-2');
+        Route::get('/bagi-hasil-berjangka-2/cetak', [LaporanSimpananBerjangkaController::class, 'cetakBagiHasilBerjangka2'])->name('bagi-hasil-berjangka-2.cetak');
+        Route::get('/posting-bagi-hasil', [LaporanSimpananBerjangkaController::class, 'postingBagiHasil'])->name('posting-bagi-hasil');
+        Route::get('/posting-bagi-hasil/cetak', [LaporanSimpananBerjangkaController::class, 'cetakPostingBagiHasil'])->name('posting-bagi-hasil.cetak');
+        Route::get('/nominatif-berjangka', [LaporanSimpananBerjangkaController::class, 'nominatifBerjangka'])->name('nominatif-berjangka');
+        Route::get('/nominatif-berjangka/cetak', [LaporanSimpananBerjangkaController::class, 'cetakNominatifBerjangka'])->name('nominatif-berjangka.cetak');
+        Route::get('/jatuh-tempo-berjangka', [LaporanSimpananBerjangkaController::class, 'jatuhTempoBerjangka'])->name('jatuh-tempo-berjangka');
+        Route::get('/jatuh-tempo-berjangka/cetak', [LaporanSimpananBerjangkaController::class, 'cetakJatuhTempoBerjangka'])->name('jatuh-tempo-berjangka.cetak');
+        Route::get('/rekapitulasi-bagi-hasil', [LaporanSimpananBerjangkaController::class, 'rekapitulasiBagiHasil'])->name('rekapitulasi-bagi-hasil');
+        Route::get('/rekapitulasi-bagi-hasil/cetak', [LaporanSimpananBerjangkaController::class, 'cetakRekapitulasiBagiHasil'])->name('rekapitulasi-bagi-hasil.cetak');
     });
 
 });
