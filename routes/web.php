@@ -35,86 +35,11 @@ use App\Http\Controllers\Superadmin\LaporanCSController;
 use App\Http\Controllers\Superadmin\LaporanPinjamanController;
 use App\Http\Controllers\Superadmin\LaporanSimpananController;
 use App\Http\Controllers\Superadmin\LaporanSimpananBerjangkaController;
+use App\Http\Controllers\Superadmin\LaporanMarketingController;
 
 // Route Livewire lama modul Anggota dihapus — sudah dimigrasikan ke Inertia.
 use App\Http\Controllers\WilayahController;
 use Illuminate\Support\Facades\Route;
-
-// USER
-
-// KELOMPOK
-
-// KANTOR
-
-
-// ACCOUNT HEADER
-
-// ACCOUNT
-
-// PINJAMAN PRODUK
-
-// JAMINAN
-
-// PINJAMAN
-// Data Pinjaman sudah dimigrasikan ke Inertia (PinjamanController).
-
-// PINJAMAN PRODUK
-
-// PINJAMAN JADWAL ULANG
-
-// PINJAMAN TAGIHAN
-
-// PINJAMAN PENGHAPUSAN
-
-// PINJAMAN SURAT PERINGATAN
-
-// PINJAMAN PENGEMBALIAN JAMINAN
-
-// SIMPANAN
-// KODE TRANSAKSI
-
-// SIMPANAN PRODUK
-
-// MARKETING
-
-// SIMPANAN
-// Data Simpanan sudah dimigrasikan ke Inertia (SimpananController).
-
-// SIMPANAN RENCANA
-// Simpanan Rencana sudah dimigrasikan ke Inertia (SimpananRencanaController).
-
-// SIMPANAN BERJANGKA PRODUK
-
-// SIMPANAN BERJANGKA
-
-
-// Penalti Pinjaman Kolektif
-
-
-// Angsuran Pinjaman Kolektif
-
-
-// Setoran Kolektif Bank
-
-// Setoran Simpanan sudah dimigrasikan ke Inertia (SetoranSimpananController).
-
-
-// Tarikan Simpanan sudah dimigrasikan ke Inertia (TarikanSimpananController).
-
-// Tarikan Simpana Kolektif
-
-// Pemindahbukuan Simpanan sudah dimigrasikan ke Inertia (PemindahbukuanSimpananController).
-
-// Penutupan Simpanan sudah dimigrasikan ke Inertia (PenutupanSimpananController).
-
-// Setoran Simpana Berjangka
-
-// Simpanan Berjangka & Produknya sudah dimigrasikan ke Inertia (BerjangkaprodukController & BerjangkaController).
-
-// Pencairan Simpana Berjangka
-
-
-// Penarikan Titipan Anggota
 
 use Illuminate\Support\Facades\Auth;
 
@@ -654,6 +579,43 @@ Route::prefix('superadmin')->name('superadmin.')->middleware(['auth', 'role:supe
         Route::get('/jatuh-tempo-berjangka/cetak', [LaporanSimpananBerjangkaController::class, 'cetakJatuhTempoBerjangka'])->name('jatuh-tempo-berjangka.cetak');
         Route::get('/rekapitulasi-bagi-hasil', [LaporanSimpananBerjangkaController::class, 'rekapitulasiBagiHasil'])->name('rekapitulasi-bagi-hasil');
         Route::get('/rekapitulasi-bagi-hasil/cetak', [LaporanSimpananBerjangkaController::class, 'cetakRekapitulasiBagiHasil'])->name('rekapitulasi-bagi-hasil.cetak');
+    });
+
+    Route::prefix('laporan-cs/marketing')->name('laporan-cs.marketing.')->group(function () {
+        Route::get('/daftar-marketing', [LaporanMarketingController::class, 'daftarMarketing'])->name('daftar-marketing');
+        Route::get('/daftar-marketing/cetak', [LaporanMarketingController::class, 'cetakDaftarMarketing'])->name('daftar-marketing.cetak');
+        Route::get('/angsuran-pinjaman-marketing', [LaporanMarketingController::class, 'angsuranPinjamanMarketing'])->name('angsuran-pinjaman-marketing');
+        Route::get('/angsuran-pinjaman-marketing/cetak', [LaporanMarketingController::class, 'cetakAngsuranPinjamanMarketing'])->name('angsuran-pinjaman-marketing.cetak');
+        Route::get('/angsuran-pinjaman-marketing-detail', [LaporanMarketingController::class, 'angsuranPinjamanMarketingDetail'])->name('angsuran-pinjaman-marketing-detail');
+        Route::get('/angsuran-pinjaman-marketing-detail/cetak', [LaporanMarketingController::class, 'cetakAngsuranPinjamanMarketingDetail'])->name('angsuran-pinjaman-marketing-detail.cetak');
+        Route::get('/insentif-marketing', [LaporanMarketingController::class, 'insentifMarketing'])->name('insentif-marketing');
+        Route::get('/insentif-marketing/cetak', [LaporanMarketingController::class, 'cetakInsentifMarketing'])->name('insentif-marketing.cetak');
+        Route::get('/insentif-marketing-angsuran-pinjaman', [LaporanMarketingController::class, 'insentifMarketingAngsuranPinjaman'])->name('insentif-marketing-angsuran-pinjaman');
+        Route::get('/insentif-marketing-angsuran-pinjaman/cetak', [LaporanMarketingController::class, 'cetakInsentifMarketingAngsuranPinjaman'])->name('insentif-marketing-angsuran-pinjaman.cetak');
+        Route::get('/pinjaman-marketing', [LaporanMarketingController::class, 'pinjamanMarketing'])->name('pinjaman-marketing');
+        Route::get('/pinjaman-marketing/cetak', [LaporanMarketingController::class, 'cetakPinjamanMarketing'])->name('pinjaman-marketing.cetak');
+        Route::get('/tagihan-marketing', [LaporanMarketingController::class, 'tagihanMarketing'])->name('tagihan-marketing');
+        Route::get('/tagihan-marketing/cetak', [LaporanMarketingController::class, 'cetakTagihanMarketing'])->name('tagihan-marketing.cetak');
+        Route::get('/tagihan-marketing-detail', [LaporanMarketingController::class, 'tagihanMarketingDetail'])->name('tagihan-marketing-detail');
+        Route::get('/tagihan-marketing-detail/cetak', [LaporanMarketingController::class, 'cetakTagihanMarketingDetail'])->name('tagihan-marketing-detail.cetak');
+        Route::get('/tagihan-marketing-status', [LaporanMarketingController::class, 'tagihanMarketingStatus'])->name('tagihan-marketing-status');
+        Route::get('/tagihan-marketing-status/cetak', [LaporanMarketingController::class, 'cetakTagihanMarketingStatus'])->name('tagihan-marketing-status.cetak');
+        Route::get('/simpanan-marketing', [LaporanMarketingController::class, 'simpananMarketing'])->name('simpanan-marketing');
+        Route::get('/simpanan-marketing/cetak', [LaporanMarketingController::class, 'cetakSimpananMarketing'])->name('simpanan-marketing.cetak');
+        Route::get('/transaksi-simpanan-marketing', [LaporanMarketingController::class, 'transaksiSimpananMarketing'])->name('transaksi-simpanan-marketing');
+        Route::get('/transaksi-simpanan-marketing/cetak', [LaporanMarketingController::class, 'cetakTransaksiSimpananMarketing'])->name('transaksi-simpanan-marketing.cetak');
+        Route::get('/transaksi-simpanan-marketing-detail', [LaporanMarketingController::class, 'transaksiSimpananMarketingDetail'])->name('transaksi-simpanan-marketing-detail');
+        Route::get('/transaksi-simpanan-marketing-detail/cetak', [LaporanMarketingController::class, 'cetakTransaksiSimpananMarketingDetail'])->name('transaksi-simpanan-marketing-detail.cetak');
+        Route::get('/npl-marketing', [LaporanMarketingController::class, 'nplMarketing'])->name('npl-marketing');
+        Route::get('/npl-marketing/cetak', [LaporanMarketingController::class, 'cetakNplMarketing'])->name('npl-marketing.cetak');
+        Route::get('/pencapaian-angsuran-harian', [LaporanMarketingController::class, 'pencapaianAngsuranHarian'])->name('pencapaian-angsuran-harian');
+        Route::get('/pencapaian-angsuran-harian/cetak', [LaporanMarketingController::class, 'cetakPencapaianAngsuranHarian'])->name('pencapaian-angsuran-harian.cetak');
+        Route::get('/pencapaian-angsuran-mingguan', [LaporanMarketingController::class, 'pencapaianAngsuranMingguan'])->name('pencapaian-angsuran-mingguan');
+        Route::get('/pencapaian-angsuran-mingguan/cetak', [LaporanMarketingController::class, 'cetakPencapaianAngsuranMingguan'])->name('pencapaian-angsuran-mingguan.cetak');
+        Route::get('/pencapaian-angsuran-bulanan', [LaporanMarketingController::class, 'pencapaianAngsuranBulanan'])->name('pencapaian-angsuran-bulanan');
+        Route::get('/pencapaian-angsuran-bulanan/cetak', [LaporanMarketingController::class, 'cetakPencapaianAngsuranBulanan'])->name('pencapaian-angsuran-bulanan.cetak');
+        Route::get('/rekapitulasi-pinjaman-marketing', [LaporanMarketingController::class, 'rekapitulasiPinjamanMarketing'])->name('rekapitulasi-pinjaman-marketing');
+        Route::get('/rekapitulasi-pinjaman-marketing/cetak', [LaporanMarketingController::class, 'cetakRekapitulasiPinjamanMarketing'])->name('rekapitulasi-pinjaman-marketing.cetak');
     });
 
 });

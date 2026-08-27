@@ -18,10 +18,12 @@ interface ReportFilterBarProps {
     kelompoks?: Array<{ id: number; kode: string; nama: string }>;
     kantors?: Array<{ id: number; kode: string; nama_kantor: string }>;
     jenisList?: Array<{ id: number; kode: string; nama: string }>;
+    marketings?: Array<{ id: number; kode: string; nama: string }>;
     showDateRange?: boolean;
     showKelompok?: boolean;
     showKantor?: boolean;
     showJenis?: boolean;
+    showMarketing?: boolean;
     printRoute?: string;
     printParams?: Record<string, string>;
     className?: string;
@@ -33,10 +35,12 @@ export function ReportFilterBar({
     kelompoks,
     kantors,
     jenisList,
+    marketings,
     showDateRange = false,
     showKelompok = false,
     showKantor = false,
     showJenis = false,
+    showMarketing = false,
     printRoute,
     printParams,
     className,
@@ -164,6 +168,25 @@ export function ReportFilterBar({
                         {jenisList.map((j) => (
                             <SelectItem key={j.id} value={String(j.id)}>
                                 {j.kode} — {j.nama}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+            )}
+
+            {showMarketing && marketings && (
+                <Select
+                    value={filters.marketing_id ?? 'all'}
+                    onValueChange={(v) => updateFilter('marketing_id', v)}
+                >
+                    <SelectTrigger className="w-52">
+                        <SelectValue placeholder="Semua Marketing" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="all">Semua Marketing</SelectItem>
+                        {marketings.map((m) => (
+                            <SelectItem key={m.id} value={String(m.id)}>
+                                {m.kode} — {m.nama}
                             </SelectItem>
                         ))}
                     </SelectContent>
