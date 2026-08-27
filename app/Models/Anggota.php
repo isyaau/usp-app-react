@@ -70,6 +70,16 @@ class Anggota extends Model
 
 
 
+    public function simpanan()
+    {
+        return $this->hasMany(Simpanan::class, 'anggota_id');
+    }
+
+    public function pinjaman()
+    {
+        return $this->hasMany(Pinjaman::class, 'anggota_id');
+    }
+
     public function kelompok()
     {
         return $this->belongsTo(Kelompok::class, 'kelompok_id');

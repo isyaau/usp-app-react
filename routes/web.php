@@ -31,6 +31,7 @@ use App\Http\Controllers\Superadmin\AngsuranKolektifController;
 use App\Http\Controllers\Superadmin\TransaksiSimpananBerjangkaController;
 use App\Http\Controllers\Superadmin\PenarikanDanaTitipanController;
 use App\Http\Controllers\Superadmin\LaporanController;
+use App\Http\Controllers\Superadmin\LaporanCSController;
 
 // Route Livewire lama modul Anggota dihapus — sudah dimigrasikan ke Inertia.
 use App\Http\Controllers\WilayahController;
@@ -455,6 +456,33 @@ Route::prefix('superadmin')->name('superadmin.')->middleware(['auth', 'role:supe
     Route::delete('/transaksi-simpanan/penutupan-simpanan/{penutupanSimpanan}', [PenutupanSimpananController::class, 'destroy'])->name('transaksi-simpanan.penutupan-simpanan.destroy');
     Route::get('/transaksi-simpanan/penutupan-simpanan/{penutupanSimpanan}', [PenutupanSimpananController::class, 'show'])->name('transaksi-simpanan.penutupan-simpanan.show');
 
+    // ==================== LAPORAN CS — ANGGOTA ====================
+    Route::prefix('laporan-cs/anggota')->name('laporan-cs.anggota.')->group(function () {
+        Route::get('/daftar-anggota', [LaporanCSController::class, 'daftarAnggota'])->name('daftar-anggota');
+        Route::get('/daftar-anggota/cetak', [LaporanCSController::class, 'cetakDaftarAnggota'])->name('daftar-anggota.cetak');
+        Route::get('/non-anggota', [LaporanCSController::class, 'daftarNonAnggota'])->name('non-anggota');
+        Route::get('/non-anggota/cetak', [LaporanCSController::class, 'cetakDaftarNonAnggota'])->name('non-anggota.cetak');
+        Route::get('/pengurus', [LaporanCSController::class, 'daftarPengurus'])->name('pengurus');
+        Route::get('/pengurus/cetak', [LaporanCSController::class, 'cetakDaftarPengurus'])->name('pengurus.cetak');
+        Route::get('/pengawas', [LaporanCSController::class, 'daftarPengawas'])->name('pengawas');
+        Route::get('/pengawas/cetak', [LaporanCSController::class, 'cetakDaftarPengawas'])->name('pengawas.cetak');
+        Route::get('/per-kelompok', [LaporanCSController::class, 'anggotaPerKelompok'])->name('per-kelompok');
+        Route::get('/per-kelompok/cetak', [LaporanCSController::class, 'cetakAnggotaPerKelompok'])->name('per-kelompok.cetak');
+        Route::get('/kartu', [LaporanCSController::class, 'kartuAnggota'])->name('kartu');
+        Route::get('/kartu/{anggota}/cetak', [LaporanCSController::class, 'cetakKartuAnggota'])->name('kartu.cetak');
+        Route::get('/laporan', [LaporanCSController::class, 'laporanAnggota'])->name('laporan');
+        Route::get('/laporan/cetak', [LaporanCSController::class, 'cetakLaporanAnggota'])->name('laporan.cetak');
+        Route::get('/penarikan', [LaporanCSController::class, 'penarikanAnggota'])->name('penarikan');
+        Route::get('/penarikan/cetak', [LaporanCSController::class, 'cetakPenarikanAnggota'])->name('penarikan.cetak');
+        Route::get('/sisa-penarikan', [LaporanCSController::class, 'sisaPenarikanDana'])->name('sisa-penarikan');
+        Route::get('/sisa-penarikan/cetak', [LaporanCSController::class, 'cetakSisaPenarikanDana'])->name('sisa-penarikan.cetak');
+        Route::get('/simpanan-pinjaman', [LaporanCSController::class, 'simpananPinjaman'])->name('simpanan-pinjaman');
+        Route::get('/simpanan-pinjaman/cetak', [LaporanCSController::class, 'cetakSimpananPinjaman'])->name('simpanan-pinjaman.cetak');
+        Route::get('/simpan-pinjam-detail', [LaporanCSController::class, 'simpanPinjamDetail'])->name('simpan-pinjam-detail');
+        Route::get('/simpan-pinjam-detail/cetak', [LaporanCSController::class, 'cetakSimpanPinjamDetail'])->name('simpan-pinjam-detail.cetak');
+        Route::get('/hutang-kewajiban', [LaporanCSController::class, 'hutangKewajiban'])->name('hutang-kewajiban');
+        Route::get('/hutang-kewajiban/cetak', [LaporanCSController::class, 'cetakHutangKewajiban'])->name('hutang-kewajiban.cetak');
+    });
 
 });
 

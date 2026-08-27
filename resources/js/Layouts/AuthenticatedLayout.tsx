@@ -18,6 +18,7 @@ import {
     X,
     Landmark,
     DollarSign,
+    FileText,
 } from 'lucide-react';
 
 import { Button } from '@/Components/ui/button';
@@ -64,19 +65,28 @@ const MENU: MenuItem[] = [
     { header: 'Super Admin' },
     { label: 'User', icon: ShieldCheck, route: 'superadmin.user' },
     {
-        label: 'Anggota',
-        icon: Users,
-        children: [
-            { label: 'Kelompok', route: 'superadmin.kelompok' },
-            { label: 'Anggota', route: 'superadmin.anggota' },
-        ],
-    },
-    {
         label: 'Account',
         icon: Receipt,
         children: [
             { label: 'Header', route: 'superadmin.account-header' },
             { label: 'Account', route: 'superadmin.account' },
+        ],
+    },
+    {
+        label: 'Kas Harian',
+        icon: DollarSign,
+        children: [
+            { label: 'Daftar Kas Harian', route: 'superadmin.kas-harian' },
+            { label: 'Tambah Kas Harian', route: 'superadmin.kas-harian.create' },
+        ],
+    },
+    { header: 'Customer Service' },
+    {
+        label: 'Anggota',
+        icon: Users,
+        children: [
+            { label: 'Kelompok', route: 'superadmin.kelompok' },
+            { label: 'Anggota', route: 'superadmin.anggota' },
         ],
     },
     {
@@ -107,11 +117,21 @@ const MENU: MenuItem[] = [
         ],
     },
     {
-        label: 'Kas Harian',
-        icon: DollarSign,
+        label: 'Laporan CS',
+        icon: FileText,
         children: [
-            { label: 'Daftar Kas Harian', route: 'superadmin.kas-harian' },
-            { label: 'Tambah Kas Harian', route: 'superadmin.kas-harian.create' },
+            { label: 'Daftar Anggota', route: 'superadmin.laporan-cs.anggota.daftar-anggota' },
+            { label: 'Non Anggota', route: 'superadmin.laporan-cs.anggota.non-anggota' },
+            { label: 'Pengurus', route: 'superadmin.laporan-cs.anggota.pengurus' },
+            { label: 'Pengawas', route: 'superadmin.laporan-cs.anggota.pengawas' },
+            { label: 'Per Kelompok', route: 'superadmin.laporan-cs.anggota.per-kelompok' },
+            { label: 'Kartu Anggota', route: 'superadmin.laporan-cs.anggota.kartu' },
+            { label: 'Laporan Anggota', route: 'superadmin.laporan-cs.anggota.laporan' },
+            { label: 'Penarikan Anggota', route: 'superadmin.laporan-cs.anggota.penarikan' },
+            { label: 'Sisa Penarikan Dana', route: 'superadmin.laporan-cs.anggota.sisa-penarikan' },
+            { label: 'Simpanan & Pinjaman', route: 'superadmin.laporan-cs.anggota.simpanan-pinjaman' },
+            { label: 'Simpan Pinjam Detail', route: 'superadmin.laporan-cs.anggota.simpan-pinjam-detail' },
+            { label: 'Hutang & Kewajiban', route: 'superadmin.laporan-cs.anggota.hutang-kewajiban' },
         ],
     },
     { header: 'Front Office' },
