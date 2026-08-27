@@ -14,4 +14,14 @@ class PinjamanKolektabilitas extends Model
         'keterangan',
         'user_id',
     ];
+
+    public function jenisPinjaman()
+    {
+        return $this->belongsTo(PinjamanProduk::class, 'pinj_jenis_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

@@ -57,11 +57,11 @@ class Pinjaman extends Model
     }
 
     /**
-     * Get the kolektabilitas records for the pinjaman produk.
+     * Kolektabilitas milik jenis pinjaman terkait.
      */
     public function kolektabilitas()
     {
-        return $this->hasMany(PinjamanKolektabilitas::class, 'pinj_jenis_id');
+        return $this->hasManyThrough(PinjamanKolektabilitas::class, PinjamanProduk::class, 'id', 'pinj_jenis_id', 'jenis_id', 'id');
     }
 
     /**
@@ -73,11 +73,11 @@ class Pinjaman extends Model
     }
 
     /**
-     * Get the komponen records for the pinjaman produk.
+     * Komponen milik jenis pinjaman terkait.
      */
     public function komponen()
     {
-        return $this->hasMany(PinjamanKomponen::class, 'pinj_jenis_id');
+        return $this->hasManyThrough(PinjamanKomponen::class, PinjamanProduk::class, 'id', 'pinj_jenis_id', 'jenis_id', 'id');
     }
 
     /**

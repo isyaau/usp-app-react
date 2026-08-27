@@ -19,38 +19,11 @@ class PinjamanSaksi extends Model
         'user_id',
     ];
 
-    /**
-     * Get the account associated with the pinjaman produk.
-     */
-    public function proposal()
+    public function pinjaman()
     {
-        return $this->belongsTo(Account::class, 'account_id');
+        return $this->belongsTo(Pinjaman::class, 'pinjaman_id');
     }
 
-    public function anggota()
-    {
-        return $this->belongsTo(Account::class, 'account_id');
-    }
-
-    /**
-     * Get the kolektabilitas records for the pinjaman produk.
-     */
-    public function kolektabilitas()
-    {
-        return $this->hasMany(PinjamanKolektabilitas::class, 'pinj_jenis_id');
-    }
-
-    /**
-     * Get the komponen records for the pinjaman produk.
-     */
-    public function komponen()
-    {
-        return $this->hasMany(PinjamanKomponen::class, 'pinj_jenis_id');
-    }
-
-    /**
-     * Get the user that created the pinjaman produk.
-     */
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');

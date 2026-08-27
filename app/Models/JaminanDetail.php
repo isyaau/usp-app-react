@@ -16,6 +16,11 @@ class JaminanDetail extends Model
 
     public function jaminan()
     {
-        return $this->belongsTo(JaminanDetail::class, 'jaminan_id');
+        return $this->belongsTo(Jaminan::class, 'jaminan_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 }
