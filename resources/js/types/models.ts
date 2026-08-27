@@ -540,6 +540,7 @@ export interface PinjamanAnggotaRow {
     no_identitas: string | null;
     telepon: string | null;
     status: string | null;
+    no_hp?: string | null;
 }
 
 /** Opsi produk pinjaman lengkap (membawa konfigurasi angsuran). */
@@ -634,7 +635,105 @@ export interface PinjamanEditRow {
     penjamin: PinjamanPenjaminItem[];
 }
 
+/* ===================== Proposal Pinjaman ===================== */
+
+/** Master komponen biaya pinjaman (loan_cost_components). */
+export interface LoanCostComponentRow {
+    id: number;
+    name: string;
+    calculation_type: string;
+    amount: string;
+    percentage: string;
+    account_id: string;
+    is_mandatory: string;
+    is_deducted_from_disbursement: string;
+    is_paid_separately: string;
+    active: string;
+}
+
+/** Baris biaya dinamis pada form Proposal. */
+export interface ProposalCostItem {
+    component_id: string;
+    nama: string;
+    nominal: string;
+    persen: boolean;
+    account_id: string;
+    is_deducted_from_disbursement: boolean;
+}
+
+/** Opsi produk pinjaman untuk Proposal (membawa konfigurasi angsuran). */
+export interface ProposalProdukRow {
+    id: number;
+    nama: string;
+    angsuran: string | null;
+    bunga: string;
+}
+
+/** Nilai lengkap form entri Proposal (2 kolom). */
+export interface ProposalValues {
+    tanggal: string;
+    no_bukti: string;
+    anggota_id: string;
+    anggota: PinjamanAnggotaRow | null;
+    jenis_id: string;
+    marketing_id: string;
+    plafon: string;
+    bunga: string;
+    jangka_waktu: string;
+    satuan: string;
+    bayar_pokok_per: string;
+    pembayaran: string;
+    setiap_saat: boolean;
+    jenis_angsuran: string;
+    penggunaan_kredit: string;
+    jaminan: string;
+    biaya: ProposalCostItem[];
+}
+
+/** Baris Proposal lengkap untuk mode Edit (beserta relasi). */
+export interface ProposalEditRow {
+    id: number;
+    tanggal: string;
+    no_bukti: string;
+    anggota_id: string;
+    jenis_id: string;
+    marketing_id: string;
+    plafon: string;
+    bunga: string;
+    jangka_waktu: string;
+    satuan: string;
+    bayar_pokok_per: string;
+    pembayaran: string;
+    setiap_saat: string | null;
+    jenis_angsuran: string;
+    nominal_angsuran: string;
+    penggunaan_kredit: string | null;
+    jaminan: string | null;
+    total_biaya: string | null;
+    total_terima: string | null;
+    status: string | null;
+    anggota?: PinjamanAnggotaRow | null;
+    marketing?: PinjamanMarketingRow | null;
+    biaya: ProposalCostItem[];
+}
+
 /* ===================== Pencairan Pinjaman ===================== */
+
+/** Baris proposal untuk daftar/index. */
+export interface ProposalRow {
+    id: number;
+    tanggal: string;
+    no_bukti: string;
+    plafon: string;
+    bunga: string;
+    jangka_waktu: string;
+    satuan: string;
+    total_terima: string | null;
+    status: string | null;
+    jenisPinjaman?: { id: number; nama: string } | null;
+    anggota?: { id: number; no_anggota: string; nama: string } | null;
+    kantor?: { id: number; nama_kantor: string } | null;
+}
 
 /** Opsi pinjaman ringkas untuk dropdown pencairan. */
 export interface PinjamanOptionLite {

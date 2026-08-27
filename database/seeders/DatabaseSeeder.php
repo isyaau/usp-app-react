@@ -34,6 +34,7 @@ class DatabaseSeeder extends Seeder
             JaminanDetailSeeder::class,
             KasHarianSeeder::class,
             PencairanPinjamanSeeder::class,
+            LoanCostComponentSeeder::class,
         ]);
     }
 }

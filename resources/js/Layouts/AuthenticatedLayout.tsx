@@ -97,6 +97,7 @@ const MENU: MenuItem[] = [
             { label: 'Produk Pinjaman', route: 'superadmin.pinjaman.produk' },
             { label: 'Jaminan', route: 'superadmin.pinjaman.jaminan' },
             { label: 'Pinjaman', route: 'superadmin.pinjaman.pinjaman' },
+            { label: 'Proposal', route: 'superadmin.pinjaman.proposal' },
             { label: 'Pencairan Pinjaman', route: 'superadmin.pencairan-pinjaman' },
         ],
     },

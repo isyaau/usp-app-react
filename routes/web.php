@@ -23,6 +23,7 @@ use App\Http\Controllers\Superadmin\SimpananRencanaController;
 use App\Http\Controllers\Superadmin\PencairanPinjamanController;
 use App\Http\Controllers\Superadmin\PinjamanController;
 use App\Http\Controllers\Superadmin\PinjamanProdukController;
+use App\Http\Controllers\Superadmin\ProposalController;
 use App\Http\Controllers\Superadmin\SimpananProdukController;
 use App\Http\Controllers\Superadmin\UserController;
 use App\Http\Controllers\Superadmin\AngsuranPinjamanController;
@@ -164,6 +165,12 @@ Route::prefix('superadmin')->name('superadmin.')->middleware(['auth', 'role:supe
     Route::get('/pinjaman/pinjaman/{pinjaman}/edit', [PinjamanController::class, 'edit'])->name('pinjaman.pinjaman.edit');
     Route::put('/pinjaman/pinjaman/{pinjaman}', [PinjamanController::class, 'update'])->name('pinjaman.pinjaman.update');
     Route::delete('/pinjaman/pinjaman/{pinjaman}', [PinjamanController::class, 'destroy'])->name('pinjaman.pinjaman.destroy');
+    Route::get('/pinjaman/proposal', [ProposalController::class, 'index'])->name('pinjaman.proposal');
+    Route::get('/pinjaman/proposal/create', [ProposalController::class, 'create'])->name('pinjaman.proposal.create');
+    Route::post('/pinjaman/proposal', [ProposalController::class, 'store'])->name('pinjaman.proposal.store');
+    Route::get('/pinjaman/proposal/{proposal}/edit', [ProposalController::class, 'edit'])->name('pinjaman.proposal.edit');
+    Route::put('/pinjaman/proposal/{proposal}', [ProposalController::class, 'update'])->name('pinjaman.proposal.update');
+    Route::delete('/pinjaman/proposal/{proposal}', [ProposalController::class, 'destroy'])->name('pinjaman.proposal.destroy');
 
     // Pencairan Pinjaman (Inertia + React)
     Route::get('/pencairan-pinjaman', [PencairanPinjamanController::class, 'index'])->name('pencairan-pinjaman');
