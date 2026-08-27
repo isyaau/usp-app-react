@@ -499,6 +499,7 @@ export interface PinjamanPenjaminItem {
 export interface PinjamanTransaksiValues {
     tanggal: string;
     no_pinjaman: string;
+    no_pinjaman_lama: string;
     anggota_id: string;
     anggota?: { id: number; no_anggota: string; nama: string; alamat: string; no_identitas: string; telepon: string } | null;
     jenis_id: string;
@@ -603,6 +604,7 @@ export interface PinjamanEditRow {
     id: number;
     tanggal: string;
     no_pinjaman: string;
+    no_pinjaman_lama?: string | null;
     anggota_id: string;
     jenis_id: string;
     jaminan_id: string | null;
@@ -718,6 +720,90 @@ export interface ProposalEditRow {
 }
 
 /* ===================== Pencairan Pinjaman ===================== */
+
+/** Data pinjaman yang dipilih untuk Jadwal Ulang (dari pinjamanByAnggota). */
+export interface PinjamanUntukJadwalRow {
+    id: number;
+    no_pinjaman: string;
+    tanggal: string;
+    plafon: number;
+    nominal_angsuran: number;
+    bunga: number;
+    jangka_waktu: number;
+    bayar_pokok_per: string | null;
+    satuan: string;
+    angsuran: string | null;
+    produk: string | null;
+    no_anggota: string | null;
+    nama_anggota: string | null;
+    sisa_pokok: number;
+}
+
+/** Baris detail angsuran pada jadwal ulang. */
+export interface JadwalUlangDetailRow {
+    id: number;
+    jadwal_ulang_id: number;
+    angsuran_ke: number;
+    nominal_pokok: string;
+    nominal_bunga: string;
+    total_angsuran: string;
+    sisa_pokok: string;
+}
+
+/** Nilai form entri Jadwal Ulang. */
+export interface JadwalUlangValues {
+    tgl_transaksi: string;
+    anggota_id: string;
+    pinjaman_id: string;
+    kantor_id: string;
+    plafon: string;
+    bunga: string;
+    jangka_waktu: string;
+    satuan: string;
+    metode: string;
+    keterangan: string;
+    status: string;
+}
+
+/** Baris jadwal ulang untuk daftar/index. */
+export interface JadwalUlangRow {
+    id: number;
+    no_transaksi: string;
+    no_pinjaman_lama: string | null;
+    tgl_transaksi: string;
+    plafon: string;
+    sisa_pokok: string;
+    bunga: string;
+    jangka_waktu: string;
+    satuan: string;
+    metode: string;
+    nominal_angsuran: string;
+    total_bunga: string;
+    status: string;
+    pinjaman?: { id: number; no_pinjaman: string; anggota?: { id: number; no_anggota: string; nama: string } | null } | null;
+    kantor?: { id: number; nama_kantor: string } | null;
+}
+
+/** Baris jadwal ulang lengkap untuk mode Edit/Show (beserta relasi). */
+export interface JadwalUlangEditRow {
+    id: number;
+    no_transaksi: string;
+    tgl_transaksi: string;
+    pinjaman_id: number;
+    plafon: string;
+    sisa_pokok: string;
+    bunga: string;
+    jangka_waktu: string;
+    satuan: string;
+    metode: string;
+    nominal_angsuran: string;
+    total_bunga: string;
+    keterangan: string | null;
+    status: string;
+    pinjaman?: { id: number; no_pinjaman: string; anggota?: { id: number; no_anggota: string; nama: string } | null } | null;
+    kantor?: { id: number; kode: string; nama_kantor: string } | null;
+    details?: JadwalUlangDetailRow[];
+}
 
 /** Baris proposal untuk daftar/index. */
 export interface ProposalRow {

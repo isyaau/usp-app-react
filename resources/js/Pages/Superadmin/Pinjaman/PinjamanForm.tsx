@@ -65,6 +65,7 @@ interface Props {
     submitUrl: string;
     submitMethod?: 'post' | 'put';
     processingLabel: string;
+    reschedule?: boolean;
 }
 
 const TAB_LIST = [
@@ -87,6 +88,7 @@ const SURAT_TOKENS =
 const emptyValues = (): PinjamanTransaksiValues => ({
     tanggal: new Date().toISOString().slice(0, 10),
     no_pinjaman: '',
+    no_pinjaman_lama: '',
     anggota_id: '',
     anggota: null,
     jenis_id: '',
@@ -137,6 +139,7 @@ export function PinjamanForm({
     submitUrl,
     submitMethod = 'post',
     processingLabel,
+    reschedule = false,
 }: Props) {
     const form = useForm<PinjamanTransaksiValues>(() => {
         if (!initial) {
@@ -147,6 +150,7 @@ export function PinjamanForm({
         return {
             tanggal: initial.tanggal || new Date().toISOString().slice(0, 10),
             no_pinjaman: initial.no_pinjaman ?? '',
+            no_pinjaman_lama: initial.no_pinjaman_lama ?? '',
             anggota_id: String(initial.anggota_id),
             anggota: initial.anggota ?? null,
             jenis_id: String(initial.jenis_id),
@@ -346,6 +350,17 @@ export function PinjamanForm({
                     );
                 })}
             </div>
+
+            {reschedule && (
+                <div className="flex flex-wrap items-center gap-3 rounded-lg border border-brand-600/30 bg-brand-50 px-4 py-3 text-sm dark:bg-brand-600/10">
+                    <HandCoins className="size-5 text-brand-600" />
+                    <span className="font-medium">Reschedule / Jadwal Ulang Pinjaman</span>
+                    <span className="text-muted-foreground">Pinjaman Asal:</span>
+                    <span className="font-mono font-semibold text-brand-700 dark:text-brand-300">
+                        {form.data.no_pinjaman_lama || '—'}
+                    </span>
+                </div>
+            )}
 
             {/* ===== TAB 1: PINJAMAN ===== */}
             {activeTab === 'pinjaman' && (
