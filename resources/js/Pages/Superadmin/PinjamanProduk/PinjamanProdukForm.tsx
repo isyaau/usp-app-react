@@ -39,13 +39,7 @@ export const KOLEKTABILITAS_LABELS = [
     'Macet',
 ];
 
-const LIST_KODE_RUMUS = [
-    ['JT', 'Jatuh Tempo (Bulan)'],
-    ['TBX', 'Tunggakan Bunga (X)'],
-    ['TPX', 'Tunggakan Pokok (X)'],
-    ['TBB', 'Tunggakan Bunga (Bulan)'],
-    ['TPB', 'Tunggakan Pokok (Bulan)'],
-] as const;
+const LIST_OPERATOR_RUMUS = ['+', '-', '*', '/', '(', ')', '<', '>', '<=', '>=', '='] as const;
 
 interface AccountOption extends AccountMini {}
 
@@ -114,9 +108,101 @@ function defaultKolektabilitas(
 interface Props {
     initial?: PinjamanProdukRow | null;
     accounts: AccountOption[];
+    parameters: Array<{ id: number; nama: string }>;
     submitUrl: string;
     submitMethod?: 'post' | 'put';
     processingLabel: string;
+}
+
+function AccountCombobox({
+    label,
+    value,
+    accounts = [],
+    onChange,
+    error,
+    required = false,
+    placeholder = 'Pilih Akun',
+}: {
+    label: string;
+    value: string;
+    accounts: AccountOption[];
+    onChange: (v: string) => void;
+    error?: string;
+    required?: boolean;
+    placeholder?: string;
+}) {
+    const [open, setOpen] = useState(false);
+    const [q, setQ] = useState('');
+    const selected = accounts.find((a) => String(a.id) === value);
+    const filtered = accounts.filter((a) =>
+        `${a.no_account} ${a.nama}`.toLowerCase().includes(q.toLowerCase()),
+    );
+
+    return (
+        <div className="space-y-2">
+            <Label>
+                {label} {required && <span className="text-brand-600">*</span>}
+            </Label>
+            <button
+                type="button"
+                onClick={() => {
+                    setQ('');
+                    setOpen(true);
+                }}
+                className="flex h-10 w-full items-center justify-between gap-2 rounded-md border border-input bg-transparent px-3 text-sm shadow-xs outline-none transition-colors hover:bg-muted/50 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
+            >
+                {selected ? (
+                    <span className="truncate text-foreground">
+                        <span className="font-mono text-xs">{selected.no_account}</span> —{' '}
+                        {selected.nama}
+                    </span>
+                ) : (
+                    <span className="text-muted-foreground">-- {placeholder} --</span>
+                )}
+            </button>
+            {error && <p className="text-sm text-brand-600">{error}</p>}
+
+            <Dialog open={open} onOpenChange={setOpen}>
+                <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                        <DialogTitle>Pilih {label}</DialogTitle>
+                    </DialogHeader>
+                    <Input
+                        autoFocus
+                        value={q}
+                        onChange={(e) => setQ(e.target.value)}
+                        placeholder="Cari nomor akun / nama…"
+                    />
+                    <div className="max-h-64 space-y-1 overflow-y-auto">
+                        {filtered.length === 0 ? (
+                            <p className="px-1 py-2 text-sm text-muted-foreground">
+                                Tidak ada akun yang cocok.
+                            </p>
+                        ) : (
+                            filtered.map((a) => (
+                                <button
+                                    key={a.id}
+                                    type="button"
+                                    onClick={() => {
+                                        onChange(String(a.id));
+                                        setOpen(false);
+                                    }}
+                                    className={`flex w-full items-center gap-2 rounded px-2 py-1.5 text-left text-sm transition hover:bg-brand-600/10 ${
+                                        value === String(a.id)
+                                            ? 'bg-brand-600/10 font-medium'
+                                            : ''
+                                    }`}
+                                >
+                                    <span className="font-mono text-xs">{a.no_account}</span> —{' '}
+                                    {a.nama}
+                                </button>
+                            ))
+                        )}
+                    </div>
+                </DialogContent>
+            </Dialog>
+        </div>
+    );
 }
 
 /**
@@ -127,6 +213,7 @@ interface Props {
 export function PinjamanProdukForm({
     initial,
     accounts,
+    parameters,
     submitUrl,
     submitMethod = 'post',
     processingLabel,
@@ -250,42 +337,14 @@ export function PinjamanProdukForm({
         return typeof node === 'string' ? node : undefined;
     };
 
-    const AccountSelect = ({
-        value,
-        onChange,
-        error,
-        ariaLabel,
-    }: {
-        value: string;
-        onChange: (v: string) => void;
-        error?: string;
-        ariaLabel: string;
-    }) => (
-        <div className="space-y-2">
-            <Select value={value || undefined} onValueChange={onChange}>
-                <SelectTrigger className="w-full" aria-label={ariaLabel}>
-                    <SelectValue placeholder="-- Pilih Akun --" />
-                </SelectTrigger>
-                <SelectContent>
-                    {accounts.map((a) => (
-                        <SelectItem key={a.id} value={String(a.id)}>
-                            <span className="font-mono text-xs">{a.no_account}</span> — {a.nama}
-                        </SelectItem>
-                    ))}
-                </SelectContent>
-            </Select>
-            {error && <p className="text-sm text-brand-600">{error}</p>}
-        </div>
-    );
-
     return (
         <form onSubmit={submit} className="space-y-5">
             {/* ===== Informasi Produk ===== */}
             <Card>
                 <CardHeader>
-                    <CardTitle>Informasi Produk</CardTitle>
+                    <CardTitle>Produk</CardTitle>
                 </CardHeader>
-                <CardContent className="grid gap-5 sm:grid-cols-2">
+                <CardContent className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
                     <div className="space-y-2">
                         <Label htmlFor="kode">
                             Kode <span className="text-brand-600">*</span>
@@ -321,46 +380,20 @@ export function PinjamanProdukForm({
                         )}
                     </div>
 
-                    <AccountSelect
+                    <AccountCombobox
+                        label="No Account"
+                        required
+                        accounts={accounts}
                         value={form.data.produk.account_id}
                         onChange={(v) =>
                             form.setData('produk', { ...form.data.produk, account_id: v })
                         }
                         error={err('produk.account_id')}
-                        ariaLabel="Akun Pinjaman"
-                    />
-
-                    <div className="space-y-2">
-                        <Label htmlFor="bunga">
-                            Bunga (%) <span className="text-brand-600">*</span>
-                        </Label>
-                        <Input
-                            id="bunga"
-                            type="number"
-                            step="0.01"
-                            min="0"
-                            value={form.data.produk.bunga}
-                            onChange={(e) =>
-                                form.setData('produk', { ...form.data.produk, bunga: e.target.value })
-                            }
-                        />
-                        {err('produk.bunga') && (
-                            <p className="text-sm text-brand-600">{err('produk.bunga')}</p>
-                        )}
-                    </div>
-
-                    <AccountSelect
-                        value={form.data.produk.account_bunga}
-                        onChange={(v) =>
-                            form.setData('produk', { ...form.data.produk, account_bunga: v })
-                        }
-                        error={err('produk.account_bunga')}
-                        ariaLabel="Akun Pendapatan Bunga"
                     />
 
                     <div className="space-y-2">
                         <Label htmlFor="insentif">
-                            Insentif (%) <span className="text-brand-600">*</span>
+                            Insentif Marketing (%) <span className="text-brand-600">*</span>
                         </Label>
                         <Input
                             id="insentif"
@@ -382,7 +415,7 @@ export function PinjamanProdukForm({
 
                     <div className="space-y-2">
                         <Label htmlFor="toleransi">
-                            Toleransi (Rp) <span className="text-brand-600">*</span>
+                            Toleransi Tunggakan (Hari) <span className="text-brand-600">*</span>
                         </Label>
                         <Input
                             id="toleransi"
@@ -429,7 +462,7 @@ export function PinjamanProdukForm({
 
                     <label className="flex cursor-pointer items-center justify-between rounded-lg border bg-card px-4 py-2.5 transition hover:bg-muted/50 sm:col-span-2">
                         <span className="text-sm font-medium">
-                            Wajib Simpanan (SWP saat cair/angsuran)
+                            Simpanan Wajib
                         </span>
                         <Switch
                             checked={form.data.produk.simpanan}
@@ -456,12 +489,12 @@ export function PinjamanProdukForm({
                     </label>
 
                     {form.data.produk.simpanan && (
-                        <div className="grid gap-4 rounded-lg border bg-muted/30 p-4 sm:col-span-2 sm:grid-cols-2 lg:grid-cols-3">
+                        <div className="grid gap-4 rounded-lg border bg-muted/30 p-4 sm:col-span-2 xl:col-span-3 xl:grid-cols-3">
                             {(
                                 [
-                                    ['swp_cair', 'SWP saat Cair'],
-                                    ['swp_angsur', 'SWP per Angsuran'],
-                                    ['swp_persen', 'Nominal dalam Persen'],
+                                    ['swp_cair', 'Pencairan'],
+                                    ['swp_angsur', 'Angsuran'],
+                                    ['swp_persen', 'Persen'],
                                 ] as const
                             ).map(([key, label]) => (
                                 <label key={key} className="flex cursor-pointer items-center justify-between gap-3 rounded-md bg-card px-3 py-2">
@@ -476,7 +509,7 @@ export function PinjamanProdukForm({
                                 </label>
                             ))}
                             <div className="space-y-2 sm:col-span-2 lg:col-span-3">
-                                <Label htmlFor="nominal_simpanan">Nominal Simpanan</Label>
+                                <Label htmlFor="nominal_simpanan">Nominal Simpanan Wajib</Label>
                                 <Input
                                     id="nominal_simpanan"
                                     type="number"
@@ -488,19 +521,14 @@ export function PinjamanProdukForm({
                                             nominal_simpanan: e.target.value,
                                         })
                                     }
-                                    disabled={form.data.produk.swp_persen}
-                                    placeholder={
-                                        form.data.produk.swp_persen
-                                            ? 'Mengikuti persentase'
-                                            : 'Contoh: 500000'
-                                    }
+                                    placeholder="Contoh: 500000"
                                 />
                             </div>
                         </div>
                     )}
 
                     <label className="flex cursor-pointer items-center justify-between rounded-lg border bg-card px-4 py-2.5 transition hover:bg-muted/50 sm:col-span-2">
-                        <span className="text-sm font-medium">Simpanan Pokok Saat Bergabung</span>
+                        <span className="text-sm font-medium">Simpanan Pokok</span>
                         <Switch
                             checked={form.data.produk.simpanan_pokok}
                             onCheckedChange={(v) =>
@@ -530,25 +558,58 @@ export function PinjamanProdukForm({
                 </CardContent>
             </Card>
 
-            {/* ===== Konfigurasi Kas & Ditanggungkan ===== */}
+            {/* ===== Bagi Hasil & Kolektabilitas ===== */}
+            <div className="grid gap-5 lg:grid-cols-2">
+            {/* ===== Bagi Hasil ===== */}
             <Card>
                 <CardHeader>
-                    <CardTitle>Konfigurasi Tambahan</CardTitle>
+                    <CardTitle>Bagi Hasil</CardTitle>
                 </CardHeader>
                 <CardContent className="grid gap-5 sm:grid-cols-2">
+                    <div className="space-y-2">
+                        <Label htmlFor="bunga">
+                            Bagi Hasil (%) <span className="text-brand-600">*</span>
+                        </Label>
+                        <Input
+                            id="bunga"
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            value={form.data.produk.bunga}
+                            onChange={(e) =>
+                                form.setData('produk', { ...form.data.produk, bunga: e.target.value })
+                            }
+                        />
+                        {err('produk.bunga') && (
+                            <p className="text-sm text-brand-600">{err('produk.bunga')}</p>
+                        )}
+                    </div>
+
+                    <AccountCombobox
+                        label="No Account"
+                        accounts={accounts}
+                        value={form.data.produk.account_bunga}
+                        onChange={(v) =>
+                            form.setData('produk', { ...form.data.produk, account_bunga: v })
+                        }
+                        error={err('produk.account_bunga')}
+                    />
+
                     <label className="flex cursor-pointer items-center justify-between rounded-lg border bg-card px-4 py-2.5 transition hover:bg-muted/50">
-                        <span className="text-sm font-medium">Bunga Ditangguhkan</span>
+                        <span className="text-sm font-medium">Bagi Hasil</span>
                         <Switch
                             checked={form.data.produk.ditangguhkan}
                             onCheckedChange={(v) =>
                                 form.setData('produk', { ...form.data.produk, ditangguhkan: v })
                             }
-                            aria-label="Bunga ditangguhkan"
+                            aria-label="Bagi hasil aktif"
                         />
                     </label>
 
                     {form.data.produk.ditangguhkan && (
-                        <AccountSelect
+                        <AccountCombobox
+                            label="No Account Bagi Hasil"
+                            accounts={accounts}
                             value={form.data.produk.account_ditangguhkan}
                             onChange={(v) =>
                                 form.setData('produk', {
@@ -557,7 +618,6 @@ export function PinjamanProdukForm({
                                 })
                             }
                             error={err('produk.account_ditangguhkan')}
-                            ariaLabel="Akun Bunga Ditangguhkan"
                         />
                     )}
 
@@ -574,13 +634,14 @@ export function PinjamanProdukForm({
                         />
                     </div>
 
-                    <AccountSelect
+                    <AccountCombobox
+                        label="Akun Bank"
+                        accounts={accounts}
                         value={form.data.produk.account_bank}
                         onChange={(v) =>
                             form.setData('produk', { ...form.data.produk, account_bank: v })
                         }
                         error={err('produk.account_bank')}
-                        ariaLabel="Akun Bank"
                     />
                 </CardContent>
             </Card>
@@ -616,6 +677,7 @@ export function PinjamanProdukForm({
                     ))}
                 </CardContent>
             </Card>
+            </div>
 
             {/* ===== Komponen ===== */}
             <Card>
@@ -623,16 +685,19 @@ export function PinjamanProdukForm({
                     <CardTitle>Komponen Biaya</CardTitle>
                 </CardHeader>
                 <CardContent className="overflow-x-auto">
-                    <table className="w-full min-w-[900px] text-sm">
+                    <table className="w-full min-w-[1150px] text-sm">
                         <thead>
                             <tr className="border-b text-left text-muted-foreground">
-                                <th className="w-56 pb-2 font-medium">Nama</th>
-                                <th className="w-32 pb-2 font-medium">Nominal</th>
-                                <th className="w-16 pb-2 text-center font-medium">%</th>
+                                <th className="w-44 pb-2 font-medium">Nama</th>
+                                <th className="w-28 pb-2 font-medium">Nominal</th>
+                                <th className="w-14 pb-2 text-center font-medium">%</th>
                                 <th className="pb-2 font-medium">Akun</th>
-                                <th className="w-14 pb-2 text-center font-medium">C</th>
-                                <th className="w-14 pb-2 text-center font-medium">A</th>
-                                <th className="w-14 pb-2 text-center font-medium">P</th>
+                                <th className="w-12 pb-2 text-center font-medium">C</th>
+                                <th className="w-12 pb-2 text-center font-medium">A</th>
+                                <th className="w-12 pb-2 text-center font-medium">P</th>
+                                <th className="w-[150px] pb-2 font-medium">Rumus Cair</th>
+                                <th className="w-[150px] pb-2 font-medium">Rumus Angsuran</th>
+                                <th className="w-[150px] pb-2 font-medium">Rumus Penalti</th>
                                 <th className="w-12 pb-2" />
                             </tr>
                         </thead>
@@ -704,6 +769,17 @@ export function PinjamanProdukForm({
                                             />
                                         </td>
                                     ))}
+                                    {(['rumus_c', 'rumus_a', 'rumus_p'] as const).map((f) => (
+                                        <td key={f} className="py-2 pr-2">
+                                            <Input
+                                                value={c[f]}
+                                                placeholder={'JT > 3'}
+                                                onClick={() => openRumus(`komponen.${i}.${f}`, c[f])}
+                                                readOnly
+                                                className="cursor-pointer font-mono text-xs"
+                                            />
+                                        </td>
+                                    ))}
                                     <td className="py-2">
                                         <Button
                                             type="button"
@@ -721,36 +797,10 @@ export function PinjamanProdukForm({
                         </tbody>
                     </table>
 
-                    {/* Rumus C / A / P */}
-                    <div className="mt-4 grid gap-3 sm:grid-cols-3">
-                        {(
-                            [
-                                ['rumus_c', 'Rumus Cair'],
-                                ['rumus_a', 'Rumus Angsuran'],
-                                ['rumus_p', 'Rumus Penalti'],
-                            ] as const
-                        ).map(([field, label], rowIdx) => (
-                            <div key={field} className="space-y-1.5">
-                                <Label>{label}</Label>
-                                <div className="flex gap-1">
-                                    {form.data.komponen.map((c, i) =>
-                                        c[field] ? (
-                                            <span
-                                                key={`${field}-${i}`}
-                                                className="inline-flex max-w-full items-center truncate rounded bg-muted px-1.5 py-0.5 text-[10px]"
-                                                title={c[field]}
-                                            >
-                                                R{i + 1}: {c[field]}
-                                            </span>
-                                        ) : null,
-                                    )}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
                     <p className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
                         <Plus className="size-3" />
-                        Isi kolom Nama pada baris terakhir untuk menambah baris komponen baru.
+                        Klik kolom Rumus Cair / Angsuran / Penalti untuk membuka editor rumus. Isi
+                        kolom Nama pada baris terakhir untuk menambah baris komponen baru.
                     </p>
                 </CardContent>
             </Card>
@@ -768,20 +818,58 @@ export function PinjamanProdukForm({
                         className="border-input focus-visible:border-ring focus-visible:ring-ring/50 w-full rounded-md border bg-transparent px-3 py-2 font-mono text-sm shadow-xs outline-none focus-visible:ring-[3px]"
                         placeholder="Bangun rumus dengan token di bawah…"
                     />
-                    <div className="flex flex-wrap gap-1.5">
-                        {LIST_KODE_RUMUS.map(([kode, ket]) => (
-                            <button
-                                key={kode}
-                                type="button"
-                                onClick={() =>
-                                    setRumusValue((v) => (v === '' ? kode : `${v} ${kode}`))
-                                }
-                                title={ket}
-                                className="rounded-md border bg-card px-2.5 py-1 font-mono text-xs font-semibold text-brand-700 transition hover:bg-brand-600/10 dark:text-brand-300"
-                            >
-                                {kode}
-                            </button>
-                        ))}
+                    <div className="space-y-3">
+                        <div>
+                            <p className="mb-1.5 text-xs font-medium text-muted-foreground">
+                                Token Rumus
+                            </p>
+                            <div className="max-h-56 space-y-1 overflow-y-auto rounded-md border bg-muted/30 p-2">
+                                {parameters.length === 0 ? (
+                                    <p className="px-1.5 py-1 text-[11px] text-muted-foreground">
+                                        Belum ada parameter token. Jalankan seeder Parameter.
+                                    </p>
+                                ) : (
+                                    parameters.map((p) => (
+                                        <button
+                                            key={p.id}
+                                            type="button"
+                                            onClick={() =>
+                                                setRumusValue((v) =>
+                                                    v === '' ? p.nama : `${v} ${p.nama}`,
+                                                )
+                                            }
+                                            className="flex w-full items-center gap-2 rounded px-1.5 py-1 text-left transition hover:bg-brand-600/10"
+                                            title={`Sisipkan ${p.nama}`}
+                                        >
+                                            <span className="inline-flex max-w-full truncate rounded border bg-card px-1.5 py-0.5 font-mono text-xs text-brand-700 dark:text-brand-300">
+                                                {p.nama}
+                                            </span>
+                                        </button>
+                                    ))
+                                )}
+                            </div>
+                        </div>
+
+                        <div>
+                            <p className="mb-1.5 text-xs font-medium text-muted-foreground">
+                                Operator Matematika
+                            </p>
+                            <div className="flex flex-wrap gap-1.5">
+                                {LIST_OPERATOR_RUMUS.map((op) => (
+                                    <button
+                                        key={op}
+                                        type="button"
+                                        onClick={() =>
+                                            setRumusValue((v) => (v === '' ? op : `${v} ${op}`))
+                                        }
+                                        title={`Sisipkan operator ${op}`}
+                                        className="rounded-md border bg-card px-2.5 py-1 font-mono text-xs font-semibold text-brand-700 transition hover:bg-brand-600/10 dark:text-brand-300"
+                                    >
+                                        {op}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
                     </div>
                     <DialogFooter className="gap-2">
                         <Button type="button" variant="outline" onClick={() => setRumusValue('')}>

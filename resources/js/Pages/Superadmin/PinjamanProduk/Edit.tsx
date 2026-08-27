@@ -11,9 +11,10 @@ import { PinjamanProdukForm } from './PinjamanProdukForm';
 interface Props {
     produkData: PinjamanProdukRow;
     accounts: AccountMini[];
+    parameters: Array<{ id: number; nama: string }>;
 }
 
-export default function PinjamanProdukEdit({ produkData, accounts }: Props) {
+export default function PinjamanProdukEdit({ produkData, accounts, parameters }: Props) {
     return (
         <AuthenticatedLayout>
             <Head title={`Edit ${produkData.nama}`} />
@@ -25,10 +26,11 @@ export default function PinjamanProdukEdit({ produkData, accounts }: Props) {
                 backHref={route('superadmin.pinjaman.produk')}
             />
 
-            <div className="max-w-5xl">
+            <div className="w-full max-w-7xl">
                 <PinjamanProdukForm
                     initial={produkData}
                     accounts={accounts}
+                    parameters={parameters}
                     submitUrl={route('superadmin.pinjaman.produk.update', produkData.id)}
                     submitMethod="put"
                     processingLabel="Perbarui Produk"

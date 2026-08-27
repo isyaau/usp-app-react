@@ -1,12 +1,13 @@
 import { Head } from '@inertiajs/react';
-import { HandCoins } from 'lucide-react';
+import { Pencil } from 'lucide-react';
 
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { PageHeader } from '@/Components/PageHeader';
 import { PinjamanForm } from './PinjamanForm';
 import type {
-    PinjamanAnggotaRow,
     PinjamanAccountRow,
+    PinjamanAnggotaRow,
+    PinjamanEditRow,
     PinjamanJaminanTypeRow,
     PinjamanJenisRow,
     PinjamanKodeTarikanRow,
@@ -17,6 +18,7 @@ import type {
 } from '@/types/models';
 
 interface Props {
+    pinjaman: PinjamanEditRow;
     anggotaOptions: PinjamanAnggotaRow[];
     jenisOptions: PinjamanJenisRow[];
     marketingOptions: PinjamanMarketingRow[];
@@ -31,23 +33,25 @@ interface Props {
     nomorOtomatis: string;
 }
 
-export default function PinjamanCreate(props: Props) {
+export default function PinjamanEdit({ pinjaman, ...props }: Props) {
     return (
         <AuthenticatedLayout>
-            <Head title="Tambah Transaksi Pinjaman" />
+            <Head title={`Edit ${pinjaman.no_pinjaman}`} />
 
             <PageHeader
-                title="Tambah Transaksi Pinjaman"
-                description="Buat transaksi pinjaman baru lengkap dengan biaya, jaminan, saksi, surat, dan penjamin."
-                icon={HandCoins}
+                title={`Edit Transaksi Pinjaman`}
+                description={`Perbarui transaksi ${pinjaman.no_pinjaman}.`}
+                icon={Pencil}
                 backHref={route('superadmin.pinjaman.pinjaman')}
             />
 
             <PinjamanForm
                 {...props}
-                submitUrl={route('superadmin.pinjaman.pinjaman.store')}
-                submitMethod="post"
-                processingLabel="Simpan Transaksi"
+                initial={pinjaman}
+                pinjamanId={pinjaman.id}
+                submitUrl={route('superadmin.pinjaman.pinjaman.update', pinjaman.id)}
+                submitMethod="put"
+                processingLabel="Perbarui Transaksi"
             />
         </AuthenticatedLayout>
     );

@@ -9,9 +9,10 @@ import { PinjamanProdukForm } from './PinjamanProdukForm';
 
 interface Props {
     accounts: AccountMini[];
+    parameters: Array<{ id: number; nama: string }>;
 }
 
-export default function PinjamanProdukCreate({ accounts }: Props) {
+export default function PinjamanProdukCreate({ accounts, parameters }: Props) {
     return (
         <AuthenticatedLayout>
             <Head title="Tambah Produk Pinjaman" />
@@ -23,9 +24,10 @@ export default function PinjamanProdukCreate({ accounts }: Props) {
                 backHref={route('superadmin.pinjaman.produk')}
             />
 
-            <div className="max-w-5xl">
+            <div className="w-full max-w-7xl">
                 <PinjamanProdukForm
                     accounts={accounts}
+                    parameters={parameters}
                     submitUrl={route('superadmin.pinjaman.produk.store')}
                     processingLabel="Simpan Produk"
                 />

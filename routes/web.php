@@ -161,6 +161,8 @@ Route::prefix('superadmin')->name('superadmin.')->middleware(['auth', 'role:supe
     Route::get('/pinjaman/pinjaman', [PinjamanController::class, 'index'])->name('pinjaman.pinjaman');
     Route::get('/pinjaman/pinjaman/create', [PinjamanController::class, 'create'])->name('pinjaman.pinjaman.create');
     Route::post('/pinjaman/pinjaman', [PinjamanController::class, 'store'])->name('pinjaman.pinjaman.store');
+    Route::get('/pinjaman/pinjaman/{pinjaman}/edit', [PinjamanController::class, 'edit'])->name('pinjaman.pinjaman.edit');
+    Route::put('/pinjaman/pinjaman/{pinjaman}', [PinjamanController::class, 'update'])->name('pinjaman.pinjaman.update');
     Route::delete('/pinjaman/pinjaman/{pinjaman}', [PinjamanController::class, 'destroy'])->name('pinjaman.pinjaman.destroy');
 
     // Pencairan Pinjaman (Inertia + React)

@@ -151,7 +151,9 @@ class PinjamanProdukController extends Controller
         return [
             'accounts' => Account::orderBy('no_account')->get(['id', 'no_account', 'nama']),
             'listAngsuran' => self::LIST_ANGSURAN,
-            // Parameter jenis=2 = daftar metode perhitungan bunga/angsuran (dipakai dropdown lama)
+            // Parameter jenis=2 = token rumus (metode perhitungan) yang dipakai
+            // menyusun rumus Cair / Angsuran / Penalti & kolektabilitas
+            // (dari tabel parameter + seeder).
             'parameters' => Parameter::where('jenis', 2)->orderBy('nama')->get(['id', 'nama']),
         ];
     }

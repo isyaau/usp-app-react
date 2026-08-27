@@ -23,6 +23,8 @@ class Pinjaman extends Model
         'bunga',
         'jangka_waktu',
         'periode',
+        'bayar_pokok_per',
+        'jatuh_tempo',
         'satuan',
         'pembayaran',
         'manual',
@@ -86,5 +88,30 @@ class Pinjaman extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function biaya()
+    {
+        return $this->hasMany(PinjamanBiaya::class, 'pinjaman_id');
+    }
+
+    public function jaminan()
+    {
+        return $this->hasMany(PinjamanJaminan::class, 'pinjaman_id');
+    }
+
+    public function saksi()
+    {
+        return $this->hasMany(PinjamanSaksi::class, 'pinjaman_id');
+    }
+
+    public function surat()
+    {
+        return $this->hasMany(PinjamanSurat::class, 'pinjaman_id');
+    }
+
+    public function penjamin()
+    {
+        return $this->hasMany(PinjamanPenjamin::class, 'pinjaman_id');
     }
 }

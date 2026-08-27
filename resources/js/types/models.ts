@@ -453,6 +453,187 @@ export interface PinjamanFormValues {
     satuan: string;
 }
 
+/** Baris komponen biaya pada tab Biaya. */
+export interface PinjamanBiayaItem {
+    nama: string;
+    nominal: string;
+    persen: boolean;
+    account_id: string;
+}
+
+/** Baris jaminan pada tab Jaminan. */
+export interface PinjamanJaminanItem {
+    nama: string;
+    keterangan: string;
+    nominal: string;
+}
+
+/** Baris saksi pada tab Saksi. */
+export interface PinjamanSaksiItem {
+    nama: string;
+    tempat_lahir: string;
+    tgl_lahir: string;
+    no_ktp: string;
+    alamat: string;
+    pekerjaan_id: string;
+}
+
+/** Baris surat pada tab Surat. */
+export interface PinjamanSuratItem {
+    surat: string;
+    surat_id: string;
+    keterangan: string;
+}
+
+/** Baris penjamin pada tab Penjamin. */
+export interface PinjamanPenjaminItem {
+    nama: string;
+    alamat: string;
+    no_ktp: string;
+    hubungan: string;
+    ibu: string;
+    telepon: string;
+}
+
+/** Nilai lengkap form transaksi pinjaman (6 tab). */
+export interface PinjamanTransaksiValues {
+    tanggal: string;
+    no_pinjaman: string;
+    anggota_id: string;
+    anggota?: { id: number; no_anggota: string; nama: string; alamat: string; no_identitas: string; telepon: string } | null;
+    jenis_id: string;
+    jaminan_id: string;
+    marketing_id: string;
+    sektor_id: string;
+    jenis_angsuran: string;
+    swp: string;
+    spp: string;
+    plafon: string;
+    bunga: string;
+    jangka_waktu: string;
+    satuan: string;
+    bayar_pokok_per: string;
+    pembayaran: string;
+    jatuh_tempo: string;
+    angsuran: string;
+    manual: string;
+    tabungan_id: string;
+    kode_id: string;
+    kode_koreksi: string;
+    cair_simpanan: boolean;
+    sms: boolean;
+    rekening_koran: boolean;
+    aktif: boolean;
+    biaya: PinjamanBiayaItem[];
+    jaminan: PinjamanJaminanItem[];
+    saksi: PinjamanSaksiItem[];
+    surat: PinjamanSuratItem[];
+    penjamin: PinjamanPenjaminItem[];
+}
+
+/** Opsi anggota untuk lookup (No. Anggota / Penjamin). */
+export interface PinjamanAnggotaRow {
+    id: number;
+    no_anggota: string;
+    nama: string;
+    alamat: string | null;
+    no_identitas: string | null;
+    telepon: string | null;
+    status: string | null;
+}
+
+/** Opsi produk pinjaman lengkap (membawa konfigurasi angsuran). */
+export interface PinjamanJenisRow {
+    id: number;
+    nama: string;
+    angsuran: string | null;
+    bunga: string;
+    nominal_simpanan: string;
+    nominal_simpanan_pokok: string;
+    simpanan: string;
+    swp_cair: string;
+    swp_angsur: string;
+}
+
+export interface PinjamanMarketingRow {
+    id: number;
+    kode: string;
+    nama: string;
+}
+
+export interface PinjamanAccountRow {
+    id: number;
+    no_account: string;
+    nama: string;
+}
+
+export interface PinjamanJaminanTypeRow {
+    id: number;
+    nama: string;
+    details: { id: number; detail: string }[];
+}
+
+export interface PinjamanSimpananRow {
+    id: number;
+    no_rekening: string;
+    anggota_id: string;
+    aktif: string | null;
+    anggota?: { id: number; no_anggota: string; nama: string } | null;
+}
+
+export interface PinjamanKodeTarikanRow {
+    id: number;
+    kode: string;
+    nama: string;
+}
+
+export interface PinjamanSektorRow {
+    id: number;
+    nama: string;
+}
+
+export interface PinjamanSuratOption {
+    id: number;
+    nama: string;
+}
+
+/** Baris pinjaman lengkap untuk mode Edit (beserta relasi pendukung). */
+export interface PinjamanEditRow {
+    id: number;
+    tanggal: string;
+    no_pinjaman: string;
+    anggota_id: string;
+    jenis_id: string;
+    jaminan_id: string | null;
+    marketing_id: string | null;
+    sektor_id: string | null;
+    plafon: string | null;
+    bunga: string | null;
+    jangka_waktu: string | null;
+    satuan: string | null;
+    bayar_pokok_per: string | null;
+    jatuh_tempo: string | null;
+    pembayaran: string | null;
+    manual: string | null;
+    tabungan_id: string | null;
+    kode_id: string | null;
+    kode_koreksi: string | null;
+    swp_id: string | null;
+    spp_id: string | null;
+    angsuran: string | null;
+    nominal_angsuran: string | null;
+    cair_simpanan: string | null;
+    sms: string | null;
+    rekening_koran: string | null;
+    aktif: string | null;
+    anggota?: PinjamanAnggotaRow | null;
+    biaya: PinjamanBiayaItem[];
+    jaminan: PinjamanJaminanItem[];
+    saksi: PinjamanSaksiItem[];
+    surat: PinjamanSuratItem[];
+    penjamin: PinjamanPenjaminItem[];
+}
+
 /* ===================== Pencairan Pinjaman ===================== */
 
 /** Opsi pinjaman ringkas untuk dropdown pencairan. */

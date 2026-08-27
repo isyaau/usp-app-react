@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, Head, router} from '@inertiajs/react';
-import { Banknote, Plus, Search } from 'lucide-react';
+import { Banknote, Pencil, Plus, Search } from 'lucide-react';
 
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { PageHeader } from '@/Components/PageHeader';
@@ -171,7 +171,11 @@ export default function PinjamanIndex({ pinjaman, filters }: Props) {
                                     </TableCell>
                                     <TableCell>
                                         <div className="flex items-center justify-end gap-1">
-                                            {/* Edit/show tidak ada di aplikasi lama (komponen rusak). */}
+                                            <Button variant="ghost" size="icon" asChild>
+                                                <Link href={route('superadmin.pinjaman.pinjaman.edit', item.id)}>
+                                                    <Pencil className="text-muted-foreground" />
+                                                </Link>
+                                            </Button>
                                             <ConfirmDelete
                                                 routeName="superadmin.pinjaman.pinjaman.destroy"
                                                 id={item.id}
