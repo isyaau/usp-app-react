@@ -2,8 +2,10 @@
 
 use App\Models\Anggota;
 use App\Models\Kantor;
+use App\Models\PenghapusanPinjaman;
 use App\Models\Pinjaman;
 use App\Models\PinjamanProduk;
+use App\Models\SuratPeringatan;
 use App\Models\User;
 
 /**
@@ -113,6 +115,232 @@ it('tagihan mencari berdasarkan no pinjaman', function () {
             ->component('Superadmin/TagihanPinjaman/Index')
             ->has('tagihan.data', 1)
             ->where('tagihan.data.0.no_pinjaman', $f['pinjaman']->no_pinjaman));
+});
+
+it('penghapusan index memuat komponen Inertia', function () {
+    $this->actingAs($this->admin)
+        ->get(route('superadmin.pinjaman.penghapusan'))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('Superadmin/PenghapusanPinjaman/Index')
+            ->has('transaksi')
+            ->has('filters'));
+});
+
+it('penghapusan create menyediakan opsi anggota & kantor', function () {
+    $this->actingAs($this->admin)
+        ->get(route('superadmin.pinjaman.penghapusan.create'))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('Superadmin/PenghapusanPinjaman/Create')
+            ->has('anggotas')
+            ->has('kantors'));
+});
+
+it('penghapusan store membuat data', function () {
+    $f = pinjamanFixtures();
+
+    $this->actingAs($this->admin)
+        ->post(route('superadmin.pinjaman.penghapusan.store'), [
+            'tgl_transaksi' => '2026-08-28',
+            'pinjaman_id' => $f['pinjaman']->id,
+            'sisa_pokok' => '5000000',
+            'keterangan' => 'TEST bukti laba macet',
+            'kantor_id' => $f['kantor']->id,
+        ])
+        ->assertRedirect(route('superadmin.pinjaman.penghapusan'));
+
+    $h = PenghapusanPinjaman::where('pinjaman_id', $f['pinjaman']->id)->first();
+    expect($h)->not->toBeNull()
+        ->and($h->no_transaksi)->toStartWith('PHP-')
+        ->and($h->sisa_pokok)->toBe('5000000.00')
+        ->and($h->status)->toBe('draft')
+        ->and($h->user_id)->toBe($this->admin->id);
+});
+
+it('penghapusan pinjamanByAnggota mengembalikan sisa pokok', function () {
+    $f = pinjamanFixtures();
+
+    $response = $this->actingAs($this->admin)
+        ->getJson(route('superadmin.pinjaman.penghapusan.pinjaman-by-anggota', $f['anggota']))
+        ->assertOk()
+        ->assertJsonCount(1);
+
+    $data = $response->json();
+    expect($data[0]['no_pinjaman'])->toBe($f['pinjaman']->no_pinjaman)
+        ->and((float) $data[0]['sisa_pokok'])->toBe(5000000.0);
+});
+
+it('penghapusan show memuat komponen Inertia', function () {
+    $f = pinjamanFixtures();
+    $h = PenghapusanPinjaman::create([
+        'no_transaksi' => 'PHP-TEST-' . uniqid(),
+        'tgl_transaksi' => '2026-08-28',
+        'pinjaman_id' => $f['pinjaman']->id,
+        'sisa_pokok' => '5000000',
+        'keterangan' => 'TEST',
+        'user_id' => $this->admin->id,
+        'kantor_id' => $f['kantor']->id,
+        'status' => 'draft',
+    ]);
+
+    $this->actingAs($this->admin)
+        ->get(route('superadmin.pinjaman.penghapusan.show', $h))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page->component('Superadmin/PenghapusanPinjaman/Show'));
+});
+
+it('penghapusan update mengubah data & status', function () {
+    $f = pinjamanFixtures();
+    $h = PenghapusanPinjaman::create([
+        'no_transaksi' => 'PHP-TEST-' . uniqid(),
+        'tgl_transaksi' => '2026-08-28',
+        'pinjaman_id' => $f['pinjaman']->id,
+        'sisa_pokok' => '5000000',
+        'keterangan' => 'TEST',
+        'user_id' => $this->admin->id,
+        'kantor_id' => $f['kantor']->id,
+        'status' => 'draft',
+    ]);
+
+    $this->actingAs($this->admin)
+        ->put(route('superadmin.pinjaman.penghapusan.update', $h), [
+            'sisa_pokok' => '4000000',
+            'status' => 'posted',
+            'keterangan' => 'TEST posting',
+        ])
+        ->assertRedirect(route('superadmin.pinjaman.penghapusan'));
+
+    expect($h->fresh()->sisa_pokok)->toBe('4000000.00')
+        ->and($h->fresh()->status)->toBe('posted')
+        ->and($f['pinjaman']->fresh()->aktif)->toBe('0');
+});
+
+it('penghapusan destroy menghapus data', function () {
+    $f = pinjamanFixtures();
+    $h = PenghapusanPinjaman::create([
+        'no_transaksi' => 'PHP-TEST-' . uniqid(),
+        'tgl_transaksi' => '2026-08-28',
+        'pinjaman_id' => $f['pinjaman']->id,
+        'sisa_pokok' => '5000000',
+        'keterangan' => 'TEST',
+        'user_id' => $this->admin->id,
+        'kantor_id' => $f['kantor']->id,
+        'status' => 'draft',
+    ]);
+
+    $this->actingAs($this->admin)
+        ->delete(route('superadmin.pinjaman.penghapusan.destroy', $h))
+        ->assertRedirect(route('superadmin.pinjaman.penghapusan'));
+
+    expect(PenghapusanPinjaman::find($h->id))->toBeNull()->and(
+        PenghapusanPinjaman::where('no_transaksi', $h->no_transaksi)->count()
+    )->toBe(0);
+});
+
+it('surat-peringatan index memuat komponen Inertia', function () {
+    $this->actingAs($this->admin)
+        ->get(route('superadmin.pinjaman.surat-peringatan'))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('Superadmin/SuratPeringatan/Index')
+            ->has('transaksi')
+            ->has('filters'));
+});
+
+it('surat-peringatan store membuat data', function () {
+    $f = pinjamanFixtures();
+
+    $this->actingAs($this->admin)
+        ->post(route('superadmin.pinjaman.surat-peringatan.store'), [
+            'tgl_transaksi' => '2026-08-28',
+            'pinjaman_id' => $f['pinjaman']->id,
+            'tahap' => 'SP-2',
+            'isi' => 'TEST surat peringatan kedua',
+            'kantor_id' => $f['kantor']->id,
+        ])
+        ->assertRedirect(route('superadmin.pinjaman.surat-peringatan'));
+
+    $sp = SuratPeringatan::where('pinjaman_id', $f['pinjaman']->id)->first();
+    expect($sp)->not->toBeNull()
+        ->and($sp->no_transaksi)->toStartWith('SP-')
+        ->and($sp->tahap)->toBe('SP-2')
+        ->and($sp->status)->toBe('draft')
+        ->and($sp->user_id)->toBe($this->admin->id);
+});
+
+it('surat-peringatan show & update', function () {
+    $f = pinjamanFixtures();
+    $sp = SuratPeringatan::create([
+        'no_transaksi' => 'SP-TEST-' . uniqid(),
+        'tgl_transaksi' => '2026-08-28',
+        'pinjaman_id' => $f['pinjaman']->id,
+        'tahap' => 'SP-1',
+        'isi' => 'TEST',
+        'user_id' => $this->admin->id,
+        'kantor_id' => $f['kantor']->id,
+        'status' => 'draft',
+    ]);
+
+    $this->actingAs($this->admin)
+        ->get(route('superadmin.pinjaman.surat-peringatan.show', $sp))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page->component('Superadmin/SuratPeringatan/Show'));
+
+    $this->actingAs($this->admin)
+        ->put(route('superadmin.pinjaman.surat-peringatan.update', $sp), [
+            'tahap' => 'SP-3',
+            'status' => 'posted',
+        ])
+        ->assertRedirect(route('superadmin.pinjaman.surat-peringatan'));
+
+    expect($sp->fresh()->tahap)->toBe('SP-3')
+        ->and($sp->fresh()->status)->toBe('posted');
+});
+
+it('surat-peringatan cetak menghasilkan PDF', function () {
+    $f = pinjamanFixtures();
+    $sp = SuratPeringatan::create([
+        'no_transaksi' => 'SP-TEST-' . uniqid(),
+        'tgl_transaksi' => '2026-08-28',
+        'pinjaman_id' => $f['pinjaman']->id,
+        'tahap' => 'SP-1',
+        'isi' => 'TEST isi surat',
+        'user_id' => $this->admin->id,
+        'kantor_id' => $f['kantor']->id,
+        'status' => 'draft',
+    ]);
+
+    $res = $this->actingAs($this->admin)
+        ->get(route('superadmin.pinjaman.surat-peringatan.cetak', $sp));
+
+    $res->assertOk()
+        ->assertHeader('content-type', 'application/pdf')
+        ->assertHeader('content-disposition', "attachment; filename=surat_peringatan_{$sp->no_transaksi}.pdf");
+
+    expect($res->streamedContent())->toStartWith('%PDF');
+});
+
+it('surat-peringatan destroy menghapus data', function () {
+    $f = pinjamanFixtures();
+    $sp = SuratPeringatan::create([
+        'no_transaksi' => 'SP-TEST-' . uniqid(),
+        'tgl_transaksi' => '2026-08-28',
+        'pinjaman_id' => $f['pinjaman']->id,
+        'tahap' => 'SP-1',
+        'isi' => 'TEST',
+        'user_id' => $this->admin->id,
+        'kantor_id' => $f['kantor']->id,
+        'status' => 'draft',
+    ]);
+
+    $this->actingAs($this->admin)
+        ->delete(route('superadmin.pinjaman.surat-peringatan.destroy', $sp))
+        ->assertRedirect(route('superadmin.pinjaman.surat-peringatan'));
+
+    expect(SuratPeringatan::find($sp->id))->toBeNull()->and(
+        SuratPeringatan::where('no_transaksi', $sp->no_transaksi)->count()
+    )->toBe(0);
 });
 
 /* ------------------------------------------------------------------ */

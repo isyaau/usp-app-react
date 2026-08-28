@@ -26,6 +26,8 @@ use App\Http\Controllers\Superadmin\PinjamanProdukController;
 use App\Http\Controllers\Superadmin\ProposalController;
 use App\Http\Controllers\Superadmin\JadwalUlangController;
 use App\Http\Controllers\Superadmin\TagihanPinjamanController;
+use App\Http\Controllers\Superadmin\PenghapusanPinjamanController;
+use App\Http\Controllers\Superadmin\SuratPeringatanController;
 use App\Http\Controllers\Superadmin\SimpananProdukController;
 use App\Http\Controllers\Superadmin\UserController;
 use App\Http\Controllers\Superadmin\AngsuranPinjamanController;
@@ -185,6 +187,27 @@ Route::prefix('superadmin')->name('superadmin.')->middleware(['auth', 'role:supe
 
     // Tagihan Pinjaman (Inertia + React)
     Route::get('/pinjaman/tagihan', [TagihanPinjamanController::class, 'index'])->name('pinjaman.tagihan');
+
+    // Penghapusan Pinjaman (Inertia + React)
+    Route::get('/pinjaman/penghapusan', [PenghapusanPinjamanController::class, 'index'])->name('pinjaman.penghapusan');
+    Route::get('/pinjaman/penghapusan/create', [PenghapusanPinjamanController::class, 'create'])->name('pinjaman.penghapusan.create');
+    Route::get('/pinjaman/penghapusan/anggota/{anggota}', [PenghapusanPinjamanController::class, 'pinjamanByAnggota'])->name('pinjaman.penghapusan.pinjaman-by-anggota');
+    Route::post('/pinjaman/penghapusan', [PenghapusanPinjamanController::class, 'store'])->name('pinjaman.penghapusan.store');
+    Route::get('/pinjaman/penghapusan/{penghapusanPinjaman}', [PenghapusanPinjamanController::class, 'show'])->name('pinjaman.penghapusan.show');
+    Route::get('/pinjaman/penghapusan/{penghapusanPinjaman}/edit', [PenghapusanPinjamanController::class, 'edit'])->name('pinjaman.penghapusan.edit');
+    Route::put('/pinjaman/penghapusan/{penghapusanPinjaman}', [PenghapusanPinjamanController::class, 'update'])->name('pinjaman.penghapusan.update');
+    Route::delete('/pinjaman/penghapusan/{penghapusanPinjaman}', [PenghapusanPinjamanController::class, 'destroy'])->name('pinjaman.penghapusan.destroy');
+
+    // Surat Peringatan (Inertia + React)
+    Route::get('/pinjaman/surat-peringatan', [SuratPeringatanController::class, 'index'])->name('pinjaman.surat-peringatan');
+    Route::get('/pinjaman/surat-peringatan/create', [SuratPeringatanController::class, 'create'])->name('pinjaman.surat-peringatan.create');
+    Route::get('/pinjaman/surat-peringatan/anggota/{anggota}', [SuratPeringatanController::class, 'pinjamanByAnggota'])->name('pinjaman.surat-peringatan.pinjaman-by-anggota');
+    Route::post('/pinjaman/surat-peringatan', [SuratPeringatanController::class, 'store'])->name('pinjaman.surat-peringatan.store');
+    Route::get('/pinjaman/surat-peringatan/{suratPeringatan}', [SuratPeringatanController::class, 'show'])->name('pinjaman.surat-peringatan.show');
+    Route::get('/pinjaman/surat-peringatan/{suratPeringatan}/edit', [SuratPeringatanController::class, 'edit'])->name('pinjaman.surat-peringatan.edit');
+    Route::put('/pinjaman/surat-peringatan/{suratPeringatan}', [SuratPeringatanController::class, 'update'])->name('pinjaman.surat-peringatan.update');
+    Route::delete('/pinjaman/surat-peringatan/{suratPeringatan}', [SuratPeringatanController::class, 'destroy'])->name('pinjaman.surat-peringatan.destroy');
+    Route::get('/pinjaman/surat-peringatan/{suratPeringatan}/cetak', [SuratPeringatanController::class, 'cetak'])->name('pinjaman.surat-peringatan.cetak');
 
     // Pencairan Pinjaman (Inertia + React)
     Route::get('/pencairan-pinjaman', [PencairanPinjamanController::class, 'index'])->name('pencairan-pinjaman');

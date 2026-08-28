@@ -101,6 +101,8 @@ const MENU: MenuItem[] = [
             { label: 'Jadwal Ulang', route: 'superadmin.pinjaman.jadwal-ulang' },
             { label: 'Tagihan Pinjaman', route: 'superadmin.pinjaman.tagihan' },
             { label: 'Pencairan Pinjaman', route: 'superadmin.pencairan-pinjaman' },
+            { label: 'Penghapusan Pinjaman', route: 'superadmin.pinjaman.penghapusan' },
+            { label: 'Surat Peringatan', route: 'superadmin.pinjaman.surat-peringatan' },
         ],
     },
     {

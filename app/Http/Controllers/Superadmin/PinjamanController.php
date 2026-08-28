@@ -291,7 +291,7 @@ class PinjamanController extends Controller
             'rekening_koran' => $request->boolean('rekening_koran') ? '1' : '',
             'cair_simpanan' => $request->boolean('cair_simpanan') ? '1' : '',
             'sms' => $request->boolean('sms') ? '1' : '',
-            'aktif' => $request->boolean('aktif') ? '1' : '0',
+            'aktif' => $request->has('aktif') ? ($request->boolean('aktif') ? '1' : '0') : '1',
             'jatuh_tempo' => $jatuhTempo,
             'kantor_id' => $kantorId,
             'user_id' => auth()->id(),
