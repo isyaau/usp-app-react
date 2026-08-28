@@ -164,10 +164,18 @@ export default function ProposalIndex({ proposal, filters }: Props) {
                                                     <Eye className="text-muted-foreground" />
                                                 </Link>
                                             </Button>
-                                            <Button variant="ghost" size="icon" asChild title="Cetak">
-                                                <Link href={route('superadmin.pinjaman.proposal.cetak', item.id)}>
-                                                    <Printer className="text-muted-foreground" />
-                                                </Link>
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                title="Cetak"
+                                                onClick={() =>
+                                                    window.open(
+                                                        route('superadmin.pinjaman.proposal.cetak', item.id),
+                                                        '_blank',
+                                                    )
+                                                }
+                                            >
+                                                <Printer className="text-muted-foreground" />
                                             </Button>
                                             <Button variant="ghost" size="icon" asChild title="Edit">
                                                 <Link href={route('superadmin.pinjaman.proposal.edit', item.id)}>

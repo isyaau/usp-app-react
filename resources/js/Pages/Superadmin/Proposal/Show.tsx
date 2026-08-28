@@ -43,11 +43,12 @@ export default function Show({ proposal }: Props) {
                 icon={FileText}
                 backHref={route('superadmin.pinjaman.proposal')}
             >
-                <Button variant="outline" asChild>
-                    <Link href={route('superadmin.pinjaman.proposal.cetak', proposal.id)}>
-                        <Printer />
-                        Cetak
-                    </Link>
+                <Button
+                    variant="outline"
+                    onClick={() => window.open(route('superadmin.pinjaman.proposal.cetak', proposal.id), '_blank')}
+                >
+                    <Printer />
+                    Cetak
                 </Button>
                 <Button asChild className="bg-brand-600 hover:bg-brand-500">
                     <Link href={route('superadmin.pinjaman.proposal.edit', proposal.id)}>

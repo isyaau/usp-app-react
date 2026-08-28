@@ -294,23 +294,17 @@ export default function PinjamanIndex({ pinjaman, filters }: Props) {
                                                     <DropdownMenuLabel className="text-xs text-muted-foreground">
                                                         Cetak
                                                     </DropdownMenuLabel>
-                                                    <DropdownMenuItem asChild>
-                                                        <Link href={route('superadmin.pinjaman.pinjaman.cetak-data', item.id)}>
-                                                            <Printer />
-                                                            Cetak Data Pinjaman
-                                                        </Link>
+                                                    <DropdownMenuItem onSelect={() => window.open(route('superadmin.pinjaman.pinjaman.cetak-data', item.id), '_blank')}>
+                                                        <Printer />
+                                                        Cetak Data Pinjaman
                                                     </DropdownMenuItem>
-                                                    <DropdownMenuItem asChild>
-                                                        <Link href={route('superadmin.pinjaman.pinjaman.cetak-simulasi', item.id)}>
-                                                            <Calculator />
-                                                            Cetak Simulasi
-                                                        </Link>
+                                                    <DropdownMenuItem onSelect={() => window.open(route('superadmin.pinjaman.pinjaman.cetak-simulasi', item.id), '_blank')}>
+                                                        <Calculator />
+                                                        Cetak Simulasi
                                                     </DropdownMenuItem>
-                                                    <DropdownMenuItem asChild>
-                                                        <Link href={route('superadmin.pinjaman.pinjaman.cetak-angsuran', item.id)}>
-                                                            <TableIcon />
-                                                            Cetak Tabel Angsuran
-                                                        </Link>
+                                                    <DropdownMenuItem onSelect={() => window.open(route('superadmin.pinjaman.pinjaman.cetak-angsuran', item.id), '_blank')}>
+                                                        <TableIcon />
+                                                        Cetak Tabel Angsuran
                                                     </DropdownMenuItem>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
