@@ -28,6 +28,7 @@ use App\Http\Controllers\Superadmin\JadwalUlangController;
 use App\Http\Controllers\Superadmin\TagihanPinjamanController;
 use App\Http\Controllers\Superadmin\PenghapusanPinjamanController;
 use App\Http\Controllers\Superadmin\SuratPeringatanController;
+use App\Http\Controllers\Superadmin\PengembalianJaminanController;
 use App\Http\Controllers\Superadmin\SimpananProdukController;
 use App\Http\Controllers\Superadmin\UserController;
 use App\Http\Controllers\Superadmin\AngsuranPinjamanController;
@@ -208,6 +209,16 @@ Route::prefix('superadmin')->name('superadmin.')->middleware(['auth', 'role:supe
     Route::put('/pinjaman/surat-peringatan/{suratPeringatan}', [SuratPeringatanController::class, 'update'])->name('pinjaman.surat-peringatan.update');
     Route::delete('/pinjaman/surat-peringatan/{suratPeringatan}', [SuratPeringatanController::class, 'destroy'])->name('pinjaman.surat-peringatan.destroy');
     Route::get('/pinjaman/surat-peringatan/{suratPeringatan}/cetak', [SuratPeringatanController::class, 'cetak'])->name('pinjaman.surat-peringatan.cetak');
+
+    // Pengembalian Jaminan (Inertia + React)
+    Route::get('/pinjaman/pengembalian-jaminan', [PengembalianJaminanController::class, 'index'])->name('pinjaman.pengembalian-jaminan');
+    Route::get('/pinjaman/pengembalian-jaminan/create', [PengembalianJaminanController::class, 'create'])->name('pinjaman.pengembalian-jaminan.create');
+    Route::get('/pinjaman/pengembalian-jaminan/anggota/{anggota}', [PengembalianJaminanController::class, 'pinjamanByAnggota'])->name('pinjaman.pengembalian-jaminan.pinjaman-by-anggota');
+    Route::post('/pinjaman/pengembalian-jaminan', [PengembalianJaminanController::class, 'store'])->name('pinjaman.pengembalian-jaminan.store');
+    Route::get('/pinjaman/pengembalian-jaminan/{pengembalianJaminan}', [PengembalianJaminanController::class, 'show'])->name('pinjaman.pengembalian-jaminan.show');
+    Route::get('/pinjaman/pengembalian-jaminan/{pengembalianJaminan}/edit', [PengembalianJaminanController::class, 'edit'])->name('pinjaman.pengembalian-jaminan.edit');
+    Route::put('/pinjaman/pengembalian-jaminan/{pengembalianJaminan}', [PengembalianJaminanController::class, 'update'])->name('pinjaman.pengembalian-jaminan.update');
+    Route::delete('/pinjaman/pengembalian-jaminan/{pengembalianJaminan}', [PengembalianJaminanController::class, 'destroy'])->name('pinjaman.pengembalian-jaminan.destroy');
 
     // Pencairan Pinjaman (Inertia + React)
     Route::get('/pencairan-pinjaman', [PencairanPinjamanController::class, 'index'])->name('pencairan-pinjaman');

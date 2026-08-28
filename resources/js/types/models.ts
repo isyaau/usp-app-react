@@ -462,6 +462,24 @@ export interface PenghapusanPinjamanRow {
     kantor?: { id: number; nama_kantor: string } | null;
 }
 
+/** Baris daftar pengembalian jaminan (menu Pengembalian Jaminan). */
+export interface PengembalianJaminanRow {
+    id: number;
+    no_transaksi: string;
+    tgl_transaksi: string;
+    sisa_pokok: number;
+    keterangan: string | null;
+    status: 'draft' | 'posted' | 'batal';
+    pinjaman?: {
+        id: number;
+        no_pinjaman: string;
+        plafon: number;
+        anggota?: { id: number; no_anggota: string; nama: string } | null;
+    } | null;
+    user?: { id: number; nama: string } | null;
+    kantor?: { id: number; nama_kantor: string } | null;
+}
+
 /** Baris daftar surat peringatan (menu Surat Peringatan). */
 export interface SuratPeringatanRow {
     id: number;

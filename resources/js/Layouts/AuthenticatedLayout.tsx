@@ -103,6 +103,7 @@ const MENU: MenuItem[] = [
             { label: 'Pencairan Pinjaman', route: 'superadmin.pencairan-pinjaman' },
             { label: 'Penghapusan Pinjaman', route: 'superadmin.pinjaman.penghapusan' },
             { label: 'Surat Peringatan', route: 'superadmin.pinjaman.surat-peringatan' },
+            { label: 'Pengembalian Jaminan', route: 'superadmin.pinjaman.pengembalian-jaminan' },
         ],
     },
     {

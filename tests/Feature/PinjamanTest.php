@@ -3,6 +3,7 @@
 use App\Models\Anggota;
 use App\Models\Kantor;
 use App\Models\PenghapusanPinjaman;
+use App\Models\PengembalianJaminan;
 use App\Models\Pinjaman;
 use App\Models\PinjamanProduk;
 use App\Models\SuratPeringatan;
@@ -340,6 +341,126 @@ it('surat-peringatan destroy menghapus data', function () {
 
     expect(SuratPeringatan::find($sp->id))->toBeNull()->and(
         SuratPeringatan::where('no_transaksi', $sp->no_transaksi)->count()
+    )->toBe(0);
+});
+
+it('pengembalian-jaminan index memuat komponen Inertia', function () {
+    $this->actingAs($this->admin)
+        ->get(route('superadmin.pinjaman.pengembalian-jaminan'))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('Superadmin/PengembalianJaminan/Index')
+            ->has('transaksi')
+            ->has('filters'));
+});
+
+it('pengembalian-jaminan create memuat komponen Inertia', function () {
+    $this->actingAs($this->admin)
+        ->get(route('superadmin.pinjaman.pengembalian-jaminan.create'))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('Superadmin/PengembalianJaminan/Create')
+            ->has('anggotas')
+            ->has('kantors'));
+});
+
+it('pengembalian-jaminan store membuat data', function () {
+    $f = pinjamanFixtures();
+
+    $this->actingAs($this->admin)
+        ->post(route('superadmin.pinjaman.pengembalian-jaminan.store'), [
+            'tgl_transaksi' => '2026-08-28',
+            'pinjaman_id' => $f['pinjaman']->id,
+            'sisa_pokok' => '2500000',
+            'keterangan' => 'TEST jaminan dikembalikan',
+            'kantor_id' => $f['kantor']->id,
+        ])
+        ->assertRedirect(route('superadmin.pinjaman.pengembalian-jaminan'));
+
+    $k = PengembalianJaminan::where('pinjaman_id', $f['pinjaman']->id)->first();
+    expect($k)->not->toBeNull()
+        ->and($k->no_transaksi)->toStartWith('PJ-')
+        ->and($k->sisa_pokok)->toBe('2500000.00')
+        ->and($k->status)->toBe('draft')
+        ->and($k->user_id)->toBe($this->admin->id);
+});
+
+it('pengembalian-jaminan pinjamanByAnggota mengembalikan jaminan', function () {
+    $f = pinjamanFixtures();
+    $f['pinjaman']->update(['aktif' => '1']);
+
+    $res = $this->actingAs($this->admin)
+        ->get(route('superadmin.pinjaman.pengembalian-jaminan.pinjaman-by-anggota', $f['anggota']))
+        ->assertOk()
+        ->json();
+
+    expect($res)->toHaveCount(1)
+        ->and($res[0]['no_pinjaman'])->toBe($f['pinjaman']->no_pinjaman)
+        ->and($res[0]['jaminan'])->toBeArray();
+});
+
+it('pengembalian-jaminan show memuat komponen Inertia', function () {
+    $f = pinjamanFixtures();
+    $k = PengembalianJaminan::create([
+        'no_transaksi' => 'PJ-TEST-' . uniqid(),
+        'tgl_transaksi' => '2026-08-28',
+        'pinjaman_id' => $f['pinjaman']->id,
+        'sisa_pokok' => '2500000',
+        'keterangan' => 'TEST',
+        'user_id' => $this->admin->id,
+        'kantor_id' => $f['kantor']->id,
+        'status' => 'draft',
+    ]);
+
+    $this->actingAs($this->admin)
+        ->get(route('superadmin.pinjaman.pengembalian-jaminan.show', $k))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page->component('Superadmin/PengembalianJaminan/Show'));
+});
+
+it('pengembalian-jaminan update mengubah data & status', function () {
+    $f = pinjamanFixtures();
+    $k = PengembalianJaminan::create([
+        'no_transaksi' => 'PJ-TEST-' . uniqid(),
+        'tgl_transaksi' => '2026-08-28',
+        'pinjaman_id' => $f['pinjaman']->id,
+        'sisa_pokok' => '2500000',
+        'keterangan' => 'TEST',
+        'user_id' => $this->admin->id,
+        'kantor_id' => $f['kantor']->id,
+        'status' => 'draft',
+    ]);
+
+    $this->actingAs($this->admin)
+        ->put(route('superadmin.pinjaman.pengembalian-jaminan.update', $k), [
+            'sisa_pokok' => '1500000',
+            'status' => 'posted',
+        ])
+        ->assertRedirect(route('superadmin.pinjaman.pengembalian-jaminan'));
+
+    expect($k->fresh()->sisa_pokok)->toBe('1500000.00')
+        ->and($k->fresh()->status)->toBe('posted');
+});
+
+it('pengembalian-jaminan destroy menghapus data', function () {
+    $f = pinjamanFixtures();
+    $k = PengembalianJaminan::create([
+        'no_transaksi' => 'PJ-TEST-' . uniqid(),
+        'tgl_transaksi' => '2026-08-28',
+        'pinjaman_id' => $f['pinjaman']->id,
+        'sisa_pokok' => '2500000',
+        'keterangan' => 'TEST',
+        'user_id' => $this->admin->id,
+        'kantor_id' => $f['kantor']->id,
+        'status' => 'draft',
+    ]);
+
+    $this->actingAs($this->admin)
+        ->delete(route('superadmin.pinjaman.pengembalian-jaminan.destroy', $k))
+        ->assertRedirect(route('superadmin.pinjaman.pengembalian-jaminan'));
+
+    expect(PengembalianJaminan::find($k->id))->toBeNull()->and(
+        PengembalianJaminan::where('no_transaksi', $k->no_transaksi)->count()
     )->toBe(0);
 });
 
