@@ -25,6 +25,7 @@ use App\Http\Controllers\Superadmin\PinjamanController;
 use App\Http\Controllers\Superadmin\PinjamanProdukController;
 use App\Http\Controllers\Superadmin\ProposalController;
 use App\Http\Controllers\Superadmin\JadwalUlangController;
+use App\Http\Controllers\Superadmin\TagihanPinjamanController;
 use App\Http\Controllers\Superadmin\SimpananProdukController;
 use App\Http\Controllers\Superadmin\UserController;
 use App\Http\Controllers\Superadmin\AngsuranPinjamanController;
@@ -181,6 +182,9 @@ Route::prefix('superadmin')->name('superadmin.')->middleware(['auth', 'role:supe
     Route::get('/pinjaman/jadwal-ulang/{jadwalUlang}/edit', [JadwalUlangController::class, 'edit'])->name('pinjaman.jadwal-ulang.edit');
     Route::put('/pinjaman/jadwal-ulang/{jadwalUlang}', [JadwalUlangController::class, 'update'])->name('pinjaman.jadwal-ulang.update');
     Route::delete('/pinjaman/jadwal-ulang/{jadwalUlang}', [JadwalUlangController::class, 'destroy'])->name('pinjaman.jadwal-ulang.destroy');
+
+    // Tagihan Pinjaman (Inertia + React)
+    Route::get('/pinjaman/tagihan', [TagihanPinjamanController::class, 'index'])->name('pinjaman.tagihan');
 
     // Pencairan Pinjaman (Inertia + React)
     Route::get('/pencairan-pinjaman', [PencairanPinjamanController::class, 'index'])->name('pencairan-pinjaman');

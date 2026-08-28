@@ -351,17 +351,6 @@ export function PinjamanForm({
                 })}
             </div>
 
-            {reschedule && (
-                <div className="flex flex-wrap items-center gap-3 rounded-lg border border-brand-600/30 bg-brand-50 px-4 py-3 text-sm dark:bg-brand-600/10">
-                    <HandCoins className="size-5 text-brand-600" />
-                    <span className="font-medium">Reschedule / Jadwal Ulang Pinjaman</span>
-                    <span className="text-muted-foreground">Pinjaman Asal:</span>
-                    <span className="font-mono font-semibold text-brand-700 dark:text-brand-300">
-                        {form.data.no_pinjaman_lama || '—'}
-                    </span>
-                </div>
-            )}
-
             {/* ===== TAB 1: PINJAMAN ===== */}
             {activeTab === 'pinjaman' && (
                 <div className="space-y-5">
@@ -377,6 +366,13 @@ export function PinjamanForm({
                                     onChange={(e) => form.setData('tanggal', e.target.value)} />
                                 {form.errors.tanggal && <Err>{form.errors.tanggal}</Err>}
                             </div>
+                            {reschedule && (
+                                <div className="space-y-2">
+                                    <Label htmlFor="no_pinjaman_lama">No. Pinjaman Lama</Label>
+                                    <Input id="no_pinjaman_lama" className="font-mono" value={form.data.no_pinjaman_lama}
+                                        onChange={(e) => form.setData('no_pinjaman_lama', e.target.value)} readOnly />
+                                </div>
+                            )}
                             <div className="space-y-2">
                                 <Label htmlFor="no_pinjaman">No. Pinjaman <span className="text-brand-600">*</span></Label>
                                 <Input id="no_pinjaman" className="font-mono" value={form.data.no_pinjaman}

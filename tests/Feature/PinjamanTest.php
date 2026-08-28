@@ -91,6 +91,30 @@ it('destroy menghapus data pinjaman', function () {
     expect(Pinjaman::find($f['pinjaman']->id))->toBeNull();
 });
 
+it('tagihan memuat komponen Inertia beserta rekap', function () {
+    pinjamanFixtures();
+
+    $this->actingAs($this->admin)
+        ->get(route('superadmin.pinjaman.tagihan'))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('Superadmin/TagihanPinjaman/Index')
+            ->has('tagihan')
+            ->has('rekap', 4));
+});
+
+it('tagihan mencari berdasarkan no pinjaman', function () {
+    $f = pinjamanFixtures();
+
+    $this->actingAs($this->admin)
+        ->get(route('superadmin.pinjaman.tagihan', ['search' => $f['pinjaman']->no_pinjaman]))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('Superadmin/TagihanPinjaman/Index')
+            ->has('tagihan.data', 1)
+            ->where('tagihan.data.0.no_pinjaman', $f['pinjaman']->no_pinjaman));
+});
+
 /* ------------------------------------------------------------------ */
 /* Helper                                                              */
 /* ------------------------------------------------------------------ */

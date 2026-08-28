@@ -99,6 +99,7 @@ const MENU: MenuItem[] = [
             { label: 'Pinjaman', route: 'superadmin.pinjaman.pinjaman' },
             { label: 'Proposal', route: 'superadmin.pinjaman.proposal' },
             { label: 'Jadwal Ulang', route: 'superadmin.pinjaman.jadwal-ulang' },
+            { label: 'Tagihan Pinjaman', route: 'superadmin.pinjaman.tagihan' },
             { label: 'Pencairan Pinjaman', route: 'superadmin.pencairan-pinjaman' },
         ],
     },

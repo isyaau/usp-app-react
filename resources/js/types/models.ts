@@ -425,6 +425,25 @@ export interface PinjamanJenisOptionLite {
     nama: string;
 }
 
+/** Baris daftar tagihan pinjaman (menu Tagihan Pinjaman). */
+export interface TagihanPinjamanRow {
+    id: number;
+    tanggal: string;
+    no_pinjaman: string;
+    plafon: number;
+    pokok_terbayar: number;
+    sisa_pokok: number;
+    nominal_angsuran: number;
+    bunga: string;
+    jangka_waktu: string;
+    satuan: string;
+    angsuranke: number;
+    jatuh_tempo: string | null;
+    lunas: boolean;
+    jenisPinjaman?: { id: number; nama: string } | null;
+    anggota?: { id: number; no_anggota: string; nama: string } | null;
+}
+
 /** Baris daftar pinjaman. */
 export interface PinjamanRow {
     id: number;
