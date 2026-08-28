@@ -894,6 +894,46 @@ export interface ProposalRow {
     kantor?: { id: number; nama_kantor: string } | null;
 }
 
+/** Baris biaya proposal untuk halaman Show. */
+export interface ProposalShowBiayaItem {
+    id: number;
+    proposal_id: number;
+    nama: string;
+    nominal: string;
+    persen: string;
+    is_deducted_from_disbursement: string;
+}
+
+/** Detail lengkap proposal untuk halaman Show. */
+export interface ProposalShowRow {
+    id: number;
+    tanggal: string;
+    no_bukti: string;
+    anggota_id: string;
+    jenis_id: string;
+    marketing_id: string;
+    plafon: string;
+    bunga: string;
+    jangka_waktu: string;
+    satuan: string;
+    bayar_pokok_per: string | null;
+    pembayaran: string | null;
+    setiap_saat: string | null;
+    jenis_angsuran: string | null;
+    nominal_angsuran: string | null;
+    penggunaan_kredit: string | null;
+    jaminan: string | null;
+    total_biaya: string | null;
+    total_terima: string | null;
+    status: string | null;
+    jenis_pinjaman?: { id: number; nama: string; angsuran: string | null } | null;
+    anggota?: PinjamanAnggotaRow | null;
+    marketing?: PinjamanMarketingRow | null;
+    kantor?: { id: number; nama_kantor: string } | null;
+    user?: { id: number; nama: string } | null;
+    biaya: ProposalShowBiayaItem[];
+}
+
 /** Opsi pinjaman ringkas untuk dropdown pencairan. */
 export interface PinjamanOptionLite {
     id: number;

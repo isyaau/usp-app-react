@@ -56,4 +56,9 @@ class Proposal extends Model
     {
         return $this->hasMany(ProposalBiaya::class, 'proposal_id');
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

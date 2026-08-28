@@ -107,6 +107,40 @@ class ProposalController extends Controller
             ->with('flash.status', 'Proposal pinjaman berhasil dihapus.');
     }
 
+    /** Detail lengkap satu proposal (identik dengan data yang dicetak). */
+    public function show(Proposal $proposal)
+    {
+        $proposal->load([
+            'biaya',
+            'anggota:id,no_anggota,nama,alamat,no_identitas,telepon,status',
+            'jenisPinjaman:id,nama,angsuran',
+            'marketing:id,kode,nama',
+            'kantor:id,nama_kantor',
+            'user:id,nama',
+        ]);
+
+        return inertia('Superadmin/Proposal/Show', [
+            'proposal' => $proposal,
+        ]);
+    }
+
+    /** Cetak dokumen satu proposal pinjaman. */
+    public function cetak(Proposal $proposal)
+    {
+        $proposal->load([
+            'biaya',
+            'anggota:id,no_anggota,nama,alamat,no_identitas,telepon,status',
+            'jenisPinjaman:id,nama,angsuran',
+            'marketing:id,kode,nama',
+            'kantor:id,nama_kantor',
+            'user:id,nama',
+        ]);
+
+        return $this->streamPdf('pdf.proposal', [
+            'proposal' => $proposal,
+        ], "proposal_{$proposal->no_bukti}.pdf", 'portrait');
+    }
+
     /* ------------------------------------------------------------------ */
 
     private function formData(): array
@@ -286,5 +320,17 @@ class ProposalController extends Controller
         }
 
         return $prefix.str_pad((string) $urutan, 4, '0', STR_PAD_LEFT);
+    }
+
+    /** Stream PDF via DomPDF dengan header Content-Type yang benar. */
+    private function streamPdf(string $view, array $data, string $filename, string $orientation = 'landscape')
+    {
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView($view, $data)->setPaper('a4', $orientation);
+        $dompdf = $pdf->getDomPDF();
+        $dompdf->render();
+
+        return response()->streamDownload(fn () => print($pdf->output()), $filename, [
+            'Content-Type' => 'application/pdf',
+        ]);
     }
 }

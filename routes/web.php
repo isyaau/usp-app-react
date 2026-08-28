@@ -185,6 +185,8 @@ Route::prefix('superadmin')->name('superadmin.')->middleware(['auth', 'role:supe
     Route::get('/pinjaman/proposal/{proposal}/edit', [ProposalController::class, 'edit'])->name('pinjaman.proposal.edit');
     Route::put('/pinjaman/proposal/{proposal}', [ProposalController::class, 'update'])->name('pinjaman.proposal.update');
     Route::delete('/pinjaman/proposal/{proposal}', [ProposalController::class, 'destroy'])->name('pinjaman.proposal.destroy');
+    Route::get('/pinjaman/proposal/{proposal}', [ProposalController::class, 'show'])->name('pinjaman.proposal.show');
+    Route::get('/pinjaman/proposal/{proposal}/cetak', [ProposalController::class, 'cetak'])->name('pinjaman.proposal.cetak');
     Route::get('/pinjaman/jadwal-ulang', [JadwalUlangController::class, 'index'])->name('pinjaman.jadwal-ulang');
     Route::get('/pinjaman/jadwal-ulang/create', [JadwalUlangController::class, 'create'])->name('pinjaman.jadwal-ulang.create');
     Route::get('/pinjaman/jadwal-ulang/anggota/{anggota}', [JadwalUlangController::class, 'pinjamanByAnggota'])->name('pinjaman.jadwal-ulang.pinjaman-by-anggota');

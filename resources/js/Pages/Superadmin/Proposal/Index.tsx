@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, Head, router } from '@inertiajs/react';
-import { FileText, Pencil, Plus, Search } from 'lucide-react';
+import { Eye, FileText, Pencil, Plus, Printer, Search } from 'lucide-react';
 
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { PageHeader } from '@/Components/PageHeader';
@@ -138,7 +138,7 @@ export default function ProposalIndex({ proposal, filters }: Props) {
                                             {item.no_bukti}
                                         </span>
                                     </TableCell>
-                                    <TableCell>{item.jenisPinjaman?.nama ?? '—'}</TableCell>
+                                    <TableCell>{item.jenis_pinjaman?.nama ?? '—'}</TableCell>
                                     <TableCell>
                                         {item.anggota ? (
                                             <>
@@ -159,7 +159,17 @@ export default function ProposalIndex({ proposal, filters }: Props) {
                                     <TableCell className="font-mono">{rupiah(item.total_terima)}</TableCell>
                                     <TableCell>
                                         <div className="flex items-center justify-end gap-1">
-                                            <Button variant="ghost" size="icon" asChild>
+                                            <Button variant="ghost" size="icon" asChild title="Detail">
+                                                <Link href={route('superadmin.pinjaman.proposal.show', item.id)}>
+                                                    <Eye className="text-muted-foreground" />
+                                                </Link>
+                                            </Button>
+                                            <Button variant="ghost" size="icon" asChild title="Cetak">
+                                                <Link href={route('superadmin.pinjaman.proposal.cetak', item.id)}>
+                                                    <Printer className="text-muted-foreground" />
+                                                </Link>
+                                            </Button>
+                                            <Button variant="ghost" size="icon" asChild title="Edit">
                                                 <Link href={route('superadmin.pinjaman.proposal.edit', item.id)}>
                                                     <Pencil className="text-muted-foreground" />
                                                 </Link>
