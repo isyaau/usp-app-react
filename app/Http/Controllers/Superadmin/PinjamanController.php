@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Superadmin;
 
 use App\Http\Controllers\Controller;
+use App\Exports\PinjamanTemplateExport;
+use App\Imports\PinjamanImport;
 use App\Models\Account;
 use App\Models\Anggota;
 use App\Models\Jaminan;
@@ -19,6 +21,7 @@ use App\Models\Simpanan;
 use App\Models\SimpananKode;
 use App\Services\LoanCalculationService;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 /**
  * Controller CRUD Transaksi Pinjaman (6 tab: Pinjaman, Biaya, Jaminan,
@@ -109,6 +112,21 @@ class PinjamanController extends Controller
         ]);
     }
 
+    public function show(Pinjaman $pinjaman)
+    {
+        $pinjaman->load([
+            'biaya', 'jaminan', 'saksi', 'surat', 'penjamin',
+            'anggota:id,no_anggota,nama,alamat,no_identitas,telepon,status',
+            'jenisPinjaman:id,nama,angsuran',
+            'kantor:id,nama_kantor',
+            'user:id,nama',
+        ]);
+
+        return inertia('Superadmin/Pinjaman/Show', [
+            'pinjaman' => $pinjaman,
+        ]);
+    }
+
     public function update(Request $request, Pinjaman $pinjaman)
     {
         $data = $this->validatedData($request, $pinjaman->id);
@@ -138,6 +156,173 @@ class PinjamanController extends Controller
         return redirect()
             ->route('superadmin.pinjaman.pinjaman')
             ->with('flash.status', 'Transaksi pinjaman berhasil dihapus.');
+    }
+
+    /* ------------------------------------------------------------------ */
+    /*  Cetak, Simulasi, Import                                            */
+    /* ------------------------------------------------------------------ */
+
+    /** Cetak daftar pinjaman (mengikuti filter pencarian pada halaman). */
+    public function cetak(Request $request)
+    {
+        $search = (string) $request->string('search');
+
+        $pinjaman = Pinjaman::query()
+            ->with([
+                'anggota:id,no_anggota,nama,kelompok_id',
+                'jenisPinjaman:id,kode,nama',
+                'kantor:id,kode,nama_kantor',
+            ])
+            ->when($search !== '', function ($q) use ($search) {
+                $q->where(function ($qq) use ($search) {
+                    $qq->where('no_pinjaman', 'ILIKE', "%{$search}%")
+                        ->orWhereHas('anggota', fn ($a) => $a
+                            ->where('nama', 'ILIKE', "%{$search}%")
+                            ->orWhere('no_anggota', 'ILIKE', "%{$search}%"));
+                });
+            })
+            ->orderBy('created_at', 'DESC')
+            ->get();
+
+        return $this->streamPdf('pdf.laporan-cs.pinjaman.daftar-pinjaman', [
+            'pinjaman' => $pinjaman,
+            'filters' => ['search' => $search],
+        ], 'daftar_pinjaman.pdf');
+    }
+
+    /** Halaman Simulasi Angsuran Pinjaman (input bebas + tabel jadwal). */
+    public function simulasi()
+    {
+        return inertia('Superadmin/Pinjaman/Simulasi');
+    }
+
+    /** Cetak PDF hasil simulasi angsuran. */
+    public function cetakSimulasi(Request $request)
+    {
+        $data = $request->validate([
+            'plafon' => ['required', 'numeric', 'gt:0'],
+            'bunga' => ['required', 'numeric', 'min:0', 'max:100'],
+            'jangka_waktu' => ['required', 'integer', 'min:1'],
+            'satuan' => ['required', 'in:'.implode(',', self::SATUAN)],
+            'metode' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $hasil = app(LoanCalculationService::class)->calculate([
+            'plafon' => (float) $data['plafon'],
+            'bunga' => (float) $data['bunga'],
+            'jangka_waktu' => (int) $data['jangka_waktu'],
+            'satuan' => $data['satuan'],
+            'metode' => $data['metode'] ?? 'Flat',
+        ]);
+
+        return $this->streamPdf('pdf.simulasi-angsuran', [
+            'judul' => 'Simulasi Angsuran Pinjaman',
+            'plafon' => $data['plafon'],
+            'bunga' => $data['bunga'],
+            'jangka_waktu' => $data['jangka_waktu'],
+            'satuan' => $data['satuan'],
+            'hasil' => $hasil,
+        ], 'simulasi_angsuran_pinjaman.pdf');
+    }
+
+    /* ------------------------------------------------------------------ */
+    /*  Cetak per data pinjaman (tombol di baris daftar pinjaman)          */
+    /* ------------------------------------------------------------------ */
+
+    /** Cetak data transaksi satu pinjaman (identik dengan halaman detail). */
+    public function cetakDataPinjaman(Pinjaman $pinjaman)
+    {
+        $pinjaman->load([
+            'biaya', 'jaminan', 'saksi', 'surat', 'penjamin',
+            'anggota:id,no_anggota,nama,alamat,no_identitas,telepon,status',
+            'jenisPinjaman:id,nama,angsuran',
+            'kantor:id,nama_kantor',
+            'user:id,nama',
+        ]);
+
+        return $this->streamPdf('pdf.pinjaman-detail', [
+            'pinjaman' => $pinjaman,
+        ], 'data_pinjaman.pdf', 'portrait');
+    }
+
+    /** Cetak simulasi/skema angsuran berdasarkan data satu pinjaman. */
+    public function cetakSimulasiPinjaman(Pinjaman $pinjaman)
+    {
+        $pinjaman->load('jenisPinjaman:id,nama,angsuran', 'anggota:id,no_anggota,nama');
+
+        $hasil = app(LoanCalculationService::class)->calculate([
+            'plafon' => (float) $pinjaman->plafon,
+            'bunga' => (float) $pinjaman->bunga,
+            'jangka_waktu' => (int) $pinjaman->jangka_waktu,
+            'satuan' => $pinjaman->satuan,
+            'metode' => $pinjaman->jenisPinjaman?->angsuran,
+        ]);
+
+        return $this->streamPdf('pdf.simulasi-angsuran', [
+            'judul' => 'Simulasi Angsuran Pinjaman',
+            'pinjaman' => $pinjaman,
+            'plafon' => $pinjaman->plafon,
+            'bunga' => $pinjaman->bunga,
+            'jangka_waktu' => $pinjaman->jangka_waktu,
+            'satuan' => $pinjaman->satuan,
+            'hasil' => $hasil,
+        ], "simulasi_angsuran_{$pinjaman->no_pinjaman}.pdf");
+    }
+
+    /** Cetak tabel angsuran (jadwal) berdasarkan data satu pinjaman. */
+    public function cetakAngsuranPinjaman(Pinjaman $pinjaman)
+    {
+        $pinjaman->load('jenisPinjaman:id,nama,angsuran', 'anggota:id,no_anggota,nama');
+
+        $hasil = app(LoanCalculationService::class)->calculate([
+            'plafon' => (float) $pinjaman->plafon,
+            'bunga' => (float) $pinjaman->bunga,
+            'jangka_waktu' => (int) $pinjaman->jangka_waktu,
+            'satuan' => $pinjaman->satuan,
+            'metode' => $pinjaman->jenisPinjaman?->angsuran,
+        ]);
+
+        return $this->streamPdf('pdf.simulasi-angsuran', [
+            'judul' => 'Tabel Angsuran Pinjaman',
+            'pinjaman' => $pinjaman,
+            'plafon' => $pinjaman->plafon,
+            'bunga' => $pinjaman->bunga,
+            'jangka_waktu' => $pinjaman->jangka_waktu,
+            'satuan' => $pinjaman->satuan,
+            'hasil' => $hasil,
+        ], "tabel_angsuran_{$pinjaman->no_pinjaman}.pdf");
+    }
+
+    /** Unduh template Excel untuk impor data pinjaman. */
+    public function template()
+    {
+        return Excel::download(new PinjamanTemplateExport, 'template_pinjaman.xlsx');
+    }
+
+    /** Impor data pinjaman dari file Excel sesuai template. */
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx,csv',
+        ], [
+            'file.required' => 'File wajib dipilih.',
+            'file.mimes' => 'File harus berformat xlsx atau csv.',
+        ]);
+
+        try {
+            Excel::import(new PinjamanImport($request->user()->id), $request->file('file')->getRealPath());
+
+            return back()->with('flash.status', 'Data pinjaman berhasil diimport!');
+        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+            $failures = $e->failures();
+            $msg = $failures[0]->errors()[0] ?? 'Data tidak valid atau duplikat.';
+
+            return back()->with('flash.error', $msg);
+        } catch (\Throwable $e) {
+            report($e);
+
+            return back()->with('flash.error', 'Import gagal. Periksa format dan isi file Anda.');
+        }
     }
 
     /* ------------------------------------------------------------------ */
@@ -410,5 +595,17 @@ class PinjamanController extends Controller
             'tahun' => $date->addYears($jangka)->format('Y-m-d'),
             default => $date->addMonths($jangka)->format('Y-m-d'),
         };
+    }
+
+    /** Stream PDF via DomPDF dengan header Content-Type yang benar. */
+    private function streamPdf(string $view, array $data, string $filename, string $orientation = 'landscape')
+    {
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView($view, $data)->setPaper('a4', $orientation);
+        $dompdf = $pdf->getDomPDF();
+        $dompdf->render();
+
+        return response()->streamDownload(fn () => print($pdf->output()), $filename, [
+            'Content-Type' => 'application/pdf',
+        ]);
     }
 }

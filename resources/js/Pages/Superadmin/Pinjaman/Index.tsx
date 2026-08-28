@@ -1,6 +1,21 @@
 import { useState } from 'react';
-import { Link, Head, router} from '@inertiajs/react';
-import { Banknote, Pencil, Plus, Search } from 'lucide-react';
+import { Link, Head, router, useForm } from '@inertiajs/react';
+import {
+    AlertCircle,
+    Banknote,
+    Calculator,
+    Eye,
+    FileDown,
+    LoaderCircle,
+    MoreHorizontal,
+    Pencil,
+    Plus,
+    Printer,
+    Search,
+    Sheet,
+    Table as TableIcon,
+    Upload,
+} from 'lucide-react';
 
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { PageHeader } from '@/Components/PageHeader';
@@ -9,6 +24,14 @@ import { ConfirmDelete } from '@/Components/ConfirmDelete';
 import { Badge } from '@/Components/ui/badge';
 import { Button } from '@/Components/ui/button';
 import { Card } from '@/Components/ui/card';
+import { CardContent, CardDescription, CardHeader, CardTitle } from '@/Components/ui/card';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuTrigger,
+} from '@/Components/ui/dropdown-menu';
 import { Input } from '@/Components/ui/input';
 import {
     Select,
@@ -39,6 +62,8 @@ export default function PinjamanIndex({ pinjaman, filters }: Props) {
     const [search, setSearch] = useState(filters.search ?? '');
     const [perPage, setPerPage] = useState(String(pinjaman.per_page));
 
+    const importForm = useForm<{ file: File | null }>({ file: null });
+
     const apply = (overrides: { search?: string; per_page?: string } = {}) => {
         router.get(
             route('superadmin.pinjaman.pinjaman'),
@@ -59,6 +84,12 @@ export default function PinjamanIndex({ pinjaman, filters }: Props) {
                 description="Kelola rekening pinjaman anggota."
                 icon={Banknote}
             >
+                <Button variant="outline" asChild title="Simulasi angsuran pinjaman">
+                    <Link href={route('superadmin.pinjaman.pinjaman.simulasi')}>
+                        <Calculator />
+                        Simulasi
+                    </Link>
+                </Button>
                 <Button asChild className="bg-brand-600 hover:bg-brand-500">
                     <Link href={route('superadmin.pinjaman.pinjaman.create')} preload="hover">
                         <Plus />
@@ -68,6 +99,73 @@ export default function PinjamanIndex({ pinjaman, filters }: Props) {
             </PageHeader>
 
             <Card className="gap-4 py-5">
+                <CardHeader className="flex-row flex-wrap items-center justify-between gap-3 space-y-0 px-5">
+                    <CardTitle className="flex items-center gap-2 text-base">
+                        <div className="p-2 rounded-lg bg-green-50 text-green-600">
+                            <Upload className="size-4" />
+                        </div>
+                        Impor Data Pinjaman
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className="px-5 space-y-4">
+                    <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/30 border border-border/50">
+                        <Sheet className="size-5 text-muted-foreground shrink-0" />
+                        <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-foreground">Template Impor Pinjaman</p>
+                            <p className="text-xs text-muted-foreground">
+                                Kolom: Tanggal, No Pinjaman, No Anggota, Produk, Plafon, Bunga, Jangka Waktu,
+                                Satuan, Nominal Angsuran, Aktif
+                            </p>
+                        </div>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            asChild
+                            className="shrink-0 text-brand-600 hover:text-brand-700 hover:bg-brand-50 gap-1.5"
+                        >
+                            <a href={route('superadmin.pinjaman.pinjaman.template')}>
+                                <FileDown className="size-3.5" />
+                                Unduh Template (.xlsx)
+                            </a>
+                        </Button>
+                    </div>
+
+                    <form
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            importForm.post(route('superadmin.pinjaman.pinjaman.import'), {
+                                forceFormData: true,
+                            });
+                        }}
+                        className="space-y-3"
+                    >
+                        <Input
+                            id="import-file"
+                            type="file"
+                            accept=".xlsx,.csv"
+                            onChange={(e) => importForm.setData('file', e.target.files?.[0] ?? null)}
+                            className="cursor-pointer"
+                        />
+                        {importForm.errors.file && (
+                            <p className="text-sm text-destructive flex items-center gap-1.5">
+                                <AlertCircle className="size-4" />
+                                {importForm.errors.file}
+                            </p>
+                        )}
+                        <Button
+                            type="submit"
+                            size="sm"
+                            disabled={importForm.processing || !importForm.data.file}
+                            className="w-full sm:w-auto bg-brand-600 hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed gap-2"
+                        >
+                            {importForm.processing && <LoaderCircle className="animate-spin size-4" />}
+                            {importForm.processing ? 'Memproses...' : 'Impor Sekarang'}
+                        </Button>
+                    </form>
+                </CardContent>
+            </Card>
+
+            <Card className="gap-4 py-5 mt-5">
                 <div className="flex flex-wrap items-center gap-3 px-5">
                     <div className="relative min-w-56 flex-1">
                         <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -171,11 +269,51 @@ export default function PinjamanIndex({ pinjaman, filters }: Props) {
                                     </TableCell>
                                     <TableCell>
                                         <div className="flex items-center justify-end gap-1">
-                                            <Button variant="ghost" size="icon" asChild>
+                                            <Button variant="ghost" size="icon" asChild title="Detail">
+                                                <Link href={route('superadmin.pinjaman.pinjaman.show', item.id)}>
+                                                    <Eye className="text-muted-foreground" />
+                                                </Link>
+                                            </Button>
+                                            <Button variant="ghost" size="icon" asChild title="Edit">
                                                 <Link href={route('superadmin.pinjaman.pinjaman.edit', item.id)}>
                                                     <Pencil className="text-muted-foreground" />
                                                 </Link>
                                             </Button>
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        title="Cetak / Lainnya"
+                                                        className="data-[state=open]:bg-muted"
+                                                    >
+                                                        <MoreHorizontal className="text-muted-foreground" />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end">
+                                                    <DropdownMenuLabel className="text-xs text-muted-foreground">
+                                                        Cetak
+                                                    </DropdownMenuLabel>
+                                                    <DropdownMenuItem asChild>
+                                                        <Link href={route('superadmin.pinjaman.pinjaman.cetak-data', item.id)}>
+                                                            <Printer />
+                                                            Cetak Data Pinjaman
+                                                        </Link>
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem asChild>
+                                                        <Link href={route('superadmin.pinjaman.pinjaman.cetak-simulasi', item.id)}>
+                                                            <Calculator />
+                                                            Cetak Simulasi
+                                                        </Link>
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem asChild>
+                                                        <Link href={route('superadmin.pinjaman.pinjaman.cetak-angsuran', item.id)}>
+                                                            <TableIcon />
+                                                            Cetak Tabel Angsuran
+                                                        </Link>
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
                                             <ConfirmDelete
                                                 routeName="superadmin.pinjaman.pinjaman.destroy"
                                                 id={item.id}

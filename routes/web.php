@@ -165,11 +165,20 @@ Route::prefix('superadmin')->name('superadmin.')->middleware(['auth', 'role:supe
 
     // Data Pinjaman (Inertia + React)
     Route::get('/pinjaman/pinjaman', [PinjamanController::class, 'index'])->name('pinjaman.pinjaman');
+    Route::get('/pinjaman/pinjaman/cetak', [PinjamanController::class, 'cetak'])->name('pinjaman.pinjaman.cetak');
+    Route::get('/pinjaman/pinjaman/simulasi', [PinjamanController::class, 'simulasi'])->name('pinjaman.pinjaman.simulasi');
+    Route::get('/pinjaman/pinjaman/simulasi/cetak', [PinjamanController::class, 'cetakSimulasi'])->name('pinjaman.pinjaman.simulasi-cetak');
+    Route::post('/pinjaman/pinjaman/import', [PinjamanController::class, 'import'])->name('pinjaman.pinjaman.import');
+    Route::get('/pinjaman/pinjaman/template', [PinjamanController::class, 'template'])->name('pinjaman.pinjaman.template');
     Route::get('/pinjaman/pinjaman/create', [PinjamanController::class, 'create'])->name('pinjaman.pinjaman.create');
     Route::post('/pinjaman/pinjaman', [PinjamanController::class, 'store'])->name('pinjaman.pinjaman.store');
+    Route::get('/pinjaman/pinjaman/{pinjaman}', [PinjamanController::class, 'show'])->name('pinjaman.pinjaman.show');
     Route::get('/pinjaman/pinjaman/{pinjaman}/edit', [PinjamanController::class, 'edit'])->name('pinjaman.pinjaman.edit');
     Route::put('/pinjaman/pinjaman/{pinjaman}', [PinjamanController::class, 'update'])->name('pinjaman.pinjaman.update');
     Route::delete('/pinjaman/pinjaman/{pinjaman}', [PinjamanController::class, 'destroy'])->name('pinjaman.pinjaman.destroy');
+    Route::get('/pinjaman/pinjaman/{pinjaman}/cetak-data', [PinjamanController::class, 'cetakDataPinjaman'])->name('pinjaman.pinjaman.cetak-data');
+    Route::get('/pinjaman/pinjaman/{pinjaman}/cetak-simulasi', [PinjamanController::class, 'cetakSimulasiPinjaman'])->name('pinjaman.pinjaman.cetak-simulasi');
+    Route::get('/pinjaman/pinjaman/{pinjaman}/cetak-angsuran', [PinjamanController::class, 'cetakAngsuranPinjaman'])->name('pinjaman.pinjaman.cetak-angsuran');
     Route::get('/pinjaman/proposal', [ProposalController::class, 'index'])->name('pinjaman.proposal');
     Route::get('/pinjaman/proposal/create', [ProposalController::class, 'create'])->name('pinjaman.proposal.create');
     Route::post('/pinjaman/proposal', [ProposalController::class, 'store'])->name('pinjaman.proposal.store');

@@ -84,6 +84,196 @@ it('store menolak no_pinjaman duplikat', function () {
         ->assertSessionHasErrors('no_pinjaman');
 });
 
+it('show memuat detail transaksi pinjaman', function () {
+    $f = pinjamanFixtures();
+
+    $this->actingAs($this->admin)
+        ->get(route('superadmin.pinjaman.pinjaman.show', $f['pinjaman']))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('Superadmin/Pinjaman/Show')
+            ->has('pinjaman.biaya')
+            ->has('pinjaman.jaminan')
+            ->has('pinjaman.anggota'));
+});
+
+it('cetak daftar pinjaman menghasilkan pdf', function () {
+    $f = pinjamanFixtures();
+
+    $res = $this->actingAs($this->admin)
+        ->get(route('superadmin.pinjaman.pinjaman.cetak', ['search' => $f['anggota']->nama]));
+
+    $res->assertOk();
+    expect($res->headers->get('Content-Type'))->toContain('application/pdf')
+        ->and($res->streamedContent())->toStartWith('%PDF');
+});
+
+it('cetak data per pinjaman menghasilkan pdf', function () {
+    $f = pinjamanFixtures();
+
+    $res = $this->actingAs($this->admin)
+        ->get(route('superadmin.pinjaman.pinjaman.cetak-data', $f['pinjaman']));
+
+    $res->assertOk();
+    expect($res->headers->get('Content-Type'))->toContain('application/pdf')
+        ->and($res->streamedContent())->toStartWith('%PDF');
+});
+
+it('cetak simulasi per pinjaman menghasilkan pdf', function () {
+    $f = pinjamanFixtures(['tanpaPinjaman' => true]);
+
+    $pinjaman = Pinjaman::create([
+        'tanggal' => '2026-01-10',
+        'no_pinjaman' => "PJS-{$f['uniq']}",
+        'proposal_id' => 0,
+        'anggota_id' => $f['anggota']->id,
+        'jaminan_id' => 0,
+        'jenis_id' => $f['jenis']->id,
+        'marketing_id' => $this->admin->id,
+        'sektor_id' => 0,
+        'angsuran' => $f['jenis']->angsuran,
+        'plafon' => '5000000',
+        'nominal_angsuran' => '470000',
+        'bunga' => '1.5',
+        'jangka_waktu' => '12',
+        'periode' => '12',
+        'satuan' => 'bulan',
+        'pembayaran' => 'tunai',
+        'manual' => '0',
+        'tabungan_id' => 0,
+        'kode_id' => 0,
+        'kode_koreksi' => '',
+        'swp_id' => 0,
+        'spp_id' => 0,
+        'angsuranke' => '0',
+        'rekening_koran' => '',
+        'cair_simpanan' => '0',
+        'sms' => '1',
+        'aktif' => '1',
+        'kantor_id' => $f['kantor']->id,
+        'user_id' => $this->admin->id,
+    ]);
+
+    $res = $this->actingAs($this->admin)
+        ->get(route('superadmin.pinjaman.pinjaman.cetak-simulasi', $pinjaman));
+
+    $res->assertOk();
+    expect($res->headers->get('Content-Type'))->toContain('application/pdf')
+        ->and($res->streamedContent())->toStartWith('%PDF');
+});
+
+it('cetak angsuran per pinjaman menghasilkan pdf', function () {
+    $f = pinjamanFixtures(['tanpaPinjaman' => true]);
+
+    $pinjaman = Pinjaman::create([
+        'tanggal' => '2026-01-10',
+        'no_pinjaman' => "PJA-{$f['uniq']}",
+        'proposal_id' => 0,
+        'anggota_id' => $f['anggota']->id,
+        'jaminan_id' => 0,
+        'jenis_id' => $f['jenis']->id,
+        'marketing_id' => $this->admin->id,
+        'sektor_id' => 0,
+        'angsuran' => $f['jenis']->angsuran,
+        'plafon' => '5000000',
+        'nominal_angsuran' => '470000',
+        'bunga' => '1.5',
+        'jangka_waktu' => '12',
+        'periode' => '12',
+        'satuan' => 'bulan',
+        'pembayaran' => 'tunai',
+        'manual' => '0',
+        'tabungan_id' => 0,
+        'kode_id' => 0,
+        'kode_koreksi' => '',
+        'swp_id' => 0,
+        'spp_id' => 0,
+        'angsuranke' => '0',
+        'rekening_koran' => '',
+        'cair_simpanan' => '0',
+        'sms' => '1',
+        'aktif' => '1',
+        'kantor_id' => $f['kantor']->id,
+        'user_id' => $this->admin->id,
+    ]);
+
+    $res = $this->actingAs($this->admin)
+        ->get(route('superadmin.pinjaman.pinjaman.cetak-angsuran', $pinjaman));
+
+    $res->assertOk();
+    expect($res->headers->get('Content-Type'))->toContain('application/pdf')
+        ->and($res->streamedContent())->toStartWith('%PDF');
+});
+
+it('halaman simulasi memuat komponen Inertia', function () {
+    $this->actingAs($this->admin)
+        ->get(route('superadmin.pinjaman.pinjaman.simulasi'))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page->component('Superadmin/Pinjaman/Simulasi'));
+});
+
+it('cetak simulasi menghasilkan pdf', function () {
+    $res = $this->actingAs($this->admin)
+        ->get(route('superadmin.pinjaman.pinjaman.simulasi-cetak', [
+            'plafon' => 10000000,
+            'bunga' => 12,
+            'jangka_waktu' => 12,
+            'satuan' => 'bulan',
+            'metode' => 'Anuitas',
+        ]));
+
+    $res->assertOk();
+    expect($res->headers->get('Content-Type'))->toContain('application/pdf')
+        ->and($res->streamedContent())->toStartWith('%PDF');
+});
+
+it('template excel dapat diunduh', function () {
+    $res = $this->actingAs($this->admin)
+        ->get(route('superadmin.pinjaman.pinjaman.template'));
+
+    $res->assertOk();
+    expect($res->headers->get('Content-Type'))->toContain(
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    );
+});
+
+it('import excel membuat data pinjaman baru', function () {
+    $f = pinjamanFixtures(['tanpaPinjaman' => true]);
+    $uniq = uniqid('IMPORT');
+    $noPinjaman = "IMP-{$uniq}";
+
+    $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+    $spreadsheet->getActiveSheet()->fromArray([
+        ['Tanggal', 'No Pinjaman', 'No Anggota', 'Produk', 'Plafon', 'Bunga', 'Jangka Waktu', 'Satuan', 'Nominal Angsuran', 'Aktif'],
+        ['19-08-2026', $noPinjaman, $f['anggota']->no_anggota, $f['jenis']->nama, 5000000, 12, 12, 'bulan', '', 'Aktif'],
+    ], null, 'A1');
+
+    $path = sys_get_temp_dir().'/imp-'.$uniq.'.xlsx';
+    (new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet))->save($path);
+
+    $file = new \Illuminate\Http\UploadedFile(
+        $path,
+        'pinjaman.xlsx',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        null,
+        true
+    );
+
+    $this->actingAs($this->admin)
+        ->post(route('superadmin.pinjaman.pinjaman.import'), ['file' => $file])
+        ->assertSessionHas('flash.status');
+
+    $pj = Pinjaman::where('no_pinjaman', $noPinjaman)->first();
+
+    expect($pj)->not->toBeNull()
+        ->and($pj->plafon)->toBe('5000000')
+        ->and($pj->aktif)->toBe('1')
+        ->and((string) $pj->anggota_id)->toBe((string) $f['anggota']->id)
+        ->and($pj->kantor_id)->toBe($f['kantor']->id);
+
+    @unlink($path);
+});
+
 it('destroy menghapus data pinjaman', function () {
     $f = pinjamanFixtures();
 
