@@ -38,6 +38,12 @@ interface KantorOption {
     nama_kantor: string;
 }
 
+type SimpananFormData = SimpananFormValues & {
+    signature_base64?: string;
+    mode?: 'draw' | 'upload';
+    uploaded_signature?: File | null;
+};
+
 interface Props {
     simpananData: SimpananDetail;
     existingSignatureUrl: string | null;
@@ -55,7 +61,7 @@ export default function SimpananEdit({
     kantorOptions,
     anggotaOptions,
 }: Props) {
-    const form = useForm<SimpananFormValues & { signature_base64?: string }>({
+    const form = useForm<SimpananFormData>({
         tanggal: s.tanggal ?? '',
         no_rekening: s.no_rekening,
         anggota_id: String(s.anggota_id),
@@ -72,6 +78,8 @@ export default function SimpananEdit({
         blokir_tgl: s.blokir_tgl === '1',
         tgl_blokir: s.tgl_blokir ?? '',
         kantor_id: s.kantor_id ? String(s.kantor_id) : '',
+        mode: 'draw',
+        uploaded_signature: null,
     });
 
     const submit = (e: React.FormEvent) => {
@@ -93,14 +101,15 @@ export default function SimpananEdit({
                 backHref={route('superadmin.simpanan')}
             />
 
-            <form onSubmit={submit} className="max-w-5xl">
-                <div className="grid gap-5 lg:grid-cols-2">
+            <form onSubmit={submit} className="max-w-6xl">
+                <div className="grid gap-5">
+                    {/* Data utama: lebar penuh agar field tidak sempit */}
                     <Card>
                         <CardHeader>
                             <CardTitle>Data Rekening</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-5">
-                            <div className="grid gap-5 sm:grid-cols-2">
+                            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                                 <div className="space-y-2">
                                     <Label htmlFor="no_rekening">
                                         No. Rekening{' '}
@@ -131,11 +140,25 @@ export default function SimpananEdit({
                                             form.setData('tanggal', e.target.value)
                                         }
                                     />
+                                    {form.errors.tanggal && (
+                                        <p className="text-sm text-brand-600">
+                                            {form.errors.tanggal}
+                                        </p>
+                                    )}
                                 </div>
-                            </div>
 
-                            <div className="grid gap-5 sm:grid-cols-2">
                                 <div className="space-y-2">
+                                    <Label htmlFor="bunga">Bagi Hasil / Tahun (%)</Label>
+                                    <Input
+                                        id="bunga"
+                                        value={form.data.bunga}
+                                        onChange={(e) => form.setData('bunga', e.target.value)}
+                                        inputMode="decimal"
+                                        placeholder="0"
+                                    />
+                                </div>
+
+                                <div className="space-y-2 lg:col-span-2">
                                     <Label>
                                         Produk Simpanan{' '}
                                         <span className="text-brand-600">*</span>
@@ -170,31 +193,27 @@ export default function SimpananEdit({
                                             ))}
                                         </SelectContent>
                                     </Select>
+                                    {form.errors.jenis_id && (
+                                        <p className="text-sm text-brand-600">
+                                            {form.errors.jenis_id}
+                                        </p>
+                                    )}
                                 </div>
 
-                                <div className="space-y-2">
-                                    <Label htmlFor="bunga">Bagi Hasil / Tahun (%)</Label>
-                                    <Input
-                                        id="bunga"
-                                        value={form.data.bunga}
-                                        onChange={(e) => form.setData('bunga', e.target.value)}
-                                        inputMode="decimal"
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="grid gap-5 sm:grid-cols-2">
                                 <div className="space-y-2">
                                     <Label htmlFor="qq">QQ</Label>
                                     <Input
                                         id="qq"
                                         value={form.data.qq}
                                         onChange={(e) => form.setData('qq', e.target.value)}
+                                        placeholder="Nama penjamin/kuasa"
                                     />
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="nominal_setor">Nominal Setoran Awal</Label>
+                                    <Label htmlFor="nominal_setor">
+                                        Nominal Setoran Awal
+                                    </Label>
                                     <Input
                                         id="nominal_setor"
                                         value={form.data.nominal_setor}
@@ -202,12 +221,12 @@ export default function SimpananEdit({
                                             form.setData('nominal_setor', e.target.value)
                                         }
                                         inputMode="numeric"
+                                        placeholder="0"
+                                        className="text-right"
                                     />
                                 </div>
-                            </div>
 
-                            <div className="grid gap-5 sm:grid-cols-3">
-                                <div className="space-y-2 sm:col-span-2">
+                                <div className="space-y-2 lg:col-span-2">
                                     <Label>
                                         Anggota <span className="text-brand-600">*</span>
                                     </Label>
@@ -233,6 +252,11 @@ export default function SimpananEdit({
                                             ))}
                                         </SelectContent>
                                     </Select>
+                                    {form.errors.anggota_id && (
+                                        <p className="text-sm text-brand-600">
+                                            {form.errors.anggota_id}
+                                        </p>
+                                    )}
                                     {/* Rekening terpilih mungkin milik anggota nonaktif */}
                                     {!anggotaOptions.some(
                                         (a) => String(a.id) === form.data.anggota_id,
@@ -244,17 +268,6 @@ export default function SimpananEdit({
                                     )}
                                 </div>
 
-                                <label className="flex h-fit cursor-pointer items-center justify-between rounded-lg border bg-card px-4 py-2.5 transition hover:bg-muted/50">
-                                    <span className="text-sm font-medium">Aktif</span>
-                                    <Switch
-                                        checked={form.data.aktif}
-                                        onCheckedChange={(v) => form.setData('aktif', v)}
-                                        aria-label="Rekening aktif"
-                                    />
-                                </label>
-                            </div>
-
-                            <div className="grid gap-5 sm:grid-cols-2">
                                 <div className="space-y-2">
                                     <Label>Marketing</Label>
                                     <Select
@@ -300,22 +313,35 @@ export default function SimpananEdit({
                                         </SelectContent>
                                     </Select>
                                 </div>
-                            </div>
 
-                            <label className="flex w-fit cursor-pointer items-center justify-between rounded-lg border bg-card px-4 py-2.5 transition hover:bg-muted/50">
-                                <span className="mr-4 text-sm font-medium">
-                                    Notifikasi SMS
-                                </span>
-                                <Switch
-                                    checked={form.data.sms}
-                                    onCheckedChange={(v) => form.setData('sms', v)}
-                                    aria-label="Notifikasi SMS"
-                                />
-                            </label>
+                                <div className="space-y-2">
+                                    <Label>Status</Label>
+                                    <label className="flex h-10 cursor-pointer items-center justify-between rounded-lg border bg-card px-4 transition hover:bg-muted/50">
+                                        <span className="text-sm font-medium">Aktif</span>
+                                        <Switch
+                                            checked={form.data.aktif}
+                                            onCheckedChange={(v) => form.setData('aktif', v)}
+                                            aria-label="Rekening aktif"
+                                        />
+                                    </label>
+                                </div>
+
+                                <label className="flex cursor-pointer items-center justify-between rounded-lg border bg-card px-4 py-2.5 transition hover:bg-muted/50 lg:col-span-3">
+                                    <span className="text-sm font-medium">
+                                        Notifikasi SMS untuk transaksi
+                                    </span>
+                                    <Switch
+                                        checked={form.data.sms}
+                                        onCheckedChange={(v) => form.setData('sms', v)}
+                                        aria-label="Notifikasi SMS"
+                                    />
+                                </label>
+                            </div>
                         </CardContent>
                     </Card>
 
-                    <div className="space-y-5">
+                    {/* TTD & Blokir */}
+                    <div className="grid gap-5 lg:grid-cols-2">
                         <Card>
                             <CardHeader>
                                 <CardTitle>Tanda Tangan</CardTitle>
@@ -324,9 +350,30 @@ export default function SimpananEdit({
                                 <SignaturePanel
                                     existingUrl={existingSignatureUrl}
                                     onChange={(dataUrl) =>
-                                        form.setData('signature_base64', dataUrl ?? '')
+                                        form.setData(
+                                            'signature_base64',
+                                            dataUrl ?? '',
+                                        )
+                                    }
+                                    onModeChange={(m) => {
+                                        form.setData('mode', m);
+                                        if (m === 'draw') {
+                                            form.setData('uploaded_signature', null);
+                                        } else {
+                                            form.setData('signature_base64', '');
+                                        }
+                                    }}
+                                    onFileChange={(f) =>
+                                        form.setData('uploaded_signature', f)
                                     }
                                 />
+                                {(() => {
+                                    const errs = form.errors as unknown as Record<string, string | undefined>;
+                                    const msg = errs.ttd ?? errs.uploaded_signature;
+                                    return msg ? (
+                                        <p className="mt-2 text-sm text-brand-600">{msg}</p>
+                                    ) : null;
+                                })()}
                             </CardContent>
                         </Card>
 
@@ -370,30 +417,36 @@ export default function SimpananEdit({
                                                 form.setData('nominal_blokir', e.target.value)
                                             }
                                             inputMode="numeric"
+                                            placeholder="0"
+                                            className="text-right"
                                         />
                                     </div>
                                 </div>
 
-                                <div className="max-w-xs space-y-2">
-                                    <div className="flex items-center gap-2">
-                                        <Switch
-                                            checked={form.data.blokir_tgl}
-                                            onCheckedChange={(v) =>
-                                                form.setData('blokir_tgl', v)
+                                <div className="flex items-end justify-between gap-4">
+                                    <div className="w-full space-y-2">
+                                        <div className="flex items-center gap-2">
+                                            <Switch
+                                                checked={form.data.blokir_tgl}
+                                                onCheckedChange={(v) =>
+                                                    form.setData('blokir_tgl', v)
+                                                }
+                                                aria-label="Blokir tanggal aktif"
+                                            />
+                                            <Label htmlFor="tgl_blokir">
+                                                Blokir s/d Tanggal
+                                            </Label>
+                                        </div>
+                                        <Input
+                                            id="tgl_blokir"
+                                            type="date"
+                                            value={form.data.tgl_blokir}
+                                            disabled={!form.data.blokir_tgl}
+                                            onChange={(e) =>
+                                                form.setData('tgl_blokir', e.target.value)
                                             }
-                                            aria-label="Blokir tanggal aktif"
                                         />
-                                        <Label htmlFor="tgl_blokir">Blokir s/d Tanggal</Label>
                                     </div>
-                                    <Input
-                                        id="tgl_blokir"
-                                        type="date"
-                                        value={form.data.tgl_blokir}
-                                        disabled={!form.data.blokir_tgl}
-                                        onChange={(e) =>
-                                            form.setData('tgl_blokir', e.target.value)
-                                        }
-                                    />
                                 </div>
                             </CardContent>
                         </Card>

@@ -321,13 +321,14 @@ export interface SimpananRow {
     tanggal: string | null;
     no_rekening: string;
     anggota?: { id: number; no_anggota: string; nama: string } | null;
-    jenis_simpanan?: { id: number; kode: string | null; nama: string | null } | null;
+    jenis_simpanan?: { id: number; kode: string | null; nama: string | null; jenis: number | null; bunga: string | null } | null;
     marketing?: { id: number; nama: string } | null;
     kantor?: { id: number; nama_kantor: string } | null;
     nominal_setor: string | null;
     bunga: string | null;
     aktif: string | null;
     sms: string | null;
+    blokir_simpanan: string | null;
 }
 
 /** Detail rekening simpanan untuk halaman show/edit. */

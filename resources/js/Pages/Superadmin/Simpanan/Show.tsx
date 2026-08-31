@@ -107,7 +107,7 @@ export default function SimpananShow({ simpananData: s, signatureUrl }: Props) {
                         <CardContent>
                             {signatureUrl ? (
                                 <img
-                                    src={signatureUrl}
+                                    src={`/storage/${signatureUrl}`}
                                     alt={`Tanda tangan ${s.no_rekening}`}
                                     className="h-24 rounded border bg-white p-2"
                                 />

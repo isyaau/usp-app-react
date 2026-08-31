@@ -26,6 +26,7 @@ import {
     TableRow,
 } from '@/Components/ui/table';
 import type { Paginated, SimpananRow } from '@/types/models';
+import { JENIS_SIMPANAN_LABELS } from '@/types/simpanan';
 
 interface Props {
     simpanan: Paginated<SimpananRow>;
@@ -101,14 +102,14 @@ export default function SimpananIndex({ simpanan, filters }: Props) {
                         <TableHeader>
                             <TableRow>
                                 <TableHead className="w-12">#</TableHead>
-                                <TableHead>No. Rekening</TableHead>
                                 <TableHead>Tanggal</TableHead>
-                                <TableHead>Anggota</TableHead>
-                                <TableHead>Produk</TableHead>
-                                <TableHead>Marketing</TableHead>
-                                <TableHead>Kantor</TableHead>
-                                <TableHead className="text-right">Setoran Awal</TableHead>
-                                <TableHead>Status</TableHead>
+                                <TableHead>No. Rekening</TableHead>
+                                <TableHead>Produk Simpanan</TableHead>
+                                <TableHead>Jenis Simpanan</TableHead>
+                                <TableHead>Nama Anggota</TableHead>
+                                <TableHead>Bagi Hasil</TableHead>
+                                <TableHead>Status Blokir</TableHead>
+                                <TableHead>Status Aktif</TableHead>
                                 <TableHead className="text-right">Aksi</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -128,13 +129,23 @@ export default function SimpananIndex({ simpanan, filters }: Props) {
                                     <TableCell className="text-muted-foreground">
                                         {simpanan.from !== null ? simpanan.from + i : i + 1}
                                     </TableCell>
+                                    <TableCell className="whitespace-nowrap text-muted-foreground">
+                                        {item.tanggal ?? '—'}
+                                    </TableCell>
                                     <TableCell>
                                         <span className="rounded-md bg-muted px-2 py-0.5 font-mono text-xs">
                                             {item.no_rekening}
                                         </span>
                                     </TableCell>
-                                    <TableCell className="whitespace-nowrap text-muted-foreground">
-                                        {item.tanggal ?? '—'}
+                                    <TableCell className="font-medium">
+                                        {item.jenis_simpanan?.nama ?? '—'}
+                                    </TableCell>
+                                    <TableCell>
+                                        <Badge variant="secondary">
+                                            {item.jenis_simpanan?.jenis != null
+                                                ? (JENIS_SIMPANAN_LABELS[item.jenis_simpanan.jenis] ?? '—')
+                                                : '—'}
+                                        </Badge>
                                     </TableCell>
                                     <TableCell>
                                         <span className="font-medium">
@@ -144,27 +155,22 @@ export default function SimpananIndex({ simpanan, filters }: Props) {
                                             {item.anggota?.no_anggota}
                                         </span>
                                     </TableCell>
-                                    <TableCell className="text-muted-foreground">
-                                        {item.jenis_simpanan?.nama ?? '—'}
+                                    <TableCell className="whitespace-nowrap text-muted-foreground">
+                                        {item.jenis_simpanan?.bunga != null
+                                            ? `${Number(item.jenis_simpanan.bunga)}%`
+                                            : '—'}
                                     </TableCell>
-                                    <TableCell className="text-muted-foreground">
-                                        {item.marketing?.nama ?? '—'}
-                                    </TableCell>
-                                    <TableCell className="text-muted-foreground">
-                                        {item.kantor?.nama_kantor ?? '—'}
-                                    </TableCell>
-                                    <TableCell className="text-right font-mono">
-                                        Rp {Number(item.nominal_setor ?? 0).toLocaleString('id-ID')}
+                                    <TableCell>
+                                        <Badge
+                                            variant={item.blokir_simpanan === '1' ? 'destructive' : 'secondary'}
+                                        >
+                                            {item.blokir_simpanan === '1' ? 'Diblokir' : 'Tidak'}
+                                        </Badge>
                                     </TableCell>
                                     <TableCell>
                                         <Badge variant={item.aktif === '1' ? 'success' : 'secondary'}>
                                             {item.aktif === '1' ? 'Aktif' : 'Nonaktif'}
                                         </Badge>
-                                        {item.sms === '1' && (
-                                            <Badge variant="outline" className="ml-1">
-                                                SMS
-                                            </Badge>
-                                        )}
                                     </TableCell>
                                     <TableCell>
                                         <div className="flex items-center justify-end gap-1">

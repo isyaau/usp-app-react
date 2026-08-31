@@ -28,7 +28,7 @@ class SimpananController extends Controller
         $simpanan = Simpanan::query()
             ->with([
                 'anggota:id,no_anggota,nama',
-                'jenis_simpanan:id,kode,nama,bunga',
+                'jenis_simpanan:id,kode,nama,bunga,jenis',
                 'marketing:id,nama',
                 'kantor:id,nama_kantor',
             ])
@@ -91,7 +91,7 @@ class SimpananController extends Controller
 
         return inertia('Superadmin/Simpanan/Show', [
             'simpananData' => $simpanan,
-            'signatureUrl' => $simpanan->ttd ? asset('storage/'.$simpanan->ttd) : null,
+            'signatureUrl' => $simpanan->ttd ? $simpanan->ttd : null,
         ]);
     }
 
@@ -106,7 +106,7 @@ class SimpananController extends Controller
 
         return inertia('Superadmin/Simpanan/Edit', [
             'simpananData' => $simpanan,
-            'existingSignatureUrl' => $simpanan->ttd ? asset('storage/'.$simpanan->ttd) : null,
+            'existingSignatureUrl' => $simpanan->ttd ? $simpanan->ttd : null,
             ...$this->formOptions(),
         ]);
     }

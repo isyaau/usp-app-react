@@ -9,6 +9,10 @@ import { Label } from '@/Components/ui/label';
 interface Props {
     /** Base64 data URL hasil gambar tangan (mode draw). */
     onChange: (dataUrl: string | null) => void;
+    /** Mode aktif (draw/upload) dilaporkan ke form. */
+    onModeChange?: (mode: 'draw' | 'upload') => void;
+    /** File terpilih pada mode upload. */
+    onFileChange?: (file: File | null) => void;
     /** URL gambar TTD lama untuk mode edit. */
     existingUrl?: string | null;
 }
@@ -18,7 +22,12 @@ interface Props {
  * - draw  : gambar pada canvas (signature_pad), output data URL PNG
  * - upload: unggah file gambar
  */
-export function SignaturePanel({ onChange, existingUrl }: Props) {
+export function SignaturePanel({
+    onChange,
+    onModeChange,
+    onFileChange,
+    existingUrl,
+}: Props) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const padRef = useRef<SignaturePad | null>(null);
     const [mode, setMode] = useState<'draw' | 'upload'>('draw');
@@ -37,6 +46,16 @@ export function SignaturePanel({ onChange, existingUrl }: Props) {
         const pad = new SignaturePad(canvas, { backgroundColor: 'rgb(255,255,255)' });
         padRef.current = pad;
 
+        // Kirim hasil goresan ke form setiap stroke selesai.
+        const handleEndStroke = () => {
+            if (pad.isEmpty()) {
+                onChange(null);
+                return;
+            }
+            onChange(pad.toDataURL('image/png'));
+        };
+        pad.addEventListener('endStroke', handleEndStroke);
+
         const handleResize = () => {
             const data = pad.toData();
             const r = Math.max(window.devicePixelRatio || 1, 1);
@@ -49,9 +68,15 @@ export function SignaturePanel({ onChange, existingUrl }: Props) {
 
         return () => {
             window.removeEventListener('resize', handleResize);
+            pad.removeEventListener('endStroke', handleEndStroke);
             pad.off();
         };
     }, []);
+
+    const changeMode = (m: 'draw' | 'upload') => {
+        setMode(m);
+        onModeChange?.(m);
+    };
 
     const clear = () => {
         padRef.current?.clear();
@@ -78,7 +103,7 @@ export function SignaturePanel({ onChange, existingUrl }: Props) {
                     <input
                         type="radio"
                         checked={mode === 'draw'}
-                        onChange={() => setMode('draw')}
+                        onChange={() => changeMode('draw')}
                         aria-label="Mode gambar"
                     />
                     Gambar
@@ -87,7 +112,7 @@ export function SignaturePanel({ onChange, existingUrl }: Props) {
                     <input
                         type="radio"
                         checked={mode === 'upload'}
-                        onChange={() => setMode('upload')}
+                        onChange={() => changeMode('upload')}
                         aria-label="Mode unggah"
                     />
                     Unggah
@@ -120,7 +145,10 @@ export function SignaturePanel({ onChange, existingUrl }: Props) {
                         type="file"
                         accept="image/*"
                         onChange={(e) => {
-                            setFile(e.target.files?.[0] ?? null);
+                            const f = e.target.files?.[0] ?? null;
+                            setFile(f);
+                            // Laporkan file terpilih ke form (dikirim via FormData).
+                            onFileChange?.(f);
                         }}
                     />
                 </div>
@@ -131,7 +159,7 @@ export function SignaturePanel({ onChange, existingUrl }: Props) {
                 <div className="space-y-1">
                     <p className="text-xs text-muted-foreground">Tanda tangan tersimpan:</p>
                     <img
-                        src={existingUrl}
+                        src={`/storage/${existingUrl}`}
                         alt="Tanda tangan tersimpan"
                         className="h-16 rounded border bg-white p-1"
                     />
