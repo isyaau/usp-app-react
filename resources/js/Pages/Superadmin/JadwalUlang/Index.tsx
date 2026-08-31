@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, Head, router } from '@inertiajs/react';
-import { CalendarClock, Eye, Pencil, Plus, Search } from 'lucide-react';
+import { CalendarClock, Eye, Pencil, Plus, Printer, Search } from 'lucide-react';
 
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { PageHeader } from '@/Components/PageHeader';
@@ -98,15 +98,12 @@ export default function Index({ jadwal, filters }: Props) {
                         <TableHeader>
                             <TableRow>
                                 <TableHead className="w-12">#</TableHead>
-                                <TableHead>No. Transaksi</TableHead>
                                 <TableHead>Tanggal</TableHead>
                                 <TableHead>No. Pinjaman Lama</TableHead>
                                 <TableHead>Anggota</TableHead>
                                 <TableHead>Plafon</TableHead>
-                                <TableHead>Sisa Pokok</TableHead>
                                 <TableHead>Bunga</TableHead>
                                 <TableHead>Jangka</TableHead>
-                                <TableHead>Metode</TableHead>
                                 <TableHead>Angsuran</TableHead>
                                 <TableHead>Status</TableHead>
                                 <TableHead className="text-right">Aksi</TableHead>
@@ -114,7 +111,7 @@ export default function Index({ jadwal, filters }: Props) {
                         </TableHeader>
                         <TableBody>
                                     {jadwal.data.length === 0 && (
-                                        <TableRow><TableCell colSpan={13} className="h-32 text-center text-muted-foreground">
+                                        <TableRow><TableCell colSpan={10} className="h-32 text-center text-muted-foreground">
                                             Tidak ada data jadwal ulang.
                                         </TableCell></TableRow>
                                     )}
@@ -122,9 +119,6 @@ export default function Index({ jadwal, filters }: Props) {
                                 <TableRow key={item.id}>
                                     <TableCell className="text-muted-foreground">
                                         {jadwal.from !== null ? jadwal.from + i : i + 1}
-                                    </TableCell>
-                                    <TableCell>
-                                        <span className="rounded-md bg-muted px-2 py-0.5 font-mono text-xs">{item.no_transaksi}</span>
                                     </TableCell>
                                     <TableCell className="whitespace-nowrap text-muted-foreground">{item.tgl_transaksi}</TableCell>
                                     <TableCell>
@@ -139,10 +133,8 @@ export default function Index({ jadwal, filters }: Props) {
                                         ) : '—'}
                                     </TableCell>
                                     <TableCell className="font-mono">{rupiah(item.plafon)}</TableCell>
-                                    <TableCell className="font-mono">{rupiah(item.sisa_pokok)}</TableCell>
                                     <TableCell>{item.bunga}%</TableCell>
                                     <TableCell className="whitespace-nowrap text-muted-foreground">{item.jangka_waktu} {item.satuan}</TableCell>
-                                    <TableCell>{item.metode}</TableCell>
                                     <TableCell className="font-mono">{rupiah(item.nominal_angsuran)}</TableCell>
                                     <TableCell>
                                         <Badge variant="outline" className={statusBadge[item.status] ?? ''}>
@@ -151,10 +143,23 @@ export default function Index({ jadwal, filters }: Props) {
                                     </TableCell>
                                     <TableCell>
                                         <div className="flex items-center justify-end gap-1">
-                                            <Button variant="ghost" size="icon" asChild>
+                                            <Button variant="ghost" size="icon" asChild title="Detail">
                                                 <Link href={route('superadmin.pinjaman.jadwal-ulang.show', item.id)}>
                                                     <Eye className="text-muted-foreground" />
                                                 </Link>
+                                            </Button>
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                title="Cetak"
+                                                onClick={() =>
+                                                    window.open(
+                                                        route('superadmin.pinjaman.jadwal-ulang.show', item.id),
+                                                        '_blank',
+                                                    )
+                                                }
+                                            >
+                                                <Printer className="text-muted-foreground" />
                                             </Button>
                                             <Button variant="ghost" size="icon" asChild>
                                                 <Link href={route('superadmin.pinjaman.jadwal-ulang.edit', item.id)}>
