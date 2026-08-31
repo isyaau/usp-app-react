@@ -214,8 +214,18 @@ class SimpananController extends Controller
     private function formOptions(): array
     {
         return [
-            'jenisOptions' => SimpananJenis::orderBy('kode')
-                ->get(['id', 'kode', 'nama', 'bunga']),
+            'jenisOptions' => SimpananJenis::with('idAccount:id,no_account,nama')
+                ->orderBy('kode')
+                ->get(['id', 'kode', 'nama', 'bunga', 'account_id', 'minimum', 'mengendap'])
+                ->map(fn (SimpananJenis $j) => [
+                    'id' => $j->id,
+                    'kode' => $j->kode,
+                    'nama' => $j->nama,
+                    'bunga' => $j->bunga,
+                    'account_no' => $j->idAccount?->no_account,
+                    'minimum' => $j->minimum,
+                    'mengendap' => $j->mengendap,
+                ]),
             'marketingOptions' => Marketing::orderBy('nama')->get(['id', 'nama']),
             'kantorOptions' => Kantor::orderBy('nama_kantor')->get(['id', 'nama_kantor']),
             'anggotaOptions' => Anggota::where('status', 1)

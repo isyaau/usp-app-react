@@ -160,11 +160,19 @@ export default function SimpananCreate({
                                         <SelectContent>
                                             {jenisOptions.map((j) => (
                                                 <SelectItem key={j.id} value={String(j.id)}>
-                                                    <span className="font-mono text-xs">
-                                                        {j.kode}
+                                                    <span className="flex flex-col gap-0.5 py-0.5">
+                                                        <span className="flex items-center gap-2">
+                                                            <span className="font-mono font-semibold text-brand-700 dark:text-brand-300">
+                                                                {j.kode}
+                                                            </span>
+                                                            <span>{j.nama}</span>
+                                                        </span>
+                                                        <span className="flex flex-wrap gap-x-3 text-[11px] text-muted-foreground">
+                                                            <span>Akun: <span className="font-mono">{j.account_no ?? '—'}</span></span>
+                                                            <span>Min: <span className="font-mono">Rp {Number(j.minimum ?? 0).toLocaleString('id-ID')}</span></span>
+                                                            <span>Mengendap: <span className="font-mono">{j.mengendap ?? 0} bln</span></span>
+                                                        </span>
                                                     </span>
-                                                    {' · '}
-                                                    {j.nama}
                                                 </SelectItem>
                                             ))}
                                         </SelectContent>

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { router } from '@inertiajs/react';
-import { Search, Printer } from 'lucide-react';
+import { FileSpreadsheet, Search, Printer } from 'lucide-react';
 import { Button } from '@/Components/ui/button';
 import { Input } from '@/Components/ui/input';
 import {
@@ -19,13 +19,19 @@ interface ReportFilterBarProps {
     kantors?: Array<{ id: number; kode: string; nama_kantor: string }>;
     jenisList?: Array<{ id: number; kode: string; nama: string }>;
     marketings?: Array<{ id: number; kode: string; nama: string }>;
+    sektors?: Array<{ id: number; nama: string }>;
     showDateRange?: boolean;
     showKelompok?: boolean;
     showKantor?: boolean;
     showJenis?: boolean;
     showMarketing?: boolean;
+    showSektor?: boolean;
+    showHariLagi?: boolean;
     printRoute?: string;
     printParams?: Record<string, string>;
+    exportRoute?: string;
+    exportLabel?: string;
+    hariLagiLabel?: string;
     className?: string;
 }
 
@@ -36,13 +42,19 @@ export function ReportFilterBar({
     kantors,
     jenisList,
     marketings,
+    sektors,
     showDateRange = false,
     showKelompok = false,
     showKantor = false,
     showJenis = false,
     showMarketing = false,
+    showSektor = false,
+    showHariLagi = false,
     printRoute,
     printParams,
+    exportRoute,
+    exportLabel = 'Export Excel',
+    hariLagiLabel = 'Jatuh Tempo ≤ N hari',
     className,
 }: ReportFilterBarProps) {
     const [search, setSearch] = useState(filters.search ?? '');
@@ -193,6 +205,25 @@ export function ReportFilterBar({
                 </Select>
             )}
 
+            {showSektor && sektors && (
+                <Select
+                    value={filters.sektor_id ?? 'all'}
+                    onValueChange={(v) => updateFilter('sektor_id', v)}
+                >
+                    <SelectTrigger className="w-40">
+                        <SelectValue placeholder="Semua Sektor" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="all">Semua Sektor</SelectItem>
+                        {sektors.map((s) => (
+                            <SelectItem key={s.id} value={String(s.id)}>
+                                {s.nama}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+            )}
+
             {showDateRange && (
                 <>
                     <div className="flex items-center gap-2">
@@ -216,10 +247,43 @@ export function ReportFilterBar({
                 </>
             )}
 
+            {showHariLagi && (
+                <div className="flex items-center gap-2">
+                    <span className="text-sm text-muted-foreground">{hariLagiLabel}</span>
+                    <Input
+                        type="number"
+                        min={0}
+                        value={filters.hari_lagi ?? ''}
+                        onChange={(e) => updateFilter('hari_lagi', e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && apply()}
+                        className="w-32"
+                        placeholder="N hari"
+                    />
+                </div>
+            )}
+
             {printRoute && (
                 <Button variant="outline" onClick={handlePrint}>
                     <Printer className="size-4" />
                     Cetak
+                </Button>
+            )}
+
+            {exportRoute && (
+                <Button
+                    variant="outline"
+                    onClick={() => {
+                        const params: Record<string, string> = { ...filters };
+                        Object.keys(params).forEach((key) => {
+                            if (params[key] === '' || params[key] === undefined) {
+                                delete params[key];
+                            }
+                        });
+                        window.open(route(exportRoute, params), '_blank');
+                    }}
+                >
+                    <FileSpreadsheet className="size-4" />
+                    {exportLabel}
                 </Button>
             )}
         </div>

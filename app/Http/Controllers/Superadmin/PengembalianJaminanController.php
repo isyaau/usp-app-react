@@ -115,6 +115,27 @@ class PengembalianJaminanController extends Controller
             ->with('success', 'Pengembalian jaminan berhasil dihapus.');
     }
 
+    /** Cetak bukti pengembalian jaminan dalam format PDF (kertas A4 portrait). */
+    public function cetak(PengembalianJaminan $pengembalianJaminan)
+    {
+        $pengembalianJaminan->load([
+            'pinjaman.anggota',
+            'pinjaman.jaminan',
+            'user',
+            'kantor',
+        ]);
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.pengembalian-jaminan', [
+            'transaksi' => $pengembalianJaminan,
+        ])->setPaper('A4', 'portrait');
+
+        return response()->streamDownload(
+            fn () => print ($pdf->output()),
+            'pengembalian_jaminan_' . $pengembalianJaminan->no_transaksi . '.pdf',
+            ['Content-Type' => 'application/pdf']
+        );
+    }
+
     /** Daftar pinjaman aktif milik anggota + sisa pokok & jaminan untuk dropdown form. */
     public function pinjamanByAnggota(Anggota $anggota)
     {

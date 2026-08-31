@@ -152,8 +152,11 @@ export default function KodetransaksiIndex({ kodeTransaksi, filters }: Props) {
                                             {item.kreditAccount?.no_account ?? '—'}
                                         </TableCell>
                                         <TableCell>
-                                            <div className="flex max-w-40 flex-wrap gap-1">
-                                                {activeFlags.slice(0, 2).map((f) => (
+                                            <div className="flex max-w-52 flex-wrap gap-1">
+                                                {activeFlags.length === 0 && (
+                                                    <span className="text-xs text-muted-foreground">—</span>
+                                                )}
+                                                {activeFlags.map((f) => (
                                                     <span
                                                         key={f}
                                                         className="rounded bg-brand-600/10 px-1.5 py-0.5 text-[10px] font-medium text-brand-700 dark:text-brand-300"
@@ -161,11 +164,6 @@ export default function KodetransaksiIndex({ kodeTransaksi, filters }: Props) {
                                                         {f}
                                                     </span>
                                                 ))}
-                                                {activeFlags.length > 2 && (
-                                                    <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] text-muted-foreground">
-                                                        +{activeFlags.length - 2}
-                                                    </span>
-                                                )}
                                             </div>
                                         </TableCell>
                                         <TableCell>

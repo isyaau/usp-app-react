@@ -13,10 +13,15 @@ interface Props {
     filters: Record<string, string>;
     kantors?: Array<{ id: number; kode: string; nama_kantor: string }>;
     kelompoks?: Array<{ id: number; kode: string; nama: string }>;
+    jenisList?: Array<{ id: number; kode: string; nama: string }>;
+    sektors?: Array<{ id: number; nama: string }>;
     variantTitle: string;
 }
 
-export default function LaporanTunggakanPinjaman({ data, filters, kantors, kelompoks, variantTitle }: Props) {
+const rupiah = (v: string | number | null | undefined) =>
+    Number(v ?? 0).toLocaleString('id-ID');
+
+export default function LaporanTunggakanPinjaman({ data, filters, kantors, kelompoks, jenisList, sektors, variantTitle }: Props) {
     return (
         <AuthenticatedLayout>
             <Head title={variantTitle || 'Laporan Tunggakan Pinjaman'} />
@@ -26,10 +31,18 @@ export default function LaporanTunggakanPinjaman({ data, filters, kantors, kelom
                     <ReportFilterBar
                         routeName="superadmin.laporan-cs.pinjaman.tunggakan"
                         filters={filters}
+                        showDateRange={true}
                         showKantor={true}
                         kantors={kantors}
                         kelompoks={kelompoks}
+                        showJenis={true}
+                        jenisList={jenisList}
+                        showSektor={true}
+                        sektors={sektors}
+                        showHariLagi={true}
+                        hariLagiLabel="Sisa ≤"
                         printRoute="superadmin.laporan-cs.pinjaman.tunggakan.cetak"
+                        exportRoute="superadmin.laporan-cs.pinjaman.tunggakan.excel"
                     />
                 </div>
                 <div className="px-5 overflow-x-auto">
@@ -40,31 +53,35 @@ export default function LaporanTunggakanPinjaman({ data, filters, kantors, kelom
                                 <TableHead>No Pinjaman</TableHead>
                                 <TableHead>No Anggota</TableHead>
                                 <TableHead>Nama</TableHead>
-                                <TableHead>Kelompok</TableHead>
                                 <TableHead>Jenis</TableHead>
+                                <TableHead>Sektor</TableHead>
                                 <TableHead className="text-right">Plafon</TableHead>
                                 <TableHead>Angsuran ke</TableHead>
-                                <TableHead>Jangka Waktu</TableHead>
+                                <TableHead>Jatuh Tempo</TableHead>
+                                <TableHead className="text-right">Sisa Hari</TableHead>
+                                <TableHead className="text-right">Tunggakan</TableHead>
                                 <TableHead>Kantor</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {data.data.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={10} className="h-32 text-center text-muted-foreground">Tidak ada data.</TableCell>
+                                    <TableCell colSpan={12} className="h-32 text-center text-muted-foreground">Tidak ada data.</TableCell>
                                 </TableRow>
                             ) : (
                                 data.data.map((item, i) => (
                                     <TableRow key={item.id}>
                                         <TableCell>{(data.current_page - 1) * data.per_page + i + 1}</TableCell>
-                                        <TableCell>{item.no_pinjaman}</TableCell>
+                                        <TableCell className="font-mono text-xs">{item.no_pinjaman}</TableCell>
                                         <TableCell>{item.no_anggota}</TableCell>
                                         <TableCell>{item.nama}</TableCell>
-                                        <TableCell>{item.kelompok}</TableCell>
                                         <TableCell>{item.jenis}</TableCell>
-                                        <TableCell className="text-right">{Number(item.plafon).toLocaleString('id-ID')}</TableCell>
+                                        <TableCell>{item.sektor}</TableCell>
+                                        <TableCell className="text-right font-mono">{rupiah(item.plafon)}</TableCell>
                                         <TableCell>{item.angsuranke}</TableCell>
-                                        <TableCell>{item.jangka_waktu}</TableCell>
+                                        <TableCell className="whitespace-nowrap text-muted-foreground">{item.jatuh_tempo || '—'}</TableCell>
+                                        <TableCell className="text-right font-mono">{item.sisa_hari ?? '—'}</TableCell>
+                                        <TableCell className="text-right font-mono">{rupiah(item.tunggakan)}</TableCell>
                                         <TableCell>{item.kantor}</TableCell>
                                     </TableRow>
                                 ))

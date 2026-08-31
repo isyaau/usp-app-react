@@ -76,23 +76,42 @@
     </footer>
 
     <div class="content">
-        <h2>Laporan Tunggakan Pinjaman</h2>
+        <h2>Tagihan Pinjaman</h2>
+
+        @php
+            $totalPlafon = $pinjaman->sum(fn ($i) => (float) $i->plafon);
+            $totalSisa = 0;
+            foreach ($pinjaman as $i) {
+                $pokok = (float) \App\Models\AngsuranPinjaman::where('pinjaman_id', $i->id)->sum('nominal_pokok');
+                $totalSisa += max(0, (float) $i->plafon - $pokok);
+            }
+        @endphp
+
+        <p style="margin: 0 0 6px 0; font-size: 8px;">
+            Jumlah Pinjaman: {{ $pinjaman->count() }} &nbsp;|&nbsp;
+            Total Plafon: Rp {{ number_format($totalPlafon, 0, ',', '.') }} &nbsp;|&nbsp;
+            Total Sisa Pokok: Rp {{ number_format($totalSisa, 0, ',', '.') }}
+            @if (!empty($filters['mulai']) || !empty($filters['sampai']))
+                &nbsp;|&nbsp; Jatuh Tempo: {{ $filters['mulai'] ?? '*' }} s/d {{ $filters['sampai'] ?? '*' }}
+            @endif
+        </p>
 
         <table width="100%" border="1" cellspacing="0" cellpadding="5">
             <thead>
                 <tr>
                     <th width="3%">No</th>
-                    <th width="10%">No Pinjaman</th>
+                    <th width="9%">No Pinjaman</th>
+                    <th width="8%">Tgl Bayar</th>
                     <th width="9%">No Anggota</th>
-                    <th width="11%">Nama</th>
-                    <th width="9%">Kelompok</th>
-                    <th width="9%">Jenis</th>
-                    <th width="9%">Sektor</th>
-                    <th width="10%">Plafon</th>
-                    <th width="5%">Ang. ke</th>
-                    <th width="9%">Jatuh Tempo</th>
-                    <th width="5%">Sisa Hari</th>
-                    <th width="10%">Kantor</th>
+                    <th width="13%">Nama</th>
+                    <th width="10%">Produk</th>
+                    <th width="9%">Plafon</th>
+                    <th width="7%">Jangka Waktu</th>
+                    <th width="5%">Satuan</th>
+                    <th width="9%">Angsuran</th>
+                    <th width="9%">Sisa Pokok</th>
+                    <th width="9%">Tunggakan</th>
+                    <th width="9%">Status</th>
                 </tr>
             </thead>
             <tbody>
@@ -100,23 +119,21 @@
                 @php
                     $pokokTerbayar = (float) \App\Models\AngsuranPinjaman::where('pinjaman_id', $item->id)->sum('nominal_pokok');
                     $sisa = max(0, (float) $item->plafon - $pokokTerbayar);
-                    $jt = $item->jatuh_tempo ? \Carbon\Carbon::parse($item->jatuh_tempo) : null;
-                    $sisaHari = $jt ? max(0, $jt->startOfDay()->diffInDays(now()->startOfDay(), false)) : '-';
-                    $sektor = $sektors->get((int) $item->sektor_id) ?? '-';
                 @endphp
                 <tr>
                     <td>{{ $loop->iteration }}</td>
                     <td>{{ $item->no_pinjaman }}</td>
+                    <td>{{ $item->tgl_bayar ?? '-' }}</td>
                     <td>{{ $item->anggota->no_anggota ?? '-' }}</td>
                     <td>{{ $item->anggota->nama ?? '-' }}</td>
-                    <td>{{ $item->anggota->kelompok->nama ?? '-' }}</td>
-                    <td>{{ $item->jenis_pinjaman->nama ?? '-' }}</td>
-                    <td>{{ $sektor }}</td>
+                    <td>{{ $item->jenisPinjaman->nama ?? '-' }}</td>
                     <td>Rp {{ number_format($item->plafon, 0, ',', '.') }}</td>
-                    <td>{{ $item->angsuran_ke }}</td>
-                    <td>{{ $item->jatuh_tempo ?? '-' }}</td>
-                    <td>{{ $sisaHari }}</td>
-                    <td>{{ $item->kantor->nama_kantor ?? '-' }}</td>
+                    <td>{{ $item->jangka_waktu }}</td>
+                    <td>{{ $item->satuan }}</td>
+                    <td>Rp {{ number_format($item->nominal_angsuran, 0, ',', '.') }}</td>
+                    <td>Rp {{ number_format($sisa, 0, ',', '.') }}</td>
+                    <td>Rp {{ number_format($sisa, 0, ',', '.') }}</td>
+                    <td>{{ $sisa <= 0 ? 'LUNAS' : 'BELUM LUNAS' }}</td>
                 </tr>
                 @endforeach
             </tbody>

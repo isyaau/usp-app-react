@@ -199,6 +199,8 @@ Route::prefix('superadmin')->name('superadmin.')->middleware(['auth', 'role:supe
 
     // Tagihan Pinjaman (Inertia + React)
     Route::get('/pinjaman/tagihan', [TagihanPinjamanController::class, 'index'])->name('pinjaman.tagihan');
+    Route::get('/pinjaman/tagihan/cetak', [TagihanPinjamanController::class, 'cetakTagihanPinjaman'])->name('pinjaman.tagihan.cetak');
+    Route::get('/pinjaman/tagihan/excel', [TagihanPinjamanController::class, 'exportExcelTagihanPinjaman'])->name('pinjaman.tagihan.excel');
 
     // Penghapusan Pinjaman (Inertia + React)
     Route::get('/pinjaman/penghapusan', [PenghapusanPinjamanController::class, 'index'])->name('pinjaman.penghapusan');
@@ -228,6 +230,7 @@ Route::prefix('superadmin')->name('superadmin.')->middleware(['auth', 'role:supe
     Route::post('/pinjaman/pengembalian-jaminan', [PengembalianJaminanController::class, 'store'])->name('pinjaman.pengembalian-jaminan.store');
     Route::get('/pinjaman/pengembalian-jaminan/{pengembalianJaminan}', [PengembalianJaminanController::class, 'show'])->name('pinjaman.pengembalian-jaminan.show');
     Route::get('/pinjaman/pengembalian-jaminan/{pengembalianJaminan}/edit', [PengembalianJaminanController::class, 'edit'])->name('pinjaman.pengembalian-jaminan.edit');
+    Route::get('/pinjaman/pengembalian-jaminan/{pengembalianJaminan}/cetak', [PengembalianJaminanController::class, 'cetak'])->name('pinjaman.pengembalian-jaminan.cetak');
     Route::put('/pinjaman/pengembalian-jaminan/{pengembalianJaminan}', [PengembalianJaminanController::class, 'update'])->name('pinjaman.pengembalian-jaminan.update');
     Route::delete('/pinjaman/pengembalian-jaminan/{pengembalianJaminan}', [PengembalianJaminanController::class, 'destroy'])->name('pinjaman.pengembalian-jaminan.destroy');
 
@@ -530,6 +533,7 @@ Route::prefix('superadmin')->name('superadmin.')->middleware(['auth', 'role:supe
         Route::get('/transaksi/cetak', [LaporanPinjamanController::class, 'cetakTransaksiPinjaman'])->name('transaksi.cetak');
         Route::get('/tunggakan', [LaporanPinjamanController::class, 'laporanTunggakanPinjaman'])->name('tunggakan');
         Route::get('/tunggakan/cetak', [LaporanPinjamanController::class, 'cetakLaporanTunggakanPinjaman'])->name('tunggakan.cetak');
+        Route::get('/tunggakan/excel', [LaporanPinjamanController::class, 'exportExcelLaporanTunggakanPinjaman'])->name('tunggakan.excel');
         Route::get('/tunggakan-per-kota', [LaporanPinjamanController::class, 'laporanTunggakanPinjamanPerKota'])->name('tunggakan-per-kota');
         Route::get('/tunggakan-per-kota/cetak', [LaporanPinjamanController::class, 'cetakLaporanTunggakanPinjamanPerKota'])->name('tunggakan-per-kota.cetak');
         Route::get('/pencairan', [LaporanPinjamanController::class, 'laporanPencairanPinjaman'])->name('pencairan');

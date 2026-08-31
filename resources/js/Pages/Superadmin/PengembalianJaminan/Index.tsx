@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, Head, router } from '@inertiajs/react';
-import { Eye, Pencil, ShieldCheck } from 'lucide-react';
+import { Eye, Pencil, Printer, ShieldCheck } from 'lucide-react';
 
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { PageHeader } from '@/Components/PageHeader';
@@ -168,6 +168,16 @@ export default function Index({ transaksi, filters }: Props) {
                                         </Badge>
                                     </TableCell>
                                     <TableCell className="space-x-1 whitespace-nowrap text-right">
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            title="Cetak"
+                                            onClick={() =>
+                                                window.open(route(`${root}.cetak`, item.id), '_blank')
+                                            }
+                                        >
+                                            <Printer className="size-4" />
+                                        </Button>
                                         <Button variant="ghost" size="icon" asChild title="Detail">
                                             <Link href={route(`${root}.show`, item.id)}>
                                                 <Eye className="size-4" />

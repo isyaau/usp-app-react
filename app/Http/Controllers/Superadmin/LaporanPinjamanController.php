@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Superadmin;
 
+use App\Exports\LaporanTunggakanPinjamanExport;
 use App\Http\Controllers\Controller;
 use App\Models\Anggota;
 use App\Models\AngsuranKolektif;
@@ -17,9 +18,24 @@ use App\Models\PinjamanProduk;
 use App\Models\PinjamanSaksi;
 use App\Models\TarikanSimpanan;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class LaporanPinjamanController extends Controller
 {
+    private const LIST_SEKTOR = [
+        ['id' => 1, 'nama' => 'PNS'],
+        ['id' => 2, 'nama' => 'Swasta'],
+        ['id' => 3, 'nama' => 'Wirausaha'],
+        ['id' => 4, 'nama' => 'Petani'],
+        ['id' => 5, 'nama' => 'Nelayan'],
+        ['id' => 6, 'nama' => 'Lainnya'],
+    ];
+
+    private function sektorNama($id): string
+    {
+        return collect(self::LIST_SEKTOR)->firstWhere('id', (int) $id)['nama'] ?? '-';
+    }
+
     private function applySearch($query, Request $request, array $searchColumns = ['no_pinjaman', 'anggota.nama']): void
     {
         if ($request->filled('search')) {
@@ -32,7 +48,10 @@ class LaporanPinjamanController extends Controller
 
     private function baseFilters(Request $request): array
     {
-        return $request->only(['search', 'kelompok_id', 'kantor_id', 'mulai', 'sampai']);
+        return $request->only([
+            'search', 'kelompok_id', 'kantor_id', 'jenis_id', 'sektor_id',
+            'mulai', 'sampai', 'hari_lagi',
+        ]);
     }
 
     private function paginated($query, Request $request)
@@ -1006,43 +1025,102 @@ class LaporanPinjamanController extends Controller
 
     // ==================== 24. LAPORAN TUNGGAKAN PINJAMAN ====================
 
+    private function buildTunggakanQuery(Request $request)
+    {
+        $query = Pinjaman::query()
+            ->with([
+                'anggota.kelompok:id,kode,nama',
+                'jenisPinjaman:id,kode,nama',
+                'kantor:id,kode,nama_kantor',
+            ])
+            ->join('anggota', 'anggota.id', '=', 'pinjaman.anggota_id')
+            ->where('pinjaman.aktif', 1);
+
+        $this->applySearch($query, $request, ['pinjaman.no_pinjaman', 'anggota.nama', 'anggota.no_anggota']);
+        $query->when($request->filled('kantor_id'), fn ($q) => $q->where('pinjaman.kantor_id', $request->input('kantor_id')));
+        $query->when($request->filled('kelompok_id'), fn ($q) => $q->where('anggota.kelompok_id', $request->input('kelompok_id')));
+        $query->when($request->filled('jenis_id'), fn ($q) => $q->where('pinjaman.jenis_id', $request->input('jenis_id')));
+        $query->when($request->filled('sektor_id'), fn ($q) => $q->where('pinjaman.sektor_id', $request->input('sektor_id')));
+        $query->when($request->filled('mulai'), fn ($q) => $q->whereDate('pinjaman.jatuh_tempo', '>=', $request->date('mulai')));
+        $query->when($request->filled('sampai'), fn ($q) => $q->whereDate('pinjaman.jatuh_tempo', '<=', $request->date('sampai')));
+        $query->when(
+            $request->filled('hari_lagi') && is_numeric($request->input('hari_lagi')),
+            fn ($q) => $q->whereDate('pinjaman.jatuh_tempo', '<=', now()->addDays((int) $request->input('hari_lagi')))
+        );
+
+        return $query;
+    }
+
+    private function toTunggakanRow(Pinjaman $p): array
+    {
+        $plafon = (float) $p->plafon;
+        $pokokTerbayar = (float) AngsuranPinjaman::where('pinjaman_id', $p->id)->sum('nominal_pokok');
+        $sisaPokok = max(0, $plafon - $pokokTerbayar);
+
+        $jatuhTempo = $p->jatuh_tempo ? \Carbon\Carbon::parse($p->jatuh_tempo) : null;
+        $sisaHari = $jatuhTempo ? max(0, $jatuhTempo->startOfDay()->diffInDays(now()->startOfDay(), false)) : null;
+
+        return [
+            'id' => $p->id,
+            'no_pinjaman' => $p->no_pinjaman,
+            'no_anggota' => $p->anggota->no_anggota ?? '-',
+            'nama' => $p->anggota->nama ?? '-',
+            'kelompok' => $p->anggota->kelompok->nama ?? '-',
+            'jenis' => $p->jenisPinjaman->nama ?? '-',
+            'sektor' => $this->sektorNama($p->sektor_id),
+            'plafon' => $plafon,
+            'pokok_terbayar' => $pokokTerbayar,
+            'sisa_pokok' => $sisaPokok,
+            'tunggakan' => $sisaPokok,
+            'nominal_angsuran' => (float) $p->nominal_angsuran,
+            'angsuranke' => (int) $p->angsuranke,
+            'jangka_waktu' => $p->jangka_waktu,
+            'satuan' => $p->satuan,
+            'jatuh_tempo' => $p->jatuh_tempo,
+            'sisa_hari' => $sisaHari,
+            'kantor' => $p->kantor->nama_kantor ?? '-',
+        ];
+    }
+
     public function laporanTunggakanPinjaman(Request $request)
     {
-        $query = Pinjaman::with([
-            'anggota:id,no_anggota,nama,kelompok_id',
-            'anggota.kelompok:id,kode,nama',
-            'jenisPinjaman:id,kode,nama',
-            'kantor:id,kode,nama_kantor',
-        ])->where('aktif', 1);
-        $this->applySearch($query, $request, ['no_pinjaman', 'anggota.nama']);
-        $query->when($request->filled('kantor_id'), fn ($q) => $q->where('kantor_id', $request->input('kantor_id')));
-        $query->when($request->filled('kelompok_id'), fn ($q) => $q->where('anggota.kelompok_id', $request->input('kelompok_id')));
+        $query = $this->buildTunggakanQuery($request);
 
         return inertia('Superadmin/LaporanCS/Pinjaman/LaporanTunggakanPinjaman', [
-            'data' => $this->paginated($query->orderBy('anggota.no_anggota'), $request),
+            'data' => $this->paginated($query->orderBy('anggota.no_anggota'), $request)
+                ->through(fn (Pinjaman $p) => $this->toTunggakanRow($p)),
             'filters' => $this->baseFilters($request),
             'kantors' => Kantor::select('id', 'kode', 'nama_kantor')->get(),
             'kelompoks' => Kelompok::select('id', 'kode', 'nama')->get(),
+            'jenisList' => PinjamanProduk::select('id', 'kode', 'nama')->get(),
+            'sektors' => self::LIST_SEKTOR,
             'variantTitle' => 'Laporan Tunggakan Pinjaman',
         ]);
     }
 
     public function cetakLaporanTunggakanPinjaman(Request $request)
     {
-        $query = Pinjaman::with([
-            'anggota:id,no_anggota,nama,kelompok_id',
-            'anggota.kelompok:id,kode,nama',
-            'jenisPinjaman:id,kode,nama',
-            'kantor:id,kode,nama_kantor',
-        ])->where('aktif', 1);
-        $this->applySearch($query, $request, ['no_pinjaman', 'anggota.nama']);
-        $query->when($request->filled('kantor_id'), fn ($q) => $q->where('kantor_id', $request->input('kantor_id')));
-        $query->when($request->filled('kelompok_id'), fn ($q) => $q->where('anggota.kelompok_id', $request->input('kelompok_id')));
+        $query = $this->buildTunggakanQuery($request);
 
         return $this->streamPdf('pdf.laporan-cs.pinjaman.laporan-tunggakan-pinjaman', [
+            'sektors' => collect(self::LIST_SEKTOR)->pluck('nama', 'id'),
             'pinjaman' => $query->orderBy('anggota.no_anggota')->get(),
             'filters' => $this->baseFilters($request),
         ], 'laporan_tunggakan_pinjaman.pdf');
+    }
+
+    public function exportExcelLaporanTunggakanPinjaman(Request $request)
+    {
+        $query = $this->buildTunggakanQuery($request);
+
+        return Excel::download(
+            new LaporanTunggakanPinjamanExport(
+                $query->orderBy('anggota.no_anggota')->get(),
+                collect(self::LIST_SEKTOR)->pluck('nama', 'id'),
+                $this->baseFilters($request),
+            ),
+            'laporan_tunggakan_pinjaman.xlsx'
+        );
     }
 
     // ==================== 25. LAPORAN TUNGGAKAN PINJAMAN PER KOTA ====================

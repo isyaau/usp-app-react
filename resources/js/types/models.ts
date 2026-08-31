@@ -310,6 +310,9 @@ export interface SimpananJenisOption {
     kode: string | null;
     nama: string | null;
     bunga: string | null;
+    account_no?: string | null;
+    minimum?: number | string | null;
+    mengendap?: number | string | null;
 }
 
 /** Baris daftar rekening simpanan. */
@@ -429,10 +432,12 @@ export interface PinjamanJenisOptionLite {
 export interface TagihanPinjamanRow {
     id: number;
     tanggal: string;
+    tgl_bayar: string | null;
     no_pinjaman: string;
     plafon: number;
     pokok_terbayar: number;
     sisa_pokok: number;
+    tunggakan: number;
     nominal_angsuran: number;
     bunga: string;
     jangka_waktu: string;
