@@ -6,6 +6,24 @@ export interface SimpananKodeOption {
     id: number;
     kode: string;
     nama: string;
+    account_debet?: number | string | null;
+    account_kredit?: number | string | null;
+}
+
+export interface SimpananJenisKodeOption {
+    id: number;
+    kode: string;
+    nama: string;
+    account_debet?: number | string | null;
+    account_kredit?: number | string | null;
+    debet_account?: { id: number; no_account: string; nama: string } | null;
+    kredit_account?: { id: number; no_account: string; nama: string } | null;
+}
+
+export interface SimpananKodeRef {
+    id?: number | null;
+    kode: string;
+    nama: string;
 }
 
 export interface SimpananBungaRow {
@@ -35,18 +53,27 @@ export interface SimpananProdukRow {
     pajak: number | string | null;
     account_pajak: number | null;
     saldo_pajak: boolean;
+    pajak_saldo: number | string | null;
     android: number | null;
     nominal_android: number | string | null;
     account_android: number | null;
     nominal: number | string | null;
+    harga_saham: number | string | null;
     jenis: number; // 1..7 (lihat JENIS_LABELS)
     setor_id: number | null;
     tarik_id: number | null;
     insentif: number | string | null;
     saham: boolean;
-    idAccount?: { id: number; no_account: string; nama: string } | null;
+    update_bagi_hasil: boolean;
+    id_account?: { id: number; no_account: string; nama: string } | null;
     tingkat?: SimpananBungaRow[];
-    simpananKodes?: Array<{ kode: string; nama: string }>;
+    simpanan_kodes?: SimpananJenisKodeOption[];
+    bunga_kode?: SimpananKodeRef | null;
+    biaya_kode?: SimpananKodeRef | null;
+    pajak_kode?: SimpananKodeRef | null;
+    android_kode?: SimpananKodeRef | null;
+    setor_kode?: SimpananKodeRef | null;
+    tarik_kode?: SimpananKodeRef | null;
 }
 
 export const JENIS_SIMPANAN_LABELS: Record<number, string> = {
@@ -61,6 +88,6 @@ export const JENIS_SIMPANAN_LABELS: Record<number, string> = {
 
 export const RUMUS_BUNGA_OPTIONS: Array<{ value: number; label: string }> = [
     { value: 1, label: 'Saldo Terendah' },
-    { value: 2, label: 'Saldo Rata-rata' },
-    { value: 3, label: 'Saldo Terakhir' },
+    { value: 2, label: 'Saldo Harian' },
+    { value: 3, label: 'Saldo Rata-rata' },
 ];

@@ -32,11 +32,14 @@ class SimpananJenis extends Model
         'nominal_android',
         'account_android',
         'nominal',
+        'harga_saham',
         'jenis',
         'setor_id',
         'tarik_id',
         'insentif',
         'saham',
+        'pajak_saldo',
+        'update_bagi_hasil',
         'user_id',
     ];
 
@@ -61,6 +64,14 @@ class SimpananJenis extends Model
     public function androidKode()
     {
         return $this->belongsTo(SimpananKode::class, 'android');
+    }
+    public function setorKode()
+    {
+        return $this->belongsTo(SimpananKode::class, 'setor_id');
+    }
+    public function tarikKode()
+    {
+        return $this->belongsTo(SimpananKode::class, 'tarik_id');
     }
 
 

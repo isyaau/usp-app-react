@@ -62,11 +62,16 @@ class SimpananProdukController extends Controller
                 ]);
             }
 
-            foreach ($validated['kode_ids'] as $kodeId) {
+            // Kode transaksi terkait + perbarui akun debet/kredit tiap kode
+            foreach ($validated['kode_rows'] as $row) {
                 SimpananJenisKode::create([
                     'jenis_id' => $jenis->id,
-                    'kode_id' => $kodeId,
+                    'kode_id' => $row['id'],
                     'user_id' => $request->user()->id,
+                ]);
+                SimpananKode::where('id', $row['id'])->update([
+                    'account_debet' => $row['account_debet'],
+                    'account_kredit' => $row['account_kredit'],
                 ]);
             }
         });
@@ -84,14 +89,37 @@ class SimpananProdukController extends Controller
             'biayaAccount:id,no_account,nama',
             'pajakAccount:id,no_account,nama',
             'androidAccount:id,no_account,nama',
-            'bungaKode:kode,nama',
-            'biayaKode:kode,nama',
-            'pajakKode:kode,nama',
+            'bungaKode',
+            'biayaKode',
+            'pajakKode',
+            'setorKode',
+            'tarikKode',
             'tingkat:id,jenis_id,minimal,maksimal,bunga',
-            'simpananKodes:kode,nama',
+            'simpananKodes:id,kode,nama,account_debet,account_kredit',
+            'simpananKodes.debetAccount:id,no_account,nama',
+            'simpananKodes.kreditAccount:id,no_account,nama',
         ]);
 
-        return inertia('Superadmin/SimpananProduk/Show', ['produkData' => $produk]);
+        \Illuminate\Support\Facades\Log::debug('SHOWDEBUG', [
+            'id' => $produk->id,
+            'kode' => $produk->kode,
+            'viaRelations' => $produk->simpananKodes->pluck('kode')->all(),
+            'viaRelationArr' => $produk->getRelation('simpananKodes')?->pluck('kode')->all(),
+            'relationLoaded' => $produk->relationLoaded('simpananKodes'),
+        ]);
+
+        \Illuminate\Support\Facades\Log::debug('SHOWDEBUG', [
+            'id' => $produk->id,
+            'kode' => $produk->kode,
+            'viaRelations' => $produk->simpananKodes->pluck('kode')->all(),
+            'viaRelationArr' => $produk->getRelation('simpananKodes')?->pluck('kode')->all(),
+            'relationLoaded' => $produk->relationLoaded('simpananKodes'),
+        ]);
+
+        return inertia('Superadmin/SimpananProduk/Show', [
+            'produkData' => $produk,
+            'accounts' => $this->formData()['accounts'],
+        ]);
     }
 
     public function edit(SimpananJenis $produk)
@@ -116,13 +144,17 @@ class SimpananProdukController extends Controller
                 SimpananBunga::create([...$row, 'jenis_id' => $produk->id, 'user_id' => $produk->user_id]);
             }
 
-            // Sinkronkan pivot kode transaksi
+            // Sinkronkan pivot kode transaksi + perbarui akun debet/kredit tiap kode
             SimpananJenisKode::where('jenis_id', $produk->id)->delete();
-            foreach ($validated['kode_ids'] as $kodeId) {
+            foreach ($validated['kode_rows'] as $row) {
                 SimpananJenisKode::create([
                     'jenis_id' => $produk->id,
-                    'kode_id' => $kodeId,
+                    'kode_id' => $row['id'],
                     'user_id' => $produk->user_id,
+                ]);
+                SimpananKode::where('id', $row['id'])->update([
+                    'account_debet' => $row['account_debet'],
+                    'account_kredit' => $row['account_kredit'],
                 ]);
             }
         });
@@ -145,15 +177,17 @@ class SimpananProdukController extends Controller
     {
         return [
             'accounts' => Account::orderBy('no_account')->get(['id', 'no_account', 'nama']),
-            'kodes' => SimpananKode::orderBy('kode')->get(['id', 'kode', 'nama']),
+            'kodes' => SimpananKode::orderBy('kode')->get(['id', 'kode', 'nama', 'account_debet', 'account_kredit']),
         ];
     }
 
     private function validateProduk(Request $request): array
     {
+        $currentId = $request->route('produk')?->id ?? 0;
+
         $validated = $request->validate([
-            'produk.kode' => 'required|string|max:255|unique:simpanan_jenis,kode,'.($request->route('produk')->id ?? ''),
-            'produk.nama' => 'required|string|max:255|unique:simpanan_jenis,nama,'.($request->route('produk')->id ?? ''),
+            'produk.kode' => 'required|string|max:255|unique:simpanan_jenis,kode,'.$currentId,
+            'produk.nama' => 'required|string|max:255|unique:simpanan_jenis,nama,'.$currentId,
             'produk.account_id' => 'required|integer|exists:account,id',
             'produk.minimum' => 'nullable|numeric|min:0',
             'produk.mengendap' => 'nullable|numeric|min:0',
@@ -173,11 +207,14 @@ class SimpananProdukController extends Controller
             'produk.nominal_android' => 'nullable|numeric|min:0',
             'produk.account_android' => 'nullable|integer|exists:account,id',
             'produk.nominal' => 'nullable|numeric|min:0',
+            'produk.harga_saham' => 'nullable|numeric|min:0',
             'produk.jenis' => 'required|integer|between:1,7',
             'produk.setor_id' => 'nullable|integer|exists:simpanan_kode,id',
             'produk.tarik_id' => 'nullable|integer|exists:simpanan_kode,id',
             'produk.insentif' => 'nullable|numeric|min:0',
             'produk.saham' => 'nullable|boolean',
+            'produk.pajak_saldo' => 'nullable|numeric|min:0',
+            'produk.update_bagi_hasil' => 'nullable|boolean',
 
             'bunga_flat' => 'nullable|numeric|min:0',
             'tingkat' => 'required_if:produk.jenis_bunga,2|array',
@@ -185,8 +222,10 @@ class SimpananProdukController extends Controller
             'tingkat.*.maksimal' => 'nullable|numeric|min:0',
             'tingkat.*.bunga' => 'required_with:tingkat.*.minimal|numeric|min:0',
 
-            'kode_ids' => 'present|array',
-            'kode_ids.*' => 'integer|exists:simpanan_kode,id',
+            'kode_rows' => 'present|array',
+            'kode_rows.*.id' => 'required|integer|exists:simpanan_kode,id',
+            'kode_rows.*.account_debet' => 'nullable|integer|exists:account,id',
+            'kode_rows.*.account_kredit' => 'nullable|integer|exists:account,id',
         ], [
             'produk.kode.required' => 'Kode produk simpanan wajib diisi.',
             'produk.kode.unique' => 'Kode produk simpanan sudah digunakan.',
@@ -223,6 +262,17 @@ class SimpananProdukController extends Controller
         $validated['produk']['bulan'] = (bool) ($validated['produk']['bulan'] ?? false);
         $validated['produk']['saldo_pajak'] = (bool) ($validated['produk']['saldo_pajak'] ?? false);
         $validated['produk']['saham'] = (bool) ($validated['produk']['saham'] ?? false);
+        $validated['produk']['update_bagi_hasil'] = (bool) ($validated['produk']['update_bagi_hasil'] ?? false);
+
+        // Normalisasi baris kode transaksi
+        $validated['kode_rows'] = array_values(array_map(
+            fn ($r) => [
+                'id' => (int) $r['id'],
+                'account_debet' => filled($r['account_debet'] ?? null) ? (int) $r['account_debet'] : null,
+                'account_kredit' => filled($r['account_kredit'] ?? null) ? (int) $r['account_kredit'] : null,
+            ],
+            $validated['kode_rows'] ?? [],
+        ));
 
         return $validated;
     }
