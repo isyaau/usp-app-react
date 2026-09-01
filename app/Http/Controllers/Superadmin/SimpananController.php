@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers\Superadmin;
 
+use App\Exports\SimpananExport;
+use App\Exports\SimpananTemplateExport;
+use App\Imports\SimpananImport;
 use App\Http\Controllers\Controller;
 use App\Models\Anggota;
 use App\Models\Kantor;
@@ -14,6 +17,7 @@ use Illuminate\Support\Str;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\Encoders\PngEncoder;
+use Maatwebsite\Excel\Facades\Excel;
 
 /**
  * Controller CRUD Data Simpanan (rekening simpanan anggota).
@@ -25,22 +29,7 @@ class SimpananController extends Controller
     {
         $search = (string) $request->string('search');
 
-        $simpanan = Simpanan::query()
-            ->with([
-                'anggota:id,no_anggota,nama',
-                'jenis_simpanan:id,kode,nama,bunga,jenis',
-                'marketing:id,nama',
-                'kantor:id,nama_kantor',
-            ])
-            ->when($search !== '', function ($q) use ($search) {
-                $q->where(function ($qq) use ($search) {
-                    $qq->where('no_rekening', 'ILIKE', "%{$search}%")
-                        ->orWhereHas('anggota', fn ($a) => $a
-                            ->where('nama', 'ILIKE', "%{$search}%")
-                            ->orWhere('no_anggota', 'ILIKE', "%{$search}%"));
-                });
-            })
-            ->orderBy('created_at', 'DESC')
+        $simpanan = $this->baseQuery($search)
             ->paginate((int) ($request->input('per_page') ?: 10))
             ->withQueryString();
 
@@ -153,6 +142,120 @@ class SimpananController extends Controller
     }
 
     /* ------------------------------------------------------------------ */
+    /*  Ekspor & Cetak                                                     */
+    /* ------------------------------------------------------------------ */
+
+    /** Cetak PDF daftar rekening simpanan (mengikuti filter pencarian halaman). */
+    public function cetak(Request $request)
+    {
+        $search = (string) $request->string('search');
+
+        $simpanan = $this->baseQuery($search)->get();
+
+        return $this->streamPdf(
+            'pdf.simpanan',
+            ['simpanan' => $simpanan, 'search' => $search],
+            'daftar_simpanan.pdf',
+            'landscape'
+        );
+    }
+
+    /** Cetak PDF satu rekening simpanan (tombol di baris daftar). */
+    public function cetakData(Simpanan $simpanan)
+    {
+        $simpanan->load([
+            'anggota:id,no_anggota,nama,alamat,telepon,no_hp,email',
+            'jenis_simpanan:id,kode,nama,bunga,jenis',
+            'marketing:id,nama',
+            'kantor:id,nama_kantor',
+        ]);
+
+        return $this->streamPdf(
+            'pdf.simpanan-detail',
+            ['simpanan' => $simpanan],
+            "data_simpanan_{$simpanan->no_rekening}.pdf",
+            'portrait'
+        );
+    }
+
+    /** Unduh daftar rekening simpanan dalam format PDF (filter tanggal opsional). */
+    public function exportPdf(Request $request)
+    {
+        $mulai = $request->input('mulai');
+        $sampai = $request->input('sampai');
+
+        $query = Simpanan::query()
+            ->with([
+                'anggota:id,no_anggota,nama',
+                'jenis_simpanan:id,kode,nama,bunga,jenis',
+                'marketing:id,nama',
+                'kantor:id,nama_kantor',
+            ]);
+
+        if ($mulai) {
+            $query->where('created_at', '>=', \Carbon\Carbon::createFromFormat('d-m-Y', $mulai)->startOfDay());
+        }
+
+        if ($sampai) {
+            $query->where('created_at', '<=', \Carbon\Carbon::createFromFormat('d-m-Y', $sampai)->endOfDay());
+        }
+
+        $simpanan = $query->orderBy('created_at', 'DESC')->get();
+
+        $filename = 'data_simpanan_'.($mulai ?? 'all').'-'.($sampai ?? 'all').'.pdf';
+
+        return $this->streamPdf(
+            'pdf.simpanan',
+            ['simpanan' => $simpanan, 'search' => ''],
+            $filename,
+            'landscape'
+        );
+    }
+
+    /** Unduh daftar rekening simpanan dalam format Excel. */
+    public function exportExcel(Request $request)
+    {
+        $mulai = $request->input('mulai');
+        $sampai = $request->input('sampai');
+
+        $filename = 'data_simpanan_'.($mulai ?? 'all').'-'.($sampai ?? 'all').'.xlsx';
+
+        return Excel::download(new SimpananExport($mulai, $sampai), $filename);
+    }
+
+    /** Unduh template Excel untuk impor data simpanan. */
+    public function downloadTemplate()
+    {
+        return Excel::download(new SimpananTemplateExport, 'template_simpanan.xlsx');
+    }
+
+    /** Impor data rekening simpanan dari file Excel sesuai template. */
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx,csv',
+        ], [
+            'file.required' => 'File wajib dipilih.',
+            'file.mimes' => 'File harus berformat xlsx atau csv.',
+        ]);
+
+        try {
+            Excel::import(new SimpananImport($request->user()->id), $request->file('file')->getRealPath());
+
+            return back()->with('success', 'Data simpanan berhasil diimport!');
+        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+            $failures = $e->failures();
+            $msg = $failures[0]->errors()[0] ?? 'Data tidak valid atau duplikat.';
+
+            return back()->with('error', $msg);
+        } catch (\Throwable $e) {
+            report($e);
+
+            return back()->with('error', 'Import gagal. Periksa format dan isi file Anda.');
+        }
+    }
+
+    /* ------------------------------------------------------------------ */
 
     private function validateRekening(Request $request, ?int $ignoreId = null): array
     {
@@ -232,5 +335,38 @@ class SimpananController extends Controller
                 ->orderBy('no_anggota')
                 ->get(['id', 'no_anggota', 'nama']),
         ];
+    }
+
+    /** Query dasar daftar simpanan dengan relasi + filter pencarian. */
+    private function baseQuery(string $search)
+    {
+        return Simpanan::query()
+            ->with([
+                'anggota:id,no_anggota,nama',
+                'jenis_simpanan:id,kode,nama,bunga,jenis',
+                'marketing:id,nama',
+                'kantor:id,nama_kantor',
+            ])
+            ->when($search !== '', function ($q) use ($search) {
+                $q->where(function ($qq) use ($search) {
+                    $qq->where('no_rekening', 'ILIKE', "%{$search}%")
+                        ->orWhereHas('anggota', fn ($a) => $a
+                            ->where('nama', 'ILIKE', "%{$search}%")
+                            ->orWhere('no_anggota', 'ILIKE', "%{$search}%"));
+                });
+            })
+            ->orderBy('created_at', 'DESC');
+    }
+
+    /** Stream PDF via DomPDF dengan header Content-Type yang benar. */
+    private function streamPdf(string $view, array $data, string $filename, string $orientation = 'landscape')
+    {
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView($view, $data)->setPaper('a4', $orientation);
+        $dompdf = $pdf->getDomPDF();
+        $dompdf->render();
+
+        return response()->streamDownload(fn () => print($pdf->output()), $filename, [
+            'Content-Type' => 'application/pdf',
+        ]);
     }
 }

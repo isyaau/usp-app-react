@@ -386,9 +386,15 @@ Route::prefix('superadmin')->name('superadmin.')->middleware(['auth', 'role:supe
     Route::get('/simpanan', [SimpananController::class, 'index'])->name('simpanan');
     Route::get('/simpanan/create', [SimpananController::class, 'create'])->name('simpanan.create');
     Route::post('/simpanan', [SimpananController::class, 'store'])->name('simpanan.store');
+    Route::get('/simpanan/cetak', [SimpananController::class, 'cetak'])->name('simpanan.cetak');
+    Route::get('/simpanan/export-pdf', [SimpananController::class, 'exportPdf'])->name('simpanan.export-pdf');
+    Route::get('/simpanan/export-excel', [SimpananController::class, 'exportExcel'])->name('simpanan.export-excel');
+    Route::get('/simpanan/template', [SimpananController::class, 'downloadTemplate'])->name('simpanan.template');
+    Route::post('/simpanan/import', [SimpananController::class, 'import'])->name('simpanan.import');
     Route::get('/simpanan/{simpanan}/edit', [SimpananController::class, 'edit'])->name('simpanan.edit');
     Route::put('/simpanan/{simpanan}', [SimpananController::class, 'update'])->name('simpanan.update');
     Route::delete('/simpanan/{simpanan}', [SimpananController::class, 'destroy'])->name('simpanan.destroy');
+    Route::get('/simpanan/{simpanan}/cetak', [SimpananController::class, 'cetakData'])->name('simpanan.cetak-data');
     Route::get('/simpanan/{simpanan}', [SimpananController::class, 'show'])->name('simpanan.show');
 
 
