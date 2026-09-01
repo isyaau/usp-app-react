@@ -379,6 +379,12 @@ Route::prefix('superadmin')->name('superadmin.')->middleware(['auth', 'role:supe
     Route::get('/simpanan/rencana', [SimpananRencanaController::class, 'index'])->name('simpanan.rencana');
     Route::get('/simpanan/rencana/create', [SimpananRencanaController::class, 'create'])->name('simpanan.rencana.create');
     Route::post('/simpanan/rencana', [SimpananRencanaController::class, 'store'])->name('simpanan.rencana.store');
+    Route::get('/simpanan/rencana/{rencana}/cetak', [SimpananRencanaController::class, 'cetak'])->name('simpanan.rencana.cetak');
+    Route::get('/simpanan/rencana/{rencana}/simulasi', [SimpananRencanaController::class, 'simulasi'])->name('simpanan.rencana.simulasi');
+    Route::get('/simpanan/rencana/{rencana}/simulasi/cetak', [SimpananRencanaController::class, 'cetakSimulasi'])->name('simpanan.rencana.cetak-simulasi');
+    Route::get('/simpanan/rencana/{rencana}/edit', [SimpananRencanaController::class, 'edit'])->name('simpanan.rencana.edit');
+    Route::put('/simpanan/rencana/{rencana}', [SimpananRencanaController::class, 'update'])->name('simpanan.rencana.update');
+    Route::get('/simpanan/rencana/{rencana}', [SimpananRencanaController::class, 'show'])->name('simpanan.rencana.show');
     Route::delete('/simpanan/rencana/{rencana}', [SimpananRencanaController::class, 'destroy'])->name('simpanan.rencana.destroy');
 
     // Simpanan

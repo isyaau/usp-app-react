@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, Head, router} from '@inertiajs/react';
-import { CalendarClock, Plus, Search } from 'lucide-react';
+import { CalendarClock, Calculator, Eye, MoreHorizontal, Pencil, Plus, Printer, Search } from 'lucide-react';
 
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { PageHeader } from '@/Components/PageHeader';
@@ -8,6 +8,13 @@ import { Pagination } from '@/Components/Pagination';
 import { ConfirmDelete } from '@/Components/ConfirmDelete';
 import { Button } from '@/Components/ui/button';
 import { Card } from '@/Components/ui/card';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuTrigger,
+} from '@/Components/ui/dropdown-menu';
 import { Input } from '@/Components/ui/input';
 import {
     Select,
@@ -146,7 +153,52 @@ export default function SimpananRencanaIndex({ rencana, filters }: Props) {
                                     </TableCell>
                                     <TableCell>
                                         <div className="flex items-center justify-end gap-1">
-                                            {/* Edit/show tidak ada di aplikasi lama (stub kosong). */}
+                                            <Button variant="ghost" size="icon" className="size-8" asChild>
+                                                <Link href={route('superadmin.simpanan.rencana.show', item.id)}
+                                                    aria-label={`Lihat ${item.no_bukti}`}
+                                                >
+                                                    <Eye className="size-4" />
+                                                </Link>
+                                            </Button>
+                                            <Button variant="ghost" size="icon" className="size-8" asChild>
+                                                <Link href={route('superadmin.simpanan.rencana.edit', item.id)}
+                                                    aria-label={`Edit ${item.no_bukti}`}
+                                                >
+                                                    <Pencil className="size-4" />
+                                                </Link>
+                                            </Button>
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        title="Cetak / Simulasi"
+                                                        aria-label={`Menu ${item.no_bukti}`}
+                                                        className="data-[state=open]:bg-muted"
+                                                    >
+                                                        <MoreHorizontal className="text-muted-foreground" />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end">
+                                                    <DropdownMenuLabel className="text-xs text-muted-foreground">
+                                                        Lainnya
+                                                    </DropdownMenuLabel>
+                                                    <DropdownMenuItem
+                                                        onSelect={() =>
+                                                            window.open(route('superadmin.simpanan.rencana.cetak', item.id), '_blank')
+                                                        }
+                                                    >
+                                                        <Printer />
+                                                        Cetak Data Rencana
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem asChild>
+                                                        <Link href={route('superadmin.simpanan.rencana.simulasi', item.id)}>
+                                                            <Calculator />
+                                                            Simulasi Setoran
+                                                        </Link>
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
                                             <ConfirmDelete
                                                 routeName="superadmin.simpanan.rencana.destroy"
                                                 id={item.id}

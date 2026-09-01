@@ -113,6 +113,7 @@ const MENU: MenuItem[] = [
             { label: 'Kode Transaksi', route: 'superadmin.simpanan.kode-transaksi' },
             { label: 'Produk Simpanan', route: 'superadmin.simpanan.produk-simpanan' },
             { label: 'Simpanan', route: 'superadmin.simpanan' },
+            { label: 'Simpanan Rencana', route: 'superadmin.simpanan.rencana' },
         ],
     },
     {

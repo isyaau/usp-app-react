@@ -30,6 +30,7 @@ class DatabaseSeeder extends Seeder
             DepositoJenisSeeder::class,
             SimpananJenisSeeder::class,
             SimpananSeeder::class,
+            SimpananRencanaSeeder::class,
             JaminanSeeder::class,
             JaminanDetailSeeder::class,
             KasHarianSeeder::class,
