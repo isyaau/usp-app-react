@@ -73,14 +73,6 @@ const MENU: MenuItem[] = [
             { label: 'Account', route: 'superadmin.account' },
         ],
     },
-    {
-        label: 'Kas Harian',
-        icon: DollarSign,
-        children: [
-            { label: 'Daftar Kas Harian', route: 'superadmin.kas-harian' },
-            { label: 'Tambah Kas Harian', route: 'superadmin.kas-harian.create' },
-        ],
-    },
     { header: 'Customer Service' },
     {
         label: 'Anggota',
@@ -275,6 +267,14 @@ const MENU: MenuItem[] = [
         label: 'Penarikan Dana Titipan',
         route: 'superadmin.transaksi-titipan.penarikan-dana-titipan',
         icon: Banknote,
+    },
+    {
+        label: 'Kas Harian',
+        icon: DollarSign,
+        children: [
+            { label: 'Daftar Kas Harian', route: 'superadmin.kas-harian' },
+            { label: 'Tambah Kas Harian', route: 'superadmin.kas-harian.create' },
+        ],
     },
     {
         label: 'Laporan',
