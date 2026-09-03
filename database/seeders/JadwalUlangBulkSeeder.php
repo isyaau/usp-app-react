@@ -145,7 +145,7 @@ class JadwalUlangBulkSeeder extends Seeder
                 'updated_at' => $tanggal->format('Y-m-d H:i:s'),
             ]);
 
-            $this->saveScheduleDetails($jadwalUlang, $hasil['jadwal']);
+            $this->saveScheduleDetails($jadwalUlang, $hasil['jadwal'], $m['user']->id);
             $this->saveRelated($jadwalUlang, $m, $sisaPokok);
 
             $count++;
@@ -244,7 +244,7 @@ class JadwalUlangBulkSeeder extends Seeder
     }
 
     /** Simpan deret angsuran ke jadwal_ulang_detail. */
-    private function saveScheduleDetails(JadwalUlang $ju, array $jadwal): void
+    private function saveScheduleDetails(JadwalUlang $ju, array $jadwal, int $userId): void
     {
         foreach ($jadwal as $row) {
             JadwalUlangDetail::create([
@@ -254,6 +254,7 @@ class JadwalUlangBulkSeeder extends Seeder
                 'nominal_bunga' => $row['bunga'],
                 'total_angsuran' => $row['angsuran'],
                 'sisa_pokok' => $row['sisa'],
+                'user_id' => $userId,
             ]);
         }
     }

@@ -10,5 +10,11 @@ class AccGroup extends Model
 
     protected $fillable = [
         'nama',
+        'user_id',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

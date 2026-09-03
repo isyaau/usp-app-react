@@ -7,6 +7,8 @@ use App\Models\DepositoJenis;
 
 class DepositoJenisSeeder extends Seeder
 {
+    use ResolvesAdminUser;
+
     public function run(): void
     {
         DepositoJenis::create([
@@ -23,7 +25,7 @@ class DepositoJenisSeeder extends Seeder
             'account_pajak' => 1,
             'saldo_pajak' => null,
             'insentif' => null,
-            'user_id' => 1,
+            'user_id' => $this->adminUserId(),
         ]);
 
         DepositoJenis::create([
@@ -40,7 +42,7 @@ class DepositoJenisSeeder extends Seeder
             'account_pajak' => 1,
             'saldo_pajak' => null,
             'insentif' => null,
-            'user_id' => 1,
+            'user_id' => $this->adminUserId(),
         ]);
 
         DepositoJenis::create([
@@ -57,7 +59,7 @@ class DepositoJenisSeeder extends Seeder
             'account_pajak' => 1,
             'saldo_pajak' => null,
             'insentif' => null,
-            'user_id' => 1,
+            'user_id' => $this->adminUserId(),
         ]);
     }
 }

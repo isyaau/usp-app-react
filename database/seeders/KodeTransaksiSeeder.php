@@ -8,6 +8,8 @@ use App\Models\Account;
 
 class KodeTransaksiSeeder extends Seeder
 {
+    use ResolvesAdminUser;
+
     public function run(): void
     {
         $data = [
@@ -62,7 +64,6 @@ class KodeTransaksiSeeder extends Seeder
                 $pokok_pinjaman,
                 $rencana,
                 $keterangan,
-                $user_id
             ] = $item;
 
             $debet = Account::where('no_account', $debetNo)->first();
@@ -89,7 +90,7 @@ class KodeTransaksiSeeder extends Seeder
                     'pokok_pinjaman'  => $pokok_pinjaman,
                     'rencana'         => $rencana,
                     'keterangan'      => $keterangan,
-                    'user_id'         => $user_id,
+                    'user_id'         => $this->adminUserId(),
                 ]
             );
         }

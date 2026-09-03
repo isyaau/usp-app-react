@@ -7,6 +7,8 @@ use App\Models\AccHeader;
 
 class AccHeaderSeeder extends Seeder
 {
+    use ResolvesAdminUser;
+
     public function run(): void
     {
         $headers = [
@@ -56,7 +58,7 @@ class AccHeaderSeeder extends Seeder
                 [
                     'nama' => $item['nama'],
                     'group_id' => $item['group_id'],
-                    'user_id' => 1,
+                    'user_id' => $this->adminUserId(),
                 ]
             );
         }

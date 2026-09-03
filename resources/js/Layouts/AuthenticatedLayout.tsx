@@ -20,6 +20,8 @@ import {
     DollarSign,
     FileText,
     CreditCard,
+    History,
+    DatabaseBackup,
 } from 'lucide-react';
 
 import { Button } from '@/Components/ui/button';
@@ -65,6 +67,7 @@ const MENU: MenuItem[] = [
     { label: 'Dashboard', icon: LayoutDashboard, route: 'superadmin.dashboard' },
     { header: 'Super Admin' },
     { label: 'User', icon: ShieldCheck, route: 'superadmin.user' },
+    { label: 'Riwayat Perubahan', icon: History, route: 'superadmin.history-log' },
     {
         label: 'Account',
         icon: Receipt,
@@ -314,6 +317,7 @@ const MENU: MenuItem[] = [
         children: [
             { label: 'Kantor', route: 'superadmin.kantor' },
             { label: 'Marketing', route: 'superadmin.marketing' },
+            { label: 'Backup Database', route: 'superadmin.backup-database' },
         ],
     },
 ];

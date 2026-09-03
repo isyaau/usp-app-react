@@ -7,6 +7,8 @@ use Illuminate\Database\Seeder;
 
 class AnggotaSeeder extends Seeder
 {
+    use ResolvesAdminUser;
+
     public function run(): void
     {
 
@@ -61,7 +63,7 @@ class AnggotaSeeder extends Seeder
             'tgl_anggota_berhenti'     => null,
             'anggota_berhenti'         => null,
             'kantor_id'                => '1', // contoh kantor
-            'user_id'                  => '1', // user pembuat
+            'user_id'                  => $this->adminUserId(), // user pembuat
         ]);
     }
 }

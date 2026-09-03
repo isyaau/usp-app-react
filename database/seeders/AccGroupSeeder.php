@@ -7,6 +7,8 @@ use App\Models\Parameter;
 
 class AccGroupSeeder extends Seeder
 {
+    use ResolvesAdminUser;
+
     public function run(): void
     {
         $data = [
@@ -38,7 +40,7 @@ class AccGroupSeeder extends Seeder
                 ['nama' => $item['nama']],
                 [
                     'jenis'   => $item['jenis'],
-                    'user_id' => '1', // default user
+                    'user_id' => $this->adminUserId(),
                 ]
             );
         }

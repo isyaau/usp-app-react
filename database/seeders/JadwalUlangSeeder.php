@@ -525,6 +525,7 @@ class JadwalUlangSeeder extends Seeder
                 'nominal_bunga' => $row['bunga'],
                 'total_angsuran' => $row['angsuran'],
                 'sisa_pokok' => $row['sisa'],
+                'user_id' => $m['user']->id,
             ]);
         }
 

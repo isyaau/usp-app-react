@@ -93,6 +93,7 @@ class AngsuranKolektifSeeder extends Seeder
 
             foreach ($details as $detail) {
                 $detail['angsuran_kolektif_id'] = $kolektif->id;
+                $detail['user_id'] = $kolektif->user_id;
                 AngsuranKolektifDetail::create($detail);
             }
 

@@ -126,9 +126,12 @@ class AngsuranKolektifController extends Controller
 
         $kolektif = AngsuranKolektif::create($validated);
 
+        $userId = $kolektif->user_id;
+
         foreach ($details as $detail) {
             $detail['angsuran_kolektif_id'] = $kolektif->id;
             $detail['denda'] = $detail['denda'] ?? 0;
+            $detail['user_id'] = $userId;
             AngsuranKolektifDetail::create($detail);
         }
 

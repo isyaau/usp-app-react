@@ -8,6 +8,8 @@ use App\Models\AccHeader;
 
 class AccountSeeder extends Seeder
 {
+    use ResolvesAdminUser;
+
     public function run(): void
     {
         $accounts = [
@@ -249,7 +251,7 @@ class AccountSeeder extends Seeder
                     'nama'      => $nama,
                     'header_id' => $header->id,
                     'tipe'      => $tipe,
-                    'user_id'   => 1,
+                    'user_id'   => $this->adminUserId(),
                 ]
             );
         }

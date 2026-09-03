@@ -381,8 +381,10 @@ class JadwalUlangController extends Controller
 
     private function saveSchedule(JadwalUlang $jadwalUlang, array $details): void
     {
+        $userId = auth()->id();
+
         foreach ($details as $row) {
-            JadwalUlangDetail::create($row + ['jadwal_ulang_id' => $jadwalUlang->id]);
+            JadwalUlangDetail::create($row + ['jadwal_ulang_id' => $jadwalUlang->id, 'user_id' => $userId]);
         }
     }
 

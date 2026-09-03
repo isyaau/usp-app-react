@@ -42,6 +42,8 @@ use App\Http\Controllers\Superadmin\LaporanPinjamanController;
 use App\Http\Controllers\Superadmin\LaporanSimpananController;
 use App\Http\Controllers\Superadmin\LaporanSimpananBerjangkaController;
 use App\Http\Controllers\Superadmin\LaporanMarketingController;
+use App\Http\Controllers\Superadmin\HistoryLogController;
+use App\Http\Controllers\Superadmin\DatabaseBackupController;
 
 // Route Livewire lama modul Anggota dihapus — sudah dimigrasikan ke Inertia.
 use App\Http\Controllers\WilayahController;
@@ -72,6 +74,18 @@ Route::middleware(['auth'])->prefix('wilayah')->name('wilayah.')->group(function
 Route::prefix('superadmin')->name('superadmin.')->middleware(['auth', 'role:superadmin'])->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    //History Log (Inertia + React)
+    Route::get('/history-log', [HistoryLogController::class, 'index'])->name('history-log');
+
+    // Database Backup & Restore (Inertia + React)
+    Route::get('/backup-database', [DatabaseBackupController::class, 'index'])->name('backup-database');
+    Route::post('/backup-database/backup', [DatabaseBackupController::class, 'backup'])->name('backup-database.backup');
+    Route::get('/backup-database/status', [DatabaseBackupController::class, 'status'])->name('backup-database.status');
+    Route::post('/backup-database/restore', [DatabaseBackupController::class, 'restore'])->name('backup-database.restore');
+    Route::post('/backup-database/{backupLog}/restore', [DatabaseBackupController::class, 'restoreFromExisting'])->name('backup-database.restore-existing');
+    Route::get('/backup-database/{backupLog}/download', [DatabaseBackupController::class, 'download'])->name('backup-database.download');
+    Route::delete('/backup-database/{backupLog}', [DatabaseBackupController::class, 'destroy'])->name('backup-database.destroy');
 
     //User (Inertia + React)
     Route::get('/user', [UserController::class, 'index'])->name('user');

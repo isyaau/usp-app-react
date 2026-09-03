@@ -7,6 +7,8 @@ use Illuminate\Database\Seeder;
 
 class MarketingSeeder extends Seeder
 {
+    use ResolvesAdminUser;
+
     public function run(): void
     {
         // Contoh marketing tunggal
@@ -19,7 +21,7 @@ class MarketingSeeder extends Seeder
             'no_hp'      => '081234567890',
             'aktif'      => '1', // 1 = aktif, 0 = nonaktif
             'kantor_id'  => '1', // contoh kantor
-            'user_id'    => '1', // user pembuat
+            'user_id'    => $this->adminUserId(), // user pembuat
         ]);
 
         // Contoh beberapa marketing tambahan
@@ -32,7 +34,7 @@ class MarketingSeeder extends Seeder
             'no_hp'      => '081298765432',
             'aktif'      => '1',
             'kantor_id'  => '1',
-            'user_id'    => '1',
+            'user_id'    => $this->adminUserId(),
         ]);
 
         Marketing::create([
@@ -44,7 +46,7 @@ class MarketingSeeder extends Seeder
             'no_hp'      => '081345678901',
             'aktif'      => '1',
             'kantor_id'  => '2',
-            'user_id'    => '1',
+            'user_id'    => $this->adminUserId(),
         ]);
     }
 }

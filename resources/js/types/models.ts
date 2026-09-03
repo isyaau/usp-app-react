@@ -36,6 +36,59 @@ export interface UserRow {
     created_at: string;
 }
 
+/* ============================================================
+   Riwayat Perubahan Data (audit log)
+   ============================================================ */
+
+export type HistoryLogAction = 'create' | 'update' | 'delete';
+
+/** Satu pasang nilai lama/baru untuk satu kolom pada log. */
+export interface HistoryLogChanges {
+    old?: unknown;
+    new?: unknown;
+}
+
+export interface HistoryLogUser {
+    id: number;
+    nama: string;
+    username: string;
+    avatar: string | null;
+}
+
+export interface HistoryLogRow {
+    id: number;
+    user_id: number | null;
+    user?: HistoryLogUser | null;
+    table: string;
+    record_id: number;
+    action: HistoryLogAction;
+    changes: Record<string, HistoryLogChanges> | null;
+    ip_address: string | null;
+    created_at: string;
+}
+
+/* ============================================================
+   Backup & Restore Database
+   ============================================================ */
+
+export type BackupLogType = 'backup' | 'restore';
+export type BackupLogStatus = 'pending' | 'running' | 'success' | 'failed';
+
+export interface BackupLogRow {
+    id: number;
+    filename: string;
+    size_bytes: number;
+    formatted_size: string;
+    type: BackupLogType;
+    status: BackupLogStatus;
+    message: string | null;
+    duration_seconds: number | null;
+    formatted_duration: string | null;
+    user_id: number;
+    user?: { id: number; nama: string; username: string } | null;
+    created_at: string;
+}
+
 export interface KelompokRow {
     id: number;
     kode: string;

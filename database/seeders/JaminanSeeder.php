@@ -7,18 +7,20 @@ use Illuminate\Database\Seeder;
 
 class JaminanSeeder extends Seeder
 {
+    use ResolvesAdminUser;
+
     public function run(): void
     {
         // Contoh kantor pertama
         Jaminan::create([
             'nama'          => 'Emas',
-            'user_id'       => 1,
+            'user_id'       => $this->adminUserId(),
         ]);
 
         // Contoh kantor pertama
         Jaminan::create([
             'nama'          => 'Tanpa Agunan',
-            'user_id'       => 1,
+            'user_id'       => $this->adminUserId(),
         ]);
     }
 }

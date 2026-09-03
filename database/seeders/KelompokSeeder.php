@@ -7,27 +7,29 @@ use App\Models\Kelompok;
 
 class KelompokSeeder extends Seeder
 {
+    use ResolvesAdminUser;
+
     public function run(): void
     {
         Kelompok::create([
             'kode' => 'KL-001',
             'nama' => 'Kelompok A',
             'ketua_id' => null,
-            'user_id' => 1,
+            'user_id' => $this->adminUserId(),
         ]);
 
         Kelompok::create([
             'kode' => 'KL-002',
             'nama' => 'Kelompok B',
             'ketua_id' => null,
-            'user_id' => 1,
+            'user_id' => $this->adminUserId(),
         ]);
 
         Kelompok::create([
             'kode' => 'KL-003',
             'nama' => 'Kelompok C',
             'ketua_id' => null,
-            'user_id' => 1,
+            'user_id' => $this->adminUserId(),
         ]);
     }
 }

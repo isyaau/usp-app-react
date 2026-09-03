@@ -7,6 +7,8 @@ use Illuminate\Database\Seeder;
 
 class KantorSeeder extends Seeder
 {
+    use ResolvesAdminUser;
+
     public function run(): void
     {
         // Contoh kantor pertama
@@ -21,7 +23,7 @@ class KantorSeeder extends Seeder
             'pejabat'       => 'Ahmad Santoso',
             'jabatan'       => 'Kepala Kantor',
             'bendahara'     => 'Rina Saputra',
-            'user_id'       => 1,
+            'user_id'       => $this->adminUserId(),
         ]);
 
         // Contoh kantor kedua
@@ -36,7 +38,7 @@ class KantorSeeder extends Seeder
             'pejabat'       => 'Budi Santoso',
             'jabatan'       => 'Kepala Cabang',
             'bendahara'     => 'Siti Aminah',
-            'user_id'       => 1,
+            'user_id'       => $this->adminUserId(),
         ]);
     }
 }

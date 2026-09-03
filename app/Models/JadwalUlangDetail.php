@@ -15,10 +15,16 @@ class JadwalUlangDetail extends Model
         'nominal_bunga',
         'total_angsuran',
         'sisa_pokok',
+        'user_id',
     ];
 
     public function jadwalUlang()
     {
         return $this->belongsTo(JadwalUlang::class, 'jadwal_ulang_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

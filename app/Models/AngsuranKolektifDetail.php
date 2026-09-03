@@ -10,10 +10,11 @@ class AngsuranKolektifDetail extends Model
     protected $fillable = [
         'angsuran_kolektif_id', 'pinjaman_id', 'anggota_id', 'angsuran_ke',
         'nominal_pokok', 'nominal_bunga', 'total_angsuran', 'setoran_simpanan',
-        'denda', 'keterangan',
+        'denda', 'keterangan', 'user_id',
     ];
 
     public function angsuranKolektif() { return $this->belongsTo(AngsuranKolektif::class, 'angsuran_kolektif_id'); }
     public function pinjaman() { return $this->belongsTo(Pinjaman::class, 'pinjaman_id'); }
     public function anggota() { return $this->belongsTo(Anggota::class, 'anggota_id'); }
+    public function user() { return $this->belongsTo(User::class); }
 }

@@ -21,7 +21,7 @@ class AccGroupController extends Controller
             'nama.unique' => 'Nama grup sudah digunakan.',
         ]);
 
-        AccGroup::create(['nama' => $validated['nama']]);
+        AccGroup::create(['nama' => $validated['nama'], 'user_id' => $request->user()->id]);
 
         return redirect()
             ->route('superadmin.account-header')

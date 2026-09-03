@@ -23,9 +23,11 @@ use App\Models\SimpananKode;
  */
 class SimpananJenisSeeder extends Seeder
 {
+    use ResolvesAdminUser;
+
     public function run(): void
     {
-        $user = 1;
+        $user = $this->adminUserId();
 
         $products = [
             [
@@ -261,7 +263,7 @@ class SimpananJenisSeeder extends Seeder
             'nama' => $nama,
             'account_debet' => $debet->id,
             'account_kredit' => $kredit->id,
-            'user_id' => 1,
+            'user_id' => $this->adminUserId(),
         ]);
     }
 }

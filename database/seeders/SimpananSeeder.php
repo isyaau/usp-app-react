@@ -24,6 +24,8 @@ use App\Models\SimpananJenis;
  */
 class SimpananSeeder extends Seeder
 {
+    use ResolvesAdminUser;
+
     public function run(): void
     {
         $kantors = Kantor::orderBy('id')->pluck('id')->values();          // mis. [215,216,217]
@@ -79,7 +81,7 @@ class SimpananSeeder extends Seeder
                     'sms'              => $s['sms'],
                     'aktif'            => $s['aktif'],
                     'kantor_id'        => $kantorId,
-                    'user_id'          => 1,
+                    'user_id'          => $this->adminUserId(),
                 ]
             );
 

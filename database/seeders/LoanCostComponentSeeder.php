@@ -7,14 +7,14 @@ use Illuminate\Database\Seeder;
 
 class LoanCostComponentSeeder extends Seeder
 {
+    use ResolvesAdminUser;
+
     /**
      * Komponen biaya default untuk tabel Biaya Proposal.
      * Idempoten via updateOrCreate pada kolom name.
      */
     public function run(): void
     {
-        $kantor = \App\Models\User::query()->value('id');
-
         $defaults = [
             [
                 'name' => 'Simpanan Wajib Pinjaman',
@@ -41,7 +41,7 @@ class LoanCostComponentSeeder extends Seeder
         foreach ($defaults as $row) {
             LoanCostComponent::updateOrCreate(
                 ['name' => $row['name']],
-                array_merge($row, ['user_id' => (string) ($kantor ?? 0)]),
+                array_merge($row, ['user_id' => $this->adminUserId()]),
             );
         }
     }

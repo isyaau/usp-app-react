@@ -16,6 +16,8 @@ use Illuminate\Database\Seeder;
  */
 class SimpananRencanaSeeder extends Seeder
 {
+    use ResolvesAdminUser;
+
     public function run(): void
     {
         $kantors = Kantor::orderBy('id')->pluck('id')->values();
@@ -45,7 +47,7 @@ class SimpananRencanaSeeder extends Seeder
                     'bunga' => (string) rand(3, 12),
                     'keterangan' => 'Rencana simpanan ke-'.$i,
                     'kantor_id' => (string) $kantors[$i % $kantors->count()],
-                    'user_id' => '1',
+                    'user_id' => $this->adminUserId(),
                 ]
             );
 

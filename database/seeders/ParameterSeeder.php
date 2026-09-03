@@ -7,6 +7,8 @@ use App\Models\Parameter;
 
 class ParameterSeeder extends Seeder
 {
+    use ResolvesAdminUser;
+
     public function run(): void
     {
         $data = [
@@ -122,7 +124,7 @@ class ParameterSeeder extends Seeder
                 ['nama' => $nama],
                 [
                     'jenis'   => $jenis,
-                    'user_id' => '1',
+                    'user_id' => $this->adminUserId(),
                 ]
             );
         }
